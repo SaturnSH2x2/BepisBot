@@ -10,16 +10,9 @@ class Moderator(base.Base):
 		self.mod_roles = config["moderator-roles"]
 		super().__init__(bot)
 
-	async def check_perms(self, ctx):
-		for role in ctx.message.author.roles:
-			if int(role.id) in self.mod_roles:
-				return True
-		await self.bot.say("You do not have permission to perform this action.")
-		return False
-
 	@commands.command(pass_context = True)
 	async def kick(self, ctx, member : discord.Member):
-		perms = await self.check_perms(ctx)
+		perms = await util.check_perms(self, ctx)
 		print(perms)
 		if (perms):
 			try:

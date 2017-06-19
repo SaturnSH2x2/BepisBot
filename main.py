@@ -15,7 +15,8 @@ def log_action(string : str):
 
 COGS = ["cogs.userrole",
 	"cogs.mod",
-	"cogs.random"]
+	"cogs.random",
+	"cogs.bot"]
 
 conf = util.load_js("config.json")
 token  = conf["token"]
