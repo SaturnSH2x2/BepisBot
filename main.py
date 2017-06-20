@@ -21,12 +21,17 @@ COGS = ["cogs.userrole",
 conf = util.load_js("config.json")
 token  = conf["token"]
 prefix = conf["prefix"]
-invite_c = conf["invite-channel"]
+main_c = conf["main-channels"]
 
 if not os.path.exists("cache"): os.mkdir("cache")
 if not os.path.exists("logs"):  os.mkdir("logs")
 
 bot = commands.Bot(command_prefix = prefix)
+
+@bot.event
+async def on_ready():
+	for channel in main_c:
+		await bot.send_message(bot.get_channel(channel), "BepisBot is back up!")
 
 @bot.event
 async def on_message(message):
