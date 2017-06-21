@@ -52,7 +52,7 @@ class BotCmd(Base):
 
 		await self.bot.say("Updating the bot...")
 		os.system("git fetch origin")
-		os.system("git checkout --force origin master")
+		os.system("git checkout --force origin/master")
 		await self.bot.say("Bot is updated!  Restarting...")
 		await self.bot.close()
 		os.system("python3.5 main.py")
