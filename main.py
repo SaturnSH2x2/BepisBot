@@ -40,12 +40,13 @@ async def on_message(message):
 
 	await bot.process_commands(message)
 
-# TODO: fix this
-"""
 @bot.event
 async def on_member_join(member):
 	print("{} has joined the server!".format(member.name))
-	await bot.send_message(discord.Channel(id=invite_c), "Welcome, {}, to the server!".format(member.name))
+	for c in main_c:
+		channel = bot.get_channel(str(c))
+		if channel.server == member.server:
+			await bot.send_message(channel, "Welcome, **{}**, to the server!".format(member.name))
 
 	log_action("{} joined the server.".format(member.name))
 	bot.process_commands(member)
@@ -53,11 +54,14 @@ async def on_member_join(member):
 @bot.event
 async def on_member_remove(member):
 	print("{} has left the server.".format(member.name))
-	await bot.send_message(discord.Channel(id=invite_c), "{} has left the server.  Welp.".format(member.name))
+	for c in main_c:
+		channel = bot.get_channel(str(c))
+		if channel.server == member.server:
+			await bot.send_message(channel, "**{}** has left the server.  Welp.".format(member.name))
 
 	log_action("{} left the server.".format(member.name))
 	bot.process_commands(member)
-"""
+
 
 for cog in COGS:
 	bot.load_extension(cog)
