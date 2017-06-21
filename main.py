@@ -31,7 +31,7 @@ bot = commands.Bot(command_prefix = prefix)
 @bot.event
 async def on_ready():
 	for channel in main_c:
-		await bot.send_message(bot.get_channel(channel), "BepisBot is back up!")
+		await bot.send_message(bot.get_channel(str(channel)), "BepisBot is back up!")
 
 @bot.event
 async def on_message(message):
