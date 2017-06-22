@@ -15,6 +15,7 @@ class BotCmd(Base):
 
 	@commands.command(pass_context = True)
 	async def setAvatar(self, ctx, link : str):
+		"""Set the bot's avatar.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return
@@ -32,6 +33,7 @@ class BotCmd(Base):
 
 	@commands.command(pass_context = True)
 	async def setUsername(self, ctx, name : str):
+		"""Set the bot's username.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return
@@ -46,6 +48,7 @@ class BotCmd(Base):
 
 	@commands.command(pass_context = True)
 	async def updateBot(self, ctx):
+		"""Update the bot to the latest version.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return
@@ -59,5 +62,3 @@ class BotCmd(Base):
 
 def setup(bot):
 	bot.add_cog(BotCmd(bot))
-
-		

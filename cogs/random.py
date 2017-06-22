@@ -11,6 +11,7 @@ from cogs.base import Base
 class RandomStuff(Base):
 	@commands.command(pass_context = True)
 	async def art(self, ctx, member : discord.Member):
+		"""?"""
 		finalImage = Image.new("RGBA", (811, 444), "white")
 		frameImage = Image.open(os.path.join("assets", "Art.png"))
 
@@ -36,6 +37,7 @@ class RandomStuff(Base):
 
 	@commands.command(pass_context = True)
 	async def rate(self, ctx):
+		"""Rate anything, on a scale frrom 0 to 10."""
 		rating = 0
 
 		thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]

@@ -29,6 +29,14 @@ if not os.path.exists("logs"):  os.mkdir("logs")
 bot = commands.Bot(command_prefix = prefix)
 
 @bot.event
+async def on_command_error(error, ctx):
+	print("Command Error!  {}".format(type(error)))
+	if isinstance(error, commands.errors.MissingRequiredArgument):
+		await bot.send_message(ctx.message.channel, bot.formatter.format_help_for(ctx, ctx.command)[0])
+	else:
+		await bot.send_message(ctx.message.channel, "An error has occurred.  {}".format(error))
+
+@bot.event
 async def on_ready():
 	for channel in main_c:
 		await bot.send_message(bot.get_channel(str(channel)), "BepisBot is back up!")

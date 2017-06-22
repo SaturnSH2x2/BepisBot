@@ -12,6 +12,7 @@ class Moderator(base.Base):
 
 	@commands.command(pass_context = True)
 	async def kick(self, ctx, member : discord.Member):
+		"""Kick a member from a server.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)
 		print(perms)
 		if (perms):
