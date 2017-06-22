@@ -5,4 +5,3 @@ Private Discord Bot that I use on my server. The source is here for anyone inter
 Required Libraries:   
 - discord.py   
 - pillow   
-- ImageScraper   
