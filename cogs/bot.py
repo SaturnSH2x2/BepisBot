@@ -60,5 +60,14 @@ class BotCmd(Base):
 		await self.bot.close()
 		os.system("python3.5 main.py")
 
+	@commands.command(pass_context = True)
+	async def setPlaying(self, ctx, playing):
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+
+		await self.bot.change_presence(game = discord.Game(name = playing))
+		await self.bot.say("Now playing {}".format(playing))
+
 def setup(bot):
 	bot.add_cog(BotCmd(bot))
