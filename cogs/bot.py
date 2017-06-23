@@ -62,12 +62,22 @@ class BotCmd(Base):
 
 	@commands.command(pass_context = True)
 	async def setPlaying(self, ctx, playing):
+		"Set the bot's playing status.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return
 
 		await self.bot.change_presence(game = discord.Game(name = playing))
 		await self.bot.say("Now playing {}".format(playing))
+
+	@commands.command(pass_context = True)
+	async def inviteLink(self, ctx):
+		"""Invite the bot to your own server!  Sends you a link with the invite link."""
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+
+		await self.bot.whisper("https://discordapp.com/oauth2/authorize?&client_id={0}&scope=bot&permissions=0".format(self.bot.user.id))
 
 def setup(bot):
 	bot.add_cog(BotCmd(bot))
