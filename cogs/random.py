@@ -1,7 +1,9 @@
 import asyncio
 import discord
 import requests
+import random
 import os
+import util
 
 from PIL import Image
 from discord.ext import commands
@@ -52,6 +54,24 @@ class RandomStuff(Base):
 			rating = 420
 
 		await self.bot.say(":thinking: I'd give {} a {} out of 10.".format(thing, rating))
+
+	@commands.command()
+	async def ship(self, mem1, mem2):
+		"""Ship two people together to create a fanfiction.  Slightly disturbing material may arise out of this.  You have been warned."""
+		fanfics = util.load_js("cogs/fanfics.json")
+
+		if isinstance(mem1, discord.User) or isinstance(mem1, discord.Member):
+			mem1 = mem1.display_name
+		else:
+			mem1 = str(mem1)
+
+		if isinstance(mem2, discord.User) or isinstance(mem2, discord.Member):
+			mem2 = mem2.display_name
+		else:
+			mem2 = str(mem2)
+
+		message = fanfics[random.randint(0, len(fanfics) - 1)]
+		await self.bot.say(message.format(mem1, mem2))
 
 def setup(bot):
 	bot.add_cog(RandomStuff(bot))
