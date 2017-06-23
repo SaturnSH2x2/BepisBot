@@ -77,7 +77,8 @@ class BotCmd(Base):
 		if not perms:
 			return
 
-		await self.bot.whisper("https://discordapp.com/oauth2/authorize?&client_id={0}&scope=bot&permissions=0".format(self.bot.user.id))
+		client_id = util.load_js("config.json")["client-id"]
+		await self.bot.whisper("https://discordapp.com/oauth2/authorize?&client_id={0}&scope=bot&permissions=0".format(client_id))
 
 def setup(bot):
 	bot.add_cog(BotCmd(bot))
