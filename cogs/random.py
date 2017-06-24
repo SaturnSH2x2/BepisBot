@@ -50,8 +50,13 @@ class RandomStuff(Base):
 
 		rating %= 10
 
+		# special cases
 		if thing == "<@162357148540469250>":
 			rating = 420
+		if "persona 3" in thing().lower():
+			rating = 10
+		if "kingy" in thing.lower():
+			rating = "gey"
 
 		await self.bot.say(":thinking: I'd give {} a {} out of 10.".format(thing, rating))
 
