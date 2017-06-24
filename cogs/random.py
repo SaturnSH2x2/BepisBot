@@ -82,13 +82,13 @@ class RandomStuff(Base):
 		rating %= 10
 
 		# special cases
-		if thing == "<@162357148540469250>":
+		if thing == "<@!162357148540469250>":
 			rating = 420
 		if "persona 3" in thing.lower():
 			rating = 10
 		if "kingy" in thing.lower():
 			rating = "gey"
-		if thing == "<@197244770626568193>":
+		if thing == "<@!197244770626568193>":
 			rating = "gey"
 
 		if rating == 8:
