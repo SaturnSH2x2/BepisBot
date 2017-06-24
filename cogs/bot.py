@@ -70,13 +70,9 @@ class BotCmd(Base):
 		await self.bot.change_presence(game = discord.Game(name = playing))
 		await self.bot.say("Now playing {}".format(playing))
 
-	@commands.command(pass_context = True)
-	async def inviteLink(self, ctx):
+	@commands.command()
+	async def inviteLink(self):
 		"""Invite the bot to your own server!  Sends you a link with the invite link."""
-		perms = await util.check_perms(self, ctx)
-		if not perms:
-			return
-
 		client_id = util.load_js("config.json")["client-id"]
 		await self.bot.whisper("https://discordapp.com/oauth2/authorize?&client_id={0}&scope=bot&permissions=0".format(client_id))
 
