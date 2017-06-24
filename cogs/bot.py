@@ -60,13 +60,9 @@ class BotCmd(Base):
 		await self.bot.close()
 		os.system("python3.5 main.py")
 
-	@commands.command(pass_context = True)
-	async def setPlaying(self, ctx, playing):
-		"Set the bot's playing status.  This requires special perms."""
-		perms = await util.check_perms(self, ctx)
-		if not perms:
-			return
-
+	@commands.command()
+	async def setPlaying(self, playing):
+		"Set the bot's playing status."""
 		await self.bot.change_presence(game = discord.Game(name = playing))
 		await self.bot.say("Now playing {}".format(playing))
 
