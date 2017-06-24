@@ -6,6 +6,8 @@ import os
 import util
 
 from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 from discord.ext import commands
 
 from cogs.base import Base
@@ -14,6 +16,9 @@ class RandomStuff(Base):
 	@commands.command(pass_context = True)
 	async def art(self, ctx, member : discord.Member):
 		"""?"""
+
+		await self.bot.send_typing(ctx.message.channel)
+
 		finalImage = Image.new("RGBA", (811, 444), "white")
 		frameImage = Image.open(os.path.join("assets", "Art.png"))
 
@@ -38,6 +43,32 @@ class RandomStuff(Base):
 		await self.bot.send_file(ctx.message.channel, "temp.png")
 
 	@commands.command(pass_context = True)
+	async def fidgetSpinner(self, ctx, line : str = None):
+		# font found here: http://www.fontspace.com/jake-luedecke-motion-and-graphic-design/ldfcomicsans
+		# code based off this: https://stackoverflow.com/questions/25255206/alternatives-to-pil-pillow-for-overlaying-an-image-with-text#25255348
+		await self.bot.send_typing(ctx.message.channel)
+		POSSIBLE_LINES = [	"vsssssssssshhhhhhh",
+					"spinning to winning",
+					"end my life",
+					"God is dead and we killed him",
+					"go away mom i'm FIDGET SPINNING",
+					"download FidgetSpinner3DS by B_E_P_I_S_M_A_N",
+					"cancer",
+					"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+				]
+		if line == None:
+			line = POSSIBLE_LINES[random.randint(0, len(POSSIBLE_LINES) - 1)]
+
+		image = Image.open(os.path.join("assets", "fidgetspinner.jpg"))
+		draw  = ImageDraw.Draw(image)
+		font  = ImageFont.truetype(os.path.join("assets","comicsans.ttf"), 50)
+
+		draw.text((10, 10), line, (0, 255, 0), font=font)
+		image.save("fidgetspinner.png")
+
+		await self.bot.upload("fidgetspinner.png")
+
+	@commands.command(pass_context = True)
 	async def rate(self, ctx):
 		"""Rate anything, on a scale frrom 0 to 10."""
 		rating = 0
@@ -53,12 +84,19 @@ class RandomStuff(Base):
 		# special cases
 		if thing == "<@162357148540469250>":
 			rating = 420
-		if "persona 3" in thing().lower():
+		if "persona 3" in thing.lower():
 			rating = 10
 		if "kingy" in thing.lower():
 			rating = "gey"
+		if thing == "<@197244770626568193>":
+			rating = "gey"
 
-		await self.bot.say(":thinking: I'd give {} a {} out of 10.".format(thing, rating))
+		if rating == 8:
+			word = "an"
+		else:
+			word = "a"
+
+		await self.bot.say(":thinking: I'd give {} {} {} out of 10.".format(thing, word, rating))
 
 	@commands.command()
 	async def ship(self, mem1, mem2):
