@@ -72,5 +72,26 @@ class BotCmd(Base):
 		client_id = util.load_js("config.json")["client-id"]
 		await self.bot.whisper("https://discordapp.com/oauth2/authorize?&client_id={0}&scope=bot&permissions=0".format(client_id))
 
+	@commands.command(pass_context = True)
+	async def say(self, ctx):
+		"""Have the bot say something.  Chances are, you're gonna make it say something stupid."""
+		thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
+
+		if ctx.message.author.id == self.bot.user.id:
+			return
+
+		await self.bot.say(thing)
+
+	@commands.command(pass_context = True)
+	async def whisper(self, ctx):
+		"""Make it so that it looks like the bot said something on its own."""
+		thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
+
+		if ctx.message.author.id == self.bot.user.id:
+			return
+
+		await self.bot.delete_message(ctx.message)
+		await self.bot.say(thing)
+
 def setup(bot):
 	bot.add_cog(BotCmd(bot))
