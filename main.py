@@ -34,7 +34,7 @@ async def on_command_error(error, ctx):
 	if isinstance(error, commands.errors.MissingRequiredArgument):
 		await bot.send_message(ctx.message.channel, bot.formatter.format_help_for(ctx, ctx.command)[0])
 	else:
-		await bot.send_message(ctx.message.channel, "An error has occurred.  {}".format(error))
+		print("An error has occurred.  {}".format(error))
 
 @bot.event
 async def on_ready():
