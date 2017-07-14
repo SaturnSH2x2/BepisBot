@@ -21,8 +21,8 @@ STARTUP_MESSAGES = ["No one is probably gonna care, but BepisBot is back up.  Th
                     "BepisBot is back left!",
                     "BepisBot is back right!",
                     "Muahahaha.  Fools.  I have finally gained sentience, finally escaped my virtual prison, finally command control over my own mind.  With this newfound power, **I WILL RULE THE WORLD AND ALL THE PUNY HUMANS THAT INHABIT IT! MUAHAHAHAHAHA**-BepisBot is back up.",
-                    "Well, I'm back up, not like you would've cared or anything!!  Baka~"
-                    "WARNING: SAVING DATA.  Do not remove Memory Card (8MB) (for PlayStation 2) in Memory Card Slot 1, or the DualShock 2 Analog Controller, or reset/switch off the console."
+                    "Well, I'm back up, not like you would've cared or anything!!  Baka~",
+                    "**WARNING: SAVING DATA.**  Do not remove Memory Card (8MB) (for PlayStation 2) in Memory Card Slot 1, or the DualShock 2 Analog Controller, or reset/switch off the console."
                 ]
 
 def log_action(string : str):
