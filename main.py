@@ -2,10 +2,27 @@ import asyncio
 import discord
 import time
 import os
+import random
 
 from discord.ext import commands
 
 import util
+
+STARTUP_MESSAGES = ["No one is probably gonna care, but BepisBot is back up.  Thought I'd let y'all know.",
+                    "Whoop-dee-hecking-doo, BepisBot is back up.  :confetti_ball:",
+                    ":white_check_mark: Emibot v4.2.0 is starti-oh shit wrong bot",
+                    "BepisBot is back down!",
+                    "PEPSIMAAAAAAAAAAAAAAAAAAAAN",
+                    "BepisBot is back up.  Preparing to launch nukes... :rocket:",
+                    "BepisBot is back up!  But you all probably don't care.",
+                    "BepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nno one cares",
+                    "I hope Tatsumaki-senpai notices that I'm back up...",
+                    "Rise, my children.  HRRRRRRRRRRRRGHHHHHHH-BepisBot is back up.",
+                    "BepisBot is back left!",
+                    "BepisBot is back right!",
+                    "Muahahaha.  Fools.  I have finally gained sentience, finally escaped my virtual prison, finally command control over my own mind.  With this newfound power, **I WILL RULE THE WORLD AND ALL THE PUNY HUMANS THAT INHABIT IT! MUAHAHAHAHAHA**-BepisBot is back up.",
+                    "Well, I'm back up, not like you would've cared or anything!!  Baka~"
+                ]
 
 def log_action(string : str):
 	with open( os.path.join( "logs", "{}.txt".format( time.strftime("%d%m%Y") ) ), "a+" ) as log:
@@ -39,7 +56,7 @@ async def on_command_error(error, ctx):
 @bot.event
 async def on_ready():
 	for channel in main_c:
-		await bot.send_message(bot.get_channel(str(channel)), "BepisBot is back up!")
+		await bot.send_message(bot.get_channel(str(channel)), random.choice(STARTUP_MESSAGES))
 
 @bot.event
 async def on_message(message):
