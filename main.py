@@ -64,6 +64,11 @@ async def on_message(message):
 	print("{}: {}".format(message.author.name, message.content))
 	log_action("{}: {}".format(message.author.name, message.content))
 
+	if message.content.lower() == "f":
+		await bot.send_file(message.channel, "assets/f.jpg")
+	if message.content.lower() == "no one cares":
+		await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+
 	await bot.process_commands(message)
 
 @bot.event
