@@ -25,8 +25,17 @@ STARTUP_MESSAGES = ["No one is probably gonna care, but BepisBot is back up.  Th
                     "**WARNING: SAVING DATA.**  Do not remove Memory Card (8MB) (for PlayStation 2) in Memory Card Slot 1, or the DualShock 2 Analog Controller, or reset/switch off the console."
                 ]
 
-def log_action(string : str):
-	with open( os.path.join( "logs", "{}.txt".format( time.strftime("%d%m%Y") ) ), "a+" ) as log:
+def log_action(message):
+	string = "{u} {t}: {c}".format(u = message.author.name, t = time.strftime("%H:%M"), c = message.content)
+	server_name_formatted = message.server.name.replace(" ", "-")
+
+	if not os.path.exists("./logs/{}/".format(server_name_formatted)):
+		os.mkdir("logs/{}/".format(server_name_formatted))
+
+	if not os.path.exists("./logs/{}/{}".format(server_name_formatted, message.channel.name)):
+		os.mkdir("logs/{}/{}/".format(server_name_formatted, message.channel.name))
+
+	with open( os.path.join( "logs", server_name_formatted, message.channel.name, "{}.txt".format( time.strftime("%d%m%Y") ) ), "a+" ) as log:
 		log.write(string + "\n")
 		log.flush()
 		log.close()
@@ -62,11 +71,15 @@ async def on_ready():
 @bot.event
 async def on_message(message):
 	print("{}: {}".format(message.author.name, message.content))
-	log_action("{}: {}".format(message.author.name, message.content))
+	log_action(message)
 
 	if message.content.lower() == "f":
 		await bot.send_file(message.channel, "assets/f.jpg")
-	if message.content.lower() == "no one cares":
+	elif ( "no one cares" in message.content.lower() ) and ( len(message.content) < 30 ):
+		await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+	elif ("ñô öñé çãrës" in message.content.lower() ) and ( len(message.content) < 30 ):
+		await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+	elif ("nobody gives a shit" in message.content.lower() ) and ( len(message.content) < 40 ):
 		await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
 
 	await bot.process_commands(message)
