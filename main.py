@@ -87,6 +87,8 @@ async def on_message(message):
 			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
 		elif ( "nobody cares" in message.content.lower() ) and ( len(message.content) < 30 ):
 			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+		elif ( "stfu" in message.content.lower() ):
+			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
 
 	await bot.process_commands(message)
 
