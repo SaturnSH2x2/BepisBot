@@ -73,14 +73,20 @@ async def on_message(message):
 	print("{}: {}".format(message.author.name, message.content))
 	log_action(message)
 
-	if message.content.lower() == "f":
-		await bot.send_file(message.channel, "assets/f.jpg")
-	elif ( "no one cares" in message.content.lower() ) and ( len(message.content) < 30 ):
-		await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
-	elif ("ñô öñé çãrës" in message.content.lower() ) and ( len(message.content) < 30 ):
-		await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
-	elif ("nobody gives a shit" in message.content.lower() ) and ( len(message.content) < 40 ):
-		await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+	if message.author.id == bot.user.id:
+		return
+
+	if prefix not in message.content.lower():
+		if message.content.lower() == "f":
+			await bot.send_file(message.channel, "assets/f.jpg")
+		elif ( "no one cares" in message.content.lower() ) and ( len(message.content) < 30 ):
+			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+		elif ("ñô öñé çãrës" in message.content.lower() ) and ( len(message.content) < 30 ):
+			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+		elif ("nobody gives a shit" in message.content.lower() ) and ( len(message.content) < 40 ):
+			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+		elif ( "nobody cares" in message.content.lower() ) and ( len(message.content) < 30 ):
+			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
 
 	await bot.process_commands(message)
 
