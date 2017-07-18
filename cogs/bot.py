@@ -14,8 +14,20 @@ class BotCmd(Base):
 		super().__init__(bot)
 
 	@commands.command(pass_context = True)
+	async def deleteMessages(self, ctx, number : int = 10):
+		"""Delete the number of messages specified.  Deletes 10 by default.  This requires special perms."""
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+
+		await self.bot.purge_from(ctx.message.channel, limit = number)
+		msg = await self.bot.say("Deleted {} messages.".format(number))
+		await asyncio.sleep(5)
+		await self.bot.delete_message(msg)
+
+	@commands.command(pass_context = True)
 	async def setAvatar(self, ctx, link : str):
-		"""Set the bot's avatar.  This requires special perms."""
+		"""Set the bot's avatar."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return
@@ -80,7 +92,7 @@ class BotCmd(Base):
 
 	@commands.command()
 	async def inviteLink(self):
-		"""Invite the bot to your own server!  Sends you a link with the invite link."""
+		"""Invite the bot to your own server!  Sends you a DM with the invite link."""
 		client_id = util.load_js("config.json")["client-id"]
 		await self.bot.whisper("https://discordapp.com/oauth2/authorize?&client_id={0}&scope=bot&permissions=0".format(client_id))
 
