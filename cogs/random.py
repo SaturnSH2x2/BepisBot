@@ -44,6 +44,7 @@ class RandomStuff(Base):
 
 	@commands.command(pass_context = True)
 	async def fidgetSpinner(self, ctx, line : str = None):
+		"""hahaha dead meme"""
 		# font found here: http://www.fontspace.com/jake-luedecke-motion-and-graphic-design/ldfcomicsans
 		# code based off this: https://stackoverflow.com/questions/25255206/alternatives-to-pil-pillow-for-overlaying-an-image-with-text#25255348
 		await self.bot.send_typing(ctx.message.channel)
@@ -84,11 +85,11 @@ class RandomStuff(Base):
 		# special cases
 		if thing == "<@!162357148540469250>":
 			rating = 420
-		if "persona 3" in thing.lower():
+		elif "persona 3" in thing.lower():
 			rating = 10
-		if "kingy" in thing.lower():
+		elif "kingy" in thing.lower():
 			rating = "gey"
-		if thing == "<@!197244770626568193>":
+		elif thing == "<@!197244770626568193>":
 			rating = "gey"
 
 		if rating == 8:

@@ -3,6 +3,7 @@ import discord
 import time
 import os
 import random
+import itertools
 
 from discord.ext import commands
 
@@ -51,6 +52,8 @@ token  = conf["token"]
 prefix = conf["prefix"]
 main_c = conf["main-channels"]
 
+blacklist = util.load_js("blacklist.json")
+
 if not os.path.exists("cache"): os.mkdir("cache")
 if not os.path.exists("logs"):  os.mkdir("logs")
 
@@ -77,7 +80,10 @@ async def on_message(message):
 	print("{}: {}".format(message.author.name, message.content))
 	log_action(message)
 
-	if message.author.id == bot.user.id:
+	blacklisted = None
+	is_command = False
+
+	if message.author.bot == True:
 		return
 
 	if prefix not in message.content.lower():
@@ -93,8 +99,34 @@ async def on_message(message):
 			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
 		elif ( "stfu" in message.content.lower() ):
 			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+		elif ( "no" in message.content.lower() ) and ( "one" in message.content.lower() ) and ( "cares" in message.content.lower() ) and ( message.author.id == "275353479701069825" ):
+			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
 
-	await bot.process_commands(message)
+	# make sure that we're processing actual commands here
+	for command in bot.commands:
+		if command in message.content:
+			is_command = True
+			break
+
+	if is_command == False:
+		return
+
+	# check if the user is blacklisted
+	for user in blacklist:
+		if str(user["id"]) == message.author.id:
+			blacklisted = user
+			break
+
+	# act accordingly
+	if (blacklisted != None) and (bot.command_prefix in message.content) and (bot.command_prefix[0] == message.content[0]):
+		e = discord.Embed()
+		e.title = "You've been blacklisted."
+		e.description = "You are on the bot's blacklist, and thus cannot use any of the bot's commands.  At all.\n\nReason given: {}".format(blacklisted["reason"])
+		e.set_thumbnail(url = "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.starrgymnastics.com%2F_includes%2Fmobile%2Fred-x-icon.png&f=1")
+
+		await bot.send_message(message.channel, embed = e)
+	else:
+		await bot.process_commands(message)
 
 @bot.event
 async def on_member_join(member):
