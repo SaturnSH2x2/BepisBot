@@ -71,6 +71,10 @@ class BotCmd(Base):
 			await self.bot.say("Haha.  Nice try there.")
 			return
 
+		if ( "emily" in playing.lower() ) and ( "bot" in playing.lower() ):
+			await self.bot.say("Haha.  Nice try there.")
+			return
+
 		await self.bot.change_presence(game = discord.Game(name = playing))
 		await self.bot.say("Now playing {}".format(playing))
 
