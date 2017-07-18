@@ -43,7 +43,8 @@ def log_action(message):
 COGS = ["cogs.userrole",
 	"cogs.mod",
 	"cogs.random",
-	"cogs.bot"]
+	"cogs.bot",
+	"cogs.tarot"]
 
 conf = util.load_js("config.json")
 token  = conf["token"]
@@ -60,7 +61,10 @@ async def on_command_error(error, ctx):
 	print("Command Error!  {}".format(type(error)))
 	if isinstance(error, commands.errors.MissingRequiredArgument):
 		await bot.send_message(ctx.message.channel, bot.formatter.format_help_for(ctx, ctx.command)[0])
+	elif isinstance(error, commands.errors.CommandNotFound):
+		pass
 	else:
+		await bot.send_message(ctx.message.channel, "An error has occurred.  {}".format(error))
 		print("An error has occurred.  {}".format(error))
 
 @bot.event

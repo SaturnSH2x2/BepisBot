@@ -116,5 +116,16 @@ class RandomStuff(Base):
 		message = fanfics[random.randint(0, len(fanfics) - 1)]
 		await self.bot.say(message.format(mem1, mem2))
 
+	@commands.command()
+	async def downloadMoreRAM(self, memorySize : int = 16):
+		msg = await self.bot.say(":thumbsup: Alright, downloading {}GB of RAM...  0%".format(memorySize))
+		for i in range(1, 100, 15):
+			await self.bot.edit_message(msg, ":thumbsup: Alright, downloading {}GB of RAM...  {}%".format(memorySize, i))
+			asyncio.sleep(1)
+
+		await self.bot.edit_message(msg, ":thumbsup: Alright, downloading {}GB of RAM...  100%".format(memorySize))
+		await self.bot.say("OK, your RAM is ready!")
+		await self.bot.upload( os.path.join("assets", "RAM") )
+
 def setup(bot):
 	bot.add_cog(RandomStuff(bot))
