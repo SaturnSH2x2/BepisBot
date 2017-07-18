@@ -3,7 +3,6 @@ import discord
 import time
 import os
 import random
-import itertools
 
 from discord.ext import commands
 
@@ -73,7 +72,9 @@ async def on_command_error(error, ctx):
 @bot.event
 async def on_ready():
 	for channel in main_c:
-		await bot.send_message(bot.get_channel(str(channel)), random.choice(STARTUP_MESSAGES))
+		msg = await bot.send_message(bot.get_channel(str(channel)), random.choice(STARTUP_MESSAGES))
+		await asyncio.sleep(10)
+		await bot.delete_message(msg)
 
 @bot.event
 async def on_message(message):
