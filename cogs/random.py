@@ -133,24 +133,33 @@ class RandomStuff(Base):
 		await self.bot.say("Just a test -Dionicio3")
 
 	@commands.command(pass_context = True)
-	async def kill(self, ctx, member : discord.Member):
+	async def kill(self, ctx, member = None):
 		"""kys"""
-		offender = ctx.message.author.mention 
-		victim = member.mention
+		if ctx.message.mention_everyone:
+			await self.bot.say(":boom::gun: Welp, {} killed everyone, the absolute madman.".format(ctx.message.author.mention))
+			return
 
-		if ctx.message.author.id == member.id:
-			if random.randint(1, 100) == 42:
-				await self.bot.say(":boom::gun: **{}**, you summoned your Persona!".format(offender))
+		if member == None:
+			await self.bot.say("Please specify a member!")
+			return
+
+		offender = ctx.message.author.mention
+		victims = ctx.message.mentions
+
+		for victim in victims:
+			if ctx.message.author.id == victim.id:
+				if random.randint(1, 100) == 42:
+					await self.bot.say(":boom::gun: **{}**, you summoned your Persona!".format(offender))
+				else:
+					await self.bot.say(":boom::gun: **{}**, you killed yourself!".format(offender))
+			elif victim.id == self.bot.user.id:
+				await self.bot.say(":boom::gun: **{}**, you killed me!  Not cool bro".format(offender))
+			elif victim.id == "162357148540469250":
+				await self.bot.say("Hey **{}**, can\'t touch this!".format(offender))
+			elif victim.id == "191238543828451329":
+				await self.bot.say("Hey **{}**, can\'t touch this!".format(offender))
 			else:
-				await self.bot.say(":boom::gun: **{}**, you killed yourself!".format(offender))
-		elif member.id == self.bot.user.id:
-			await self.bot.say(":boom::gun: **{}**, you killed me!  Not cool bro".format(offender))
-		elif member.id == 162357148540469250:
-			await self.bot.say("Hey **{}**, can\'t touch this!".format(offender))
-		elif member.id == 191238543828451329:
-			await self.bot.say("Hey **{}**, can\'t touch this!".format(offender))
-		else:
-			await self.bot.say(":boom::gun: **{}**, you have been killed by **{}**!".format(victim, offender))
+				await self.bot.say(":boom::gun: **{}**, you have been killed by **{}**!".format(victim.mention, offender))
 
 def setup(bot):
 	bot.add_cog(RandomStuff(bot))
