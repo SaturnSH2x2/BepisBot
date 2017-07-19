@@ -28,10 +28,6 @@ class BotCmd(Base):
 	@commands.command(pass_context = True)
 	async def setAvatar(self, ctx, link : str):
 		"""Set the bot's avatar."""
-		perms = await util.check_perms(self, ctx)
-		if not perms:
-			return
-
 		await self.bot.send_typing(ctx.message.channel)
 		image = requests.get(link)
 
