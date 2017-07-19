@@ -145,6 +145,10 @@ class RandomStuff(Base):
 				await self.bot.say(":boom::gun: **{}**, you killed yourself!".format(offender))
 		elif member.id == self.bot.user.id:
 			await self.bot.say(":boom::gun: **{}**, you killed me!  Not cool bro".format(offender))
+		elif member.id == 162357148540469250:
+			await self.bot.say("Hey **{}**, can't touch this!".format(offender))
+		elif member.id == 191238543828451329:
+			await self.bot.say("Hey **{}**, can't touch this!".format(offender))
 		else:
 			await self.bot.say(":boom::gun: **{}**, you have been killed by **{}**!".format(victim, offender))
 
