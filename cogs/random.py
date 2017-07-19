@@ -43,7 +43,7 @@ class RandomStuff(Base):
 		await self.bot.send_file(ctx.message.channel, "temp.png")
 
 	@commands.command(pass_context = True)
-	async def fidgetSpinner(self, ctx, line : str = None):
+	async def fidgetSpinner(self, ctx, *, line : str = None):
 		"""hahaha dead meme"""
 		# font found here: http://www.fontspace.com/jake-luedecke-motion-and-graphic-design/ldfcomicsans
 		# code based off this: https://stackoverflow.com/questions/25255206/alternatives-to-pil-pillow-for-overlaying-an-image-with-text#25255348
@@ -89,7 +89,7 @@ class RandomStuff(Base):
 			rating = 10
 		elif "kingy" in thing.lower():
 			rating = "gey"
-		elif thing == "<@!197244770626568193>":
+		elif "<@!197244770626568193>" in thing.lower():
 			rating = "gey"
 
 		if rating == 8:

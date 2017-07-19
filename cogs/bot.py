@@ -40,7 +40,7 @@ class BotCmd(Base):
 			await self.bot.say("Something went wrong.  Sorry.")
 
 	@commands.command(pass_context = True)
-	async def setUsername(self, ctx, name : str):
+	async def setUsername(self, ctx, *, name : str):
 		"""Set the bot's username.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
@@ -69,7 +69,7 @@ class BotCmd(Base):
 		os.system("python3.5 main.py")
 
 	@commands.command()
-	async def setPlaying(self, playing):
+	async def setPlaying(self, *, playing : str):
 		"Set the bot's playing status."""
 		if "emibot" in playing.lower():
 			await self.bot.say("Haha.  Nice try there.")
@@ -93,9 +93,9 @@ class BotCmd(Base):
 		await self.bot.whisper("https://discordapp.com/oauth2/authorize?&client_id={0}&scope=bot&permissions=0".format(client_id))
 
 	@commands.command(pass_context = True)
-	async def say(self, ctx):
+	async def say(self, ctx, *, thing : str):
 		"""Have the bot say something.  Chances are, you're gonna make it say something stupid."""
-		thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
+		#thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
 
 		if ctx.message.author.id == self.bot.user.id:
 			return
@@ -103,9 +103,9 @@ class BotCmd(Base):
 		await self.bot.say(thing)
 
 	@commands.command(pass_context = True)
-	async def whisper(self, ctx):
+	async def whisper(self, ctx, *, thing : str):
 		"""Make it so that it looks like the bot said something on its own."""
-		thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
+		#thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
 
 		if ctx.message.author.id == self.bot.user.id:
 			return
