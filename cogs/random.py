@@ -126,8 +126,9 @@ class RandomStuff(Base):
 
 		await self.bot.edit_message(msg, ":thumbsup: Alright, downloading {}GB of RAM...  100%".format(memorySize))
 		await self.bot.say("OK, your RAM is ready!")
-
-    @commands.command()
+	await self.bot.upload( os.path.join("assets", "RAM") )  
+	
+	@commands.command()
     async def dioTest(self)
     await self.bot.say("Just a test -Dionicio3")await self.bot.upload( os.path.join("assets", "RAM") )
 
