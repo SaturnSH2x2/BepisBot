@@ -129,8 +129,9 @@ class RandomStuff(Base):
 	await self.bot.upload( os.path.join("assets", "RAM") )  
 	
 	@commands.command()
-    async def dioTest(self)
-    await self.bot.say("Just a test -Dionicio3")await self.bot.upload( os.path.join("assets", "RAM") )
+	async def dioTest(self)
+		await self.bot.say("Just a test -Dionicio3")
+		await self.bot.upload( os.path.join("assets", "RAM") )
 
 def setup(bot):
 	bot.add_cog(RandomStuff(bot))
