@@ -132,5 +132,21 @@ class RandomStuff(Base):
 	async def dioTest(self):
 		await self.bot.say("Just a test -Dionicio3")
 
+	@commands.command(pass_context = True)
+	async def kill(self, ctx, member : discord.Member):
+		"""kys"""
+		offender = ctx.message.author.mention 
+		victim = member.mention
+
+		if ctx.message.author.id == member.id:
+			if random.randint(1, 100) == 42:
+				await self.bot.say(":boom::gun: **{}**, you summoned your Persona!".format(offender))
+			else:
+				await self.bot.say(":boom::gun: **{}**, you killed yourself!".format(offender))
+		elif member.id == self.bot.user.id:
+			await self.bot.say(":boom::gun: **{}**, you killed me!  Not cool bro".format(offender))
+		else:
+			await self.bot.say(":boom::gun: **{}**, you have been killed by **{}**!".format(victim, offender))
+
 def setup(bot):
 	bot.add_cog(RandomStuff(bot))
