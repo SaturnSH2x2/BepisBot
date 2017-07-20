@@ -118,7 +118,7 @@ class BotCmd(Base):
 		await self.bot.say(thing)
 		
 	@commands.command(pass_context = True)
-	async def say(self, ctx):
+	async def setNick(self, ctx):
 		"""Nickname test"""
 		nick = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
 
