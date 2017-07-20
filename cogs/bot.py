@@ -114,12 +114,11 @@ class BotCmd(Base):
 		await self.bot.say(thing)
 		
 	@commands.command(pass_context = True)
-	async def setNick(self, *, ctx, nick : str):
+	async def setNick(self, ctx, *, nick : str):
 		"""Nickname test"""
-		if ctx.message.author.id == self.bot.user.id:
-			return
-
-		await self.bot.change_nickname(self.bot.user, nick)
+		botMember = ctx.message.server.get_member(self.bot.user.id)
+		await self.bot.change_nickname(botMember, nick)
+		await self.bot.say("Set nickname to {}".format(nick))
 		
 def setup(bot):
 	bot.add_cog(BotCmd(bot))
