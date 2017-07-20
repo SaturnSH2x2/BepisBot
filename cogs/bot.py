@@ -112,6 +112,14 @@ class BotCmd(Base):
 
 		await self.bot.delete_message(ctx.message)
 		await self.bot.say(thing)
+		
+	@commands.command(pass_context = True)
+	async def setNick(self, *, ctx, nick : str):
+		"""Nickname test"""
+		if ctx.message.author.id == self.bot.user.id:
+			return
 
+		await self.bot.change_nickname(self.bot.user, nick)
+		
 def setup(bot):
 	bot.add_cog(BotCmd(bot))
