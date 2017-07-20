@@ -118,10 +118,8 @@ class BotCmd(Base):
 		await self.bot.say(thing)
 		
 	@commands.command(pass_context = True)
-	async def setNick(self, ctx):
+	async def setNick(self, *, ctx, nick : str):
 		"""Nickname test"""
-		nick = ctx.message.content
-
 		if ctx.message.author.id == self.bot.user.id:
 			return
 
