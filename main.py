@@ -26,10 +26,7 @@ STARTUP_MESSAGES = ["No one is probably gonna care, but BepisBot is back up.  Th
                 ]
 
 def log_action(message):
-	try:
-		string = "{u} {t}: {c}".format(u = message.author.name, t = time.strftime("%H:%M"), c = message.content)
-	except UnicodeEncodeError:
-		string = "{u} {t}: {c}".format(u = message.author.id, t = time.strftime("%H:%M"), c = message.content)
+	string = "{u} {t}: {c}".format(u = message.author.name, t = time.strftime("%H:%M"), c = message.content)
 
 	server_name_formatted = message.server.name.replace(" ", "-")
 
@@ -40,7 +37,12 @@ def log_action(message):
 		os.mkdir("logs/{}/{}/".format(server_name_formatted, message.channel.name))
 
 	with open( os.path.join( "logs", server_name_formatted, message.channel.name, "{}.txt".format( time.strftime("%d%m%Y") ) ), "a+" ) as log:
-		log.write(string)
+		try:
+			log.write(string)
+		except UnicodeEncodeError:
+			string = "{u} {t}: {c}".format(u = message.author.id, t = time.strftime("%H:%M"), c = message.content)
+			log.write(string)
+			
 		log.write("\n")
 		log.flush()
 		log.close()
