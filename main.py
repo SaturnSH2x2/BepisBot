@@ -26,7 +26,11 @@ STARTUP_MESSAGES = ["No one is probably gonna care, but BepisBot is back up.  Th
                 ]
 
 def log_action(message):
-	string = "{u} {t}: {c}".format(u = message.author.name, t = time.strftime("%H:%M"), c = message.content)
+	try:
+		string = "{u} {t}: {c}".format(u = message.author.name, t = time.strftime("%H:%M"), c = message.content)
+	except UnicodeEncodeError:
+		string = "{u} {t}: {c}".format(u = message.author.id, t = time.strftime("%H:%M"), c = message.content)
+
 	server_name_formatted = message.server.name.replace(" ", "-")
 
 	if not os.path.exists("./logs/{}/".format(server_name_formatted)):
@@ -78,7 +82,11 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-	print("{}: {}".format(message.author.name, message.content))
+	try:
+		print("{}: {}".format(message.author.name, message.content))
+	except UnicodeEncodeError:
+		print("{}: {}".format(message.author.id, message.content))
+
 	log_action(message)
 
 	blacklisted = None
@@ -137,7 +145,7 @@ async def on_member_join(member):
 		if channel.server == member.server:
 			await bot.send_message(channel, "Welcome, **{}**, to the server!".format(member.name))
 
-	log_action("{} joined the server.".format(member.name))
+	#log_action("{} joined the server.".format(member.name))
 	bot.process_commands(member)
 
 @bot.event
@@ -148,7 +156,7 @@ async def on_member_remove(member):
 		if channel.server == member.server:
 			await bot.send_message(channel, "**{}** has left the server.  Welp.".format(member.name))
 
-	log_action("{} left the server.".format(member.name))
+	#log_action("{} left the server.".format(member.name))
 	bot.process_commands(member)
 
 
