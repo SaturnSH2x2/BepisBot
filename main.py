@@ -40,7 +40,8 @@ def log_action(message):
 		os.mkdir("logs/{}/{}/".format(server_name_formatted, message.channel.name))
 
 	with open( os.path.join( "logs", server_name_formatted, message.channel.name, "{}.txt".format( time.strftime("%d%m%Y") ) ), "a+" ) as log:
-		log.write(string + "\n")
+		log.write(string)
+		log.write("\n")
 		log.flush()
 		log.close()
 
