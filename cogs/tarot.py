@@ -105,7 +105,8 @@ class Tarot(Base):
 		e.title = "You drew the {} card.".format(cardName)
 		e.set_image( url = deck[card] )
 
-		if self.server_decks[ctx.message.server.id]["explanations-enabled"]:
+		if ( (ctx.message.server.id in self.server_decks) and (self.server_decks[ctx.message.server.id]["explanations-enabled"]) ) or \
+				(ctx.message.server.id not in self.server_decks):
 			e.description = explanations[card]
 			e.set_footer( text = explanations["source"] )
 
