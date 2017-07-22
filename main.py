@@ -73,7 +73,7 @@ blacklist = util.load_js("blacklist.json")
 if not os.path.exists("cache"): os.mkdir("cache")
 if not os.path.exists("logs"):  os.mkdir("logs")
 
-bot = commands.Bot(command_prefix = prefix)
+bot = commands.Bot(command_prefix = prefix, pm_help = True)
 
 @bot.event
 async def on_command_error(error, ctx):
