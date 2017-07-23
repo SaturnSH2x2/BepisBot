@@ -61,7 +61,8 @@ COGS = ["cogs.userrole",
 	"cogs.random",
 	"cogs.bot",
 	"cogs.tarot",
-	"cogs.server"]
+	"cogs.server",
+	"cogs.music"]
 
 conf = util.load_js("config.json")
 token  = conf["token"]
