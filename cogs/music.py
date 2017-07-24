@@ -39,12 +39,16 @@ class Music(Base):
 		except discord.ClientException:
 			await self.voice.move_to(vChannel)
 			
-	@commands.command()
-	async def mikeWazowski(self):
+	@commands.command(pass_context = True)
+	async def mikeWazowski(self, ctx):
 		if self.voice == None:
 			await self.bot.say("Connect to a voice channel, call me with {}join, then call this command.".format(self.bot.command_prefix))
 			return
+		elif ctx.message.server.get_member(ctx.message.author.id).voice.voice_channel != self.voice.channel:
+			await self.bot.say("You're in a different voice channel!  Either switch channels, or use {}join to summon me there.".format(self.bot.command_prefix))
+			return
 			
+		await self.bot.type()
 		mw = await self.voice.create_ytdl_player("https://youtu.be/IRP-2y43BLo")
 		mw.start()
 		
