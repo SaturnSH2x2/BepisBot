@@ -101,6 +101,19 @@ class BotCmd(Base):
 			return
 
 		await self.bot.say(thing)
+		
+	@commands.command(pass_context = True)
+	async def spam(self, ctx, number : int, *, thing : str):
+		"""Spam a message.  Use with caution."""
+		if ctx.message.author.id == self.bot.user.id:
+			return
+			
+		await self.bot.type()
+			
+		for i in range(number):
+			await self.bot.say(thing)
+			await self.bot.type()
+			await asyncio.sleep(0.75)
 
 	@commands.command(pass_context = True)
 	async def whisper(self, ctx, *, thing : str):
