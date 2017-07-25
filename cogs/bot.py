@@ -68,6 +68,28 @@ class BotCmd(Base):
 		await self.bot.close()
 		os.system("python3.5 main.py")
 
+	@commands.command(pass_context = True)
+	async def shutdown(self, ctx):
+		"""Shutdown the bot.  Useful.  Occasionally."""
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+			
+		await self.bot.say(":ballot_box_with_check: BepisBot is shutting down...")
+		await asyncio.sleep(1)
+		await self.bot.close()
+		
+	@commands.command(pass_context = True)
+	async def restart(self, ctx):
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+			
+		await self.bot.say(":ballot_box_with_check: BepisBot is restarting...")
+		await asyncio.sleep(1)
+		await self.bot.close()
+		os.system("python3.5 main.py")
+		
 	@commands.command()
 	async def setPlaying(self, *, playing : str):
 		"Set the bot's playing status."""
