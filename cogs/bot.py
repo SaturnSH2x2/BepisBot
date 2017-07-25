@@ -109,10 +109,21 @@ class BotCmd(Base):
 			return
 			
 		await self.bot.type()
-			
+		
+		if number > 100000000000000000000:
+			await self.bot.say("Are you fucking out of your mind?")
+			return
+		if number > 100:
+			await self.bot.say("Yeah, no.")
+			return
+		
 		for i in range(number):
 			await self.bot.say(thing)
-			await self.bot.type()
+			
+			if i == number - 1:
+				pass
+			else:
+				await self.bot.type()
 			await asyncio.sleep(0.75)
 
 	@commands.command(pass_context = True)
