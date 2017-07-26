@@ -63,7 +63,8 @@ COGS = ["cogs.userrole",
 	"cogs.tarot",
 	"cogs.server",
 	"cogs.music",
-	"cogs.embeds"]
+	"cogs.embeds",
+	"cogs.whitelist"]
 
 conf = util.load_js("config.json")
 token  = conf["token"]
@@ -71,6 +72,7 @@ prefix = conf["prefix"]
 main_c = conf["main-channels"]
 
 blacklist = util.load_js("blacklist.json")
+serverLogList = util.load_js("logs/server-list.json")
 
 if not os.path.exists("cache"): os.mkdir("cache")
 if not os.path.exists("logs"):  os.mkdir("logs")
@@ -101,8 +103,10 @@ async def on_message(message):
 		print("{}: {}".format(message.author.name, message.content))
 	except UnicodeEncodeError:
 		print("{}: {}".format(message.author.id, message.content))
-
-	log_action(message)
+		
+	serverLogList = util.load_js("logs/server-list.json")
+	if str(message.server.id) in str(serverLogList):
+		log_action(message)
 
 	blacklisted = None
 	is_command = False
@@ -136,8 +140,9 @@ async def on_message(message):
 		return
 
 	# check if the user is blacklisted
+	blacklist = util.load_js("blacklist.json")
 	for user in blacklist:
-		if str(user["id"]) == message.author.id:
+		if str(user["id"]) == str(message.author.id):
 			blacklisted = user
 			break
 

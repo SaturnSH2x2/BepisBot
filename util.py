@@ -5,9 +5,16 @@ from discord.ext import commands
 import json
 
 async def check_perms(obj, ctx):
-	for role in ctx.message.author.roles:
-		if int(role.id) in obj.mod_roles:
+	whitelist = load_js("whitelist.json")
+	for member in whitelist["users"]:
+		if ctx.message.author.id == member:
 			return True
+			
+	for wRole in whitelist["roles"]:
+		for role in ctx.message.author.roles:
+			if role.id == wRole:
+				return True
+	
 	await obj.bot.say("You do not have permission to perform this action.")
 	return False
 

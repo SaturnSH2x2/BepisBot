@@ -166,5 +166,32 @@ class BotCmd(Base):
 		await self.bot.change_nickname(botMember, nick)
 		await self.bot.say("Set nickname to {}".format(nick))
 		
+	@commands.command(pass_context = True)
+	async def enableLogging(self, ctx):
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+			
+		logLog = util.load_js("logs/server-list.json")
+		if len(logLog) == 0:
+			logLog = []
+			
+		logLog.append(ctx.message.server.id)
+		util.save_js("logs/server-list.json", logLog)
+		
+		await self.bot.say("Logging for this server has been enabled.")
+		
+	@commands.command(pass_context = True)
+	async def disableLogging(self, ctx):
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+			
+		logLog = util.load_js("logs/server-list.json")
+		logLog.remove(ctx.message.server.id)
+		util.save_js("logs/server-list.json", logLog)
+		
+		await self.bot.say("Logging for this server has been disabled.")
+		
 def setup(bot):
 	bot.add_cog(BotCmd(bot))
