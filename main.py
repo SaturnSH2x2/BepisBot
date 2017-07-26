@@ -80,6 +80,31 @@ if not os.path.exists("logs"):  os.mkdir("logs")
 bot = commands.Bot(command_prefix = prefix, pm_help = True)
 
 @bot.event
+async def on_server_update(before, after):
+	if after.id not in serverLogList:
+		return
+		
+	old_name_formatted = before.name.replace(" ", "-")
+	new_name_formatted = after.name.replace(" ", "-")
+		
+	if os.path.exists( os.path.join("logs", old_name_formatted) ):
+		print("Server renamed?")
+		os.rename(os.path.join("logs", old_name_formatted), os.path.join("logs", new_name_formatted))
+
+@bot.event
+async def on_channel_update(before, after):
+	if after.server.id not in serverLogList:
+		return
+		
+	server_name_formatted = before.server.name.replace(" ", "-")
+	
+	print(os.path.join("logs", server_name_formatted, before.name))
+
+	if os.path.exists( os.path.join("logs", server_name_formatted, before.name) ):
+		print("Channel renamed?")
+		os.rename( os.path.join("logs", server_name_formatted, before.name), os.path.join("logs", server_name_formatted, after.name) )
+
+@bot.event
 async def on_command_error(error, ctx):
 	print("Command Error!  {}".format(type(error)))
 	if isinstance(error, commands.errors.MissingRequiredArgument):
