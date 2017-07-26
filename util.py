@@ -17,7 +17,7 @@ async def check_perms(obj, ctx):
 					return True
 	except KeyError:
 		whitelist = {"users" : [], "roles" : []}
-		util.save_js("whitelist.json", whitelist)
+		save_js("whitelist.json", whitelist)
 	
 	await obj.bot.say("You do not have permission to perform this action.")
 	return False
