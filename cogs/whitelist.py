@@ -26,7 +26,7 @@ class BlackWhiteList(Base):
 			return
 			
 		if str(member.id) in self.whitelist["users"]:
-			await self.bot.say("{} is already in the bot's whitelist.".format(ctx.message.author.name))
+			await self.bot.say("{} is already in the bot's whitelist.".format(member.name))
 			return
 			
 		self.whitelist["users"].append(member.id)
