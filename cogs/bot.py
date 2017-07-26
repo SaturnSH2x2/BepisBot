@@ -70,6 +70,15 @@ class BotCmd(Base):
 		os.system("python3.5 main.py")
 
 	@commands.command(pass_context = True)
+	async def leaveServer(self, ctx):
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+			
+		await self.bot.say("Leaving server.  Bye... :cry:")
+		await self.bot.leave_server(ctx.message.server)
+
+	@commands.command(pass_context = True)
 	async def shutdown(self, ctx):
 		"""Shutdown the bot.  Useful.  Occasionally."""
 		perms = await util.check_perms(self, ctx)
