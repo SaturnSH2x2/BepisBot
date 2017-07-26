@@ -11,6 +11,7 @@ class BotCmd(Base):
 	def __init__(self, bot):
 		conf = util.load_js("config.json")
 		self.mod_roles= conf["moderator-roles"]
+		self.kSpam = False
 		super().__init__(bot)
 
 	@commands.command(pass_context = True)
@@ -130,6 +131,9 @@ class BotCmd(Base):
 		if ctx.message.author.id == self.bot.user.id:
 			return
 			
+		if self.kSpam == True:
+			return
+			
 		await self.bot.type()
 		
 		if number > 100000000000000000000:
@@ -140,6 +144,9 @@ class BotCmd(Base):
 			return
 		
 		for i in range(number):
+			if self.kSpam == True:
+				break
+				
 			await self.bot.say(thing)
 			
 			if i == number - 1:
@@ -147,6 +154,17 @@ class BotCmd(Base):
 			else:
 				await self.bot.type()
 			await asyncio.sleep(0.75)
+
+	@commands.command(pass_context = True)
+	async def killSpam(self, ctx):
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+			
+		self.kSpam = True
+		await self.bot.say("Spam killed.  All spam commands will be ignored for the next minute.")
+		await asyncio.sleep(60)
+		self.kSpam = False
 
 	@commands.command(pass_context = True)
 	async def whisper(self, ctx, *, thing : str):
