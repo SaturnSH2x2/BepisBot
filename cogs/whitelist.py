@@ -112,6 +112,7 @@ class BlackWhiteList(Base):
 		for user in self.blacklistList:
 			if str(member.id) == str(user["id"]):
 				self.blacklistList.remove(user)
+				util.save_js("blacklist.json", self.blacklistList)
 				await self.bot.say("**{}**, you have been removed from the bot's blacklist".format(member.mention))
 				return
 				

@@ -165,8 +165,7 @@ async def on_message(message):
 		return
 
 	# check if the user is blacklisted
-	blacklist = util.load_js("blacklist.json")
-	for user in blacklist:
+	for user in util.load_js("blacklist.json"):
 		if str(user["id"]) == str(message.author.id):
 			blacklisted = user
 			break
