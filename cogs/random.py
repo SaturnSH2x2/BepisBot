@@ -161,5 +161,15 @@ class RandomStuff(Base):
 			else:
 				await self.bot.say(":boom::gun: **{}**, you have been killed by **{}**!".format(victim.mention, offender))
 
+	@commands.command()
+	async def soon(self):
+		"""shitty hacker meme"""
+		if random.randint(1, 25) == 13:
+			fil = "uu"
+		else:
+			fil = "oo"
+			
+		await self.bot.say("S{}n:tm:".format(fil))
+		
 def setup(bot):
 	bot.add_cog(RandomStuff(bot))
