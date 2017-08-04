@@ -83,13 +83,13 @@ class RandomStuff(Base):
 		rating %= 10
 
 		# special cases
-		if thing == "<@!162357148540469250>":
+		if "162357148540469250" in thing.lower():
 			rating = 420
 		elif "persona 3" in thing.lower():
 			rating = 10
 		elif "kingy" in thing.lower():
 			rating = "gey"
-		elif "<@!197244770626568193>" in thing.lower():
+		elif "197244770626568193" in thing.lower():
 			rating = "gey"
 
 		if rating == 8:
@@ -135,7 +135,7 @@ class RandomStuff(Base):
 	@commands.command(pass_context = True)
 	async def kill(self, ctx, member = None):
 		"""kys"""
-		if ctx.message.mention_everyone:
+		if ctx.message.mention_everyone or "@everyone" in ctx.message.content:
 			await self.bot.say(":boom::gun: Welp, {} killed everyone, the absolute madman.".format(ctx.message.author.mention))
 			return
 

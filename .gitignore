@@ -1,0 +1,10 @@
+__pycache__/
+blacklist.json
+cache/
+config.json
+fidgetspinner.png
+logs/
+server-deck-tarot.json
+temp.png
+track.txt
+whitelist.json
