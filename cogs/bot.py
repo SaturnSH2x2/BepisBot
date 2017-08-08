@@ -24,6 +24,10 @@ class BotCmd(Base):
 		if len(disabledCommands) == 0:
 			disabledCommands = []
 			
+		if passedCommand == "disableCommand" or passedCommand == "enableCommand":
+			await self.bot.say("That command cannot be disabled.")
+			return
+			
 		for command in self.bot.commands:
 			if command == passedCommand:
 				disabledCommands.append({ "command" : passedCommand,
