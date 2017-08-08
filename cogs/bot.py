@@ -15,6 +15,62 @@ class BotCmd(Base):
 		super().__init__(bot)
 
 	@commands.command(pass_context = True)
+	async def disableCommand(self, ctx, passedCommand : str):
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+			
+		disabledCommands = util.load_js("disabled-commands.json")
+		if len(disabledCommands) == 0:
+			disabledCommands = []
+			
+		for command in self.bot.commands:
+			if command == passedCommand:
+				disabledCommands.append({ "command" : passedCommand,
+										"server-id" : ctx.message.server.id})
+				util.save_js("disabled-commands.json", disabledCommands)
+				await self.bot.say("{}{} has been disabled.".format(self.bot.command_prefix, passedCommand))
+				return
+				
+		await self.bot.say("The {}{} command does not exist!".format(self.bot.command_prefix, passedCommand))
+		
+	@commands.command(pass_context = True)
+	async def enableCommand(self, ctx, passedCommand : str):
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+			
+		disabledCommands = util.load_js("disabled-commands.json")
+		index = 0
+		for d in disabledCommands:
+			if d["command"] == passedCommand and d["server-id"] == ctx.message.server.id:
+				del d
+				del disabledCommands[index]
+				util.save_js("disabled-commands.json", disabledCommands)
+				await self.bot.say("{}{} has been re-enabled.".format(self.bot.command_prefix, passedCommand))
+				return
+				
+		await self.bot.say("{}{} either isn't a valid command, or is not currently disabled.".format(self.bot.command_prefix, passedCommand))
+				
+	@commands.command(pass_context = True)
+	async def printDisabledCommands(self, ctx):
+		disabledCommands = util.load_js("disabled-commands.json")
+		e = discord.Embed()
+		eContent = ""
+		for d in disabledCommands:
+			if d["server-id"] == ctx.message.server.id:
+				eContent += d["command"]
+				eContent += "\n"
+				
+		if eContent == "":
+			e.title = "No commands have been disabled for this server."
+		else:
+			e.title = "Here are the commands that have been disabled for this server."
+		e.description = eContent
+		
+		await self.bot.say(embed = e)
+	
+	@commands.command(pass_context = True)
 	async def deleteMessages(self, ctx, number : int = 10):
 		"""Delete the number of messages specified.  Deletes 10 by default.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)

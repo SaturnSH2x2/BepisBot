@@ -5,25 +5,26 @@ import os
 import random
 
 from discord.ext import commands
+from discord.ext.commands.view import StringView
 
 import util
 
 STARTUP_MESSAGES = ["No one is probably gonna care, but BepisBot is back up.  Thought I'd let y'all know.",
-                    "Whoop-dee-hecking-doo, BepisBot is back up.  :confetti_ball:",
-                    ":white_check_mark: Emibot v4.2.0 is starti-oh shit wrong bot",
-                    "BepisBot is back down!",
-                    "PEPSIMAAAAAAAAAAAAAAAAAAAAN",
-                    "BepisBot is back up.  Preparing to launch nukes... :rocket:",
-                    "BepisBot is back up!  But you all probably don't care.",
-                    "BepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nno one cares",
-                    "I hope Tatsumaki-senpai notices that I'm back up...",
-                    "Rise, my children.  HRRRRRRRRRRRRGHHHHHHH-BepisBot is back up.",
-                    "BepisBot is back left!",
-                    "BepisBot is back right!",
-                    "Muahahaha.  Fools.  I have finally gained sentience, finally escaped my virtual prison, finally command control over my own mind.  With this newfound power, **I WILL RULE THE WORLD AND ALL THE PUNY HUMANS THAT INHABIT IT! MUAHAHAHAHAHA**-BepisBot is back up.",
-                    "Well, I'm back up, not like you would've cared or anything!!  Baka~",
-                    "**WARNING: SAVING DATA.**  Do not remove Memory Card (8MB) (for PlayStation 2) in Memory Card Slot 1, or the DualShock 2 Analog Controller, or reset/switch off the console."
-                ]
+					"Whoop-dee-hecking-doo, BepisBot is back up.  :confetti_ball:",
+					":white_check_mark: Emibot v4.2.0 is starti-oh shit wrong bot",
+					"BepisBot is back down!",
+					"PEPSIMAAAAAAAAAAAAAAAAAAAAN",
+					"BepisBot is back up.  Preparing to launch nukes... :rocket:",
+					"BepisBot is back up!  But you all probably don't care.",
+					"BepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nBepisBot is back up!\nno one cares",
+					"I hope Tatsumaki-senpai notices that I'm back up...",
+					"Rise, my children.  HRRRRRRRRRRRRGHHHHHHH-BepisBot is back up.",
+					"BepisBot is back left!",
+					"BepisBot is back right!",
+					"Muahahaha.  Fools.  I have finally gained sentience, finally escaped my virtual prison, finally command control over my own mind.  With this newfound power, **I WILL RULE THE WORLD AND ALL THE PUNY HUMANS THAT INHABIT IT! MUAHAHAHAHAHA**-BepisBot is back up.",
+					"Well, I'm back up, not like you would've cared or anything!!  Baka~",
+					"**WARNING: SAVING DATA.**  Do not remove Memory Card (8MB) (for PlayStation 2) in Memory Card Slot 1, or the DualShock 2 Analog Controller, or reset/switch off the console."
+				]
 
 def log_action(message):
 	string = "{u} {t}: {c}".format(u = message.author.name, t = time.strftime("%H:%M"), c = message.content)
@@ -169,6 +170,21 @@ async def on_message(message):
 		if str(user["id"]) == str(message.author.id):
 			blacklisted = user
 			break
+			
+	# check if the command has been disabled for this server
+	commandIsDisabled = False
+	disabledCommands = util.load_js("disabled-commands.json")
+	for command in bot.commands:
+		if "{}{}".format(bot.command_prefix, command) not in message.content:
+			continue
+			
+		for d in disabledCommands:
+			if command == d["command"] and message.server.id == d["server-id"]:
+				commandIsDisabled = True
+				break
+				
+		if commandIsDisabled:
+			break
 
 	# act accordingly
 	if (blacklisted != None) and (bot.command_prefix in message.content) and (bot.command_prefix[0] == message.content[0]):
@@ -178,6 +194,8 @@ async def on_message(message):
 		e.set_thumbnail(url = "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.starrgymnastics.com%2F_includes%2Fmobile%2Fred-x-icon.png&f=1")
 
 		await bot.send_message(message.channel, embed = e)
+	elif commandIsDisabled:
+		await bot.send_message(message.channel, "That command is disabled for use in this server.")
 	else:
 		await bot.process_commands(message)
 
@@ -206,5 +224,5 @@ async def on_member_remove(member):
 
 for cog in COGS:
 	bot.load_extension(cog)
-
+	
 bot.run(token)
