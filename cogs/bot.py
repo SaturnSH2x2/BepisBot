@@ -54,6 +54,7 @@ class BotCmd(Base):
 				await self.bot.say("{}{} has been re-enabled.".format(self.bot.command_prefix, passedCommand))
 				return
 				
+			index += 1
 		await self.bot.say("{}{} either isn't a valid command, or is not currently disabled.".format(self.bot.command_prefix, passedCommand))
 				
 	@commands.command(pass_context = True)
