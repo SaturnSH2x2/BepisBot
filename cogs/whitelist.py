@@ -118,5 +118,49 @@ class BlackWhiteList(Base):
 				
 		await self.bot.say("{} is not in the bot's blacklist".format(member.name))
 		
+
+	@commands.command(pass_context = True)
+	async def wlsPrintList(self, ctx):
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+
+		await self.bot.say("{}".format(self.whitelist))
+			
+		content = "**Users:**\n"
+			
+		e = discord.Embed()
+		e.title = "Here are the whitelists for this server."
+			
+		for user in self.whitelist["users"]:
+			member = ctx.message.server.get_member(user)
+		
+			if member == None:
+				continue
+					
+			content += member.name
+			content += "\n"
+			
+		content += "\n**Roles:**\n"
+		
+		for roleID in self.whitelist["roles"]:
+			isServerRole = False
+			serverRole = None
+		
+			for role in ctx.message.server.roles:
+				if role.id == roleID:
+					isServerRole = True
+					serverRole = role
+					break
+					
+			if isServerRole == False:
+				continue
+				
+			content += serverRole.name
+
+		e.description = content
+			
+		await self.bot.say(embed = e)
+
 def setup(bot):
 	bot.add_cog(BlackWhiteList(bot))
