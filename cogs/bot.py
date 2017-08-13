@@ -204,6 +204,11 @@ class BotCmd(Base):
 		if self.kSpam == True:
 			return
 			
+
+		if len(ctx.message.role_mentions) > 0:
+			await self.bot.say("The bot cannot spam role mentions.")
+			return
+
 		await self.bot.type()
 		
 		if number > 100000000000000000000:
