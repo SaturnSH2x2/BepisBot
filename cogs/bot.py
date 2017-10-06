@@ -12,6 +12,7 @@ class BotCmd(Base):
 	def __init__(self, bot):
 		conf = util.load_js("config.json")
 		self.okbLocation = conf["okaybot-location"]
+		self.okbToken    = conf["okaybot-token"]
 		self.mod_roles= conf["moderator-roles"]
 		self.kSpam = False
 		super().__init__(bot)
@@ -303,7 +304,7 @@ class BotCmd(Base):
 
 		if okbInServer:
 			await self.bot.say("Okay, <@!354059440355409921>, get your ass over here")
-			asyncio.sleep(5.0)
+			await asyncio.sleep(3.0)
 
 		data = requests.get(mainRB)
 		with open(os.path.join(self.okbLocation, "main.rb"), "wb+") as mrb:
@@ -311,7 +312,7 @@ class BotCmd(Base):
 			mrb.close()
 		
 		os.system("killall ruby")
-		subprocess.Popen(["bundle", "exec", "ruby", "{}/main.rb".format(self.okbLocation), "--gemfile={}/Gemfile".format(self.okbLocation)])
+		subprocess.Popen(["bundle", "exec", "ruby", "{}/main.rb".format(self.okbLocation), self.okbToken, "--gemfile={}/Gemfile".format(self.okbLocation)])
 		await self.bot.say(":white_check_mark: OkayBot has been updated.")
 
 	@commands.command(pass_context = True)
