@@ -129,6 +129,7 @@ async def on_message(message):
 		print("{}: {}".format(message.author.name, message.content))
 	except UnicodeEncodeError:
 		print("{}: {}".format(message.author.id, message.content))
+	print(message.attachments)
 		
 	serverLogList = util.load_js("logs/server-list.json")
 	if str(message.server.id) in str(serverLogList):

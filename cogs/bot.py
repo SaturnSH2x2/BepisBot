@@ -3,6 +3,7 @@ import discord
 import requests
 import util
 import os
+import subprocess
 
 from discord.ext import commands
 from cogs.base import Base
@@ -10,6 +11,7 @@ from cogs.base import Base
 class BotCmd(Base):
 	def __init__(self, bot):
 		conf = util.load_js("config.json")
+		self.okbLocation = conf["okaybot-location"]
 		self.mod_roles= conf["moderator-roles"]
 		self.kSpam = False
 		super().__init__(bot)
@@ -273,7 +275,45 @@ class BotCmd(Base):
 		util.save_js("logs/server-list.json", logLog)
 		
 		await self.bot.say("Logging for this server has been enabled.")
+
+	@commands.command(pass_context = True)
+	async def updateOkaybot(self, ctx):
+		"""Updates OkayBot.  I'm only able to do this because OkayBot is hosted on the same VPS."""
+		user = ctx.message.author.id
+		files = ctx.message.attachments
+
+		if (user != "162357148540469250") and (user != "218919888583000064"):
+			await self.bot.say("Due to the nature of this command, only B_E_P_I_S_M_A_N and Stovven can update OkayBot.")
+			return
+
+		mainRB = None
+		for f in files:
+			if f["filename"] == "main.rb":
+				mainRB = f["url"]
+				break
+
+		if not mainRB:
+			await self.bot.say("Please make sure your file is named \"main.rb\", then try uploading again.")
+			return
+
+		okbInServer = False
+		for member in ctx.message.server.members:
+			if member.id == "354059440355409921":
+				okbInServer = True
+
+		if okbInServer:
+			await self.bot.say("Okay, <@!354059440355409921>, get your ass over here")
+			asyncio.sleep(5.0)
+
+		data = requests.get(mainRB)
+		with open(os.path.join(self.okbLocation, "main.rb"), "wb+") as mrb:
+			mrb.write(data.content)
+			mrb.close()
 		
+		os.system("killall ruby")
+		subprocess.Popen(["bundle", "exec", "ruby", "{}/main.rb".format(self.okbLocation), "--gemfile={}/Gemfile".format(self.okbLocation)])
+		await self.bot.say(":white_check_mark: OkayBot has been updated.")
+
 	@commands.command(pass_context = True)
 	async def disableLogging(self, ctx):
 		perms = await util.check_perms(self, ctx)
