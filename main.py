@@ -138,11 +138,17 @@ async def on_message(message):
 	blacklisted = None
 	is_command = False
 
+	conf = util.load_js("config.json")
+	try:
+		a = conf["fDisabled"]
+	except KeyError:
+		conf["fDisabled"] = []
+
 	if message.author.bot == True:
 		return
 
 	if prefix not in message.content.lower():
-		if message.content.lower() == "f":
+		if message.content.lower() == "f" and message.server.id not in conf["fDisabled"]:
 			await bot.send_file(message.channel, "assets/f.jpg")
 		elif ( "no one cares" in message.content.lower() ) and ( len(message.content) < 30 ):
 			await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))

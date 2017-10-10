@@ -312,8 +312,47 @@ class BotCmd(Base):
 			mrb.close()
 		
 		os.system("killall ruby")
-		subprocess.Popen(["bundle", "exec", "ruby", "{}/main.rb".format(self.okbLocation), self.okbToken, "--gemfile={}/Gemfile".format(self.okbLocation)])
+		subprocess.Popen(["cd", self.okbLocation, "&&", "bundle", "exec", "ruby", "{}/main.rb".format(self.okbLocation), self.okbToken, "--gemfile={}/Gemfile".format(self.okbLocation)])
 		await self.bot.say(":white_check_mark: OkayBot has been updated.")
+
+	@commands.command(pass_context = True)
+	async def fDisable(self, ctx):
+		"Don't want SpongeBob's ugly mug staring you down every time you pay your respects? Use this. Requires special perms."
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+
+		conf = util.load_js("config.json")
+		try:
+			conf["fDisabled"].append(ctx.message.server.id)
+		except KeyError:
+			conf["fDisabled"] = []
+			conf["fDisabled"].append(ctx.message.server.id)		
+
+		util.save_js("config.json", conf)
+
+		await self.bot.say("F Reactions have been disabled.")
+
+	@commands.command(pass_context = True)
+	async def fEnable(self, ctx):
+		"Enables the bot to react accordingly whenever you pay your respects. Requires special perms."
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+
+		conf = util.load_js("config.json")
+		try:
+			conf["fDisabled"].remove(ctx.message.server.id)
+		except KeyError:
+			await self.bot.say("F Reactions are already enabled.")
+			return
+		except ValueError:
+			await self.bot.say("F Reactions are already enabled.")
+			return
+
+		util.save_js("config.json", conf)
+
+		await self.bot.say("F Reactions have been enabled.")
 
 	@commands.command(pass_context = True)
 	async def disableLogging(self, ctx):
