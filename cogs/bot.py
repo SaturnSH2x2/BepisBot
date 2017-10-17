@@ -312,8 +312,25 @@ class BotCmd(Base):
 			mrb.close()
 		
 		os.system("killall ruby")
-		subprocess.Popen(["cd", self.okbLocation, "&&", "bundle", "exec", "ruby", "{}/main.rb".format(self.okbLocation), self.okbToken, "--gemfile={}/Gemfile".format(self.okbLocation)])
+		subprocess.Popen(["ruby", os.path.join(self.okbLocation, "main.rb"), self.okbToken])
 		await self.bot.say(":white_check_mark: OkayBot has been updated.")
+
+	@commands.command(pass_context = True)
+	async def startOkaybot(self, ctx):
+		"Starts OkayBot. Useful for when it's down. Only B_E_P_I_S_M_A_N and Stovven can use this command."
+		user = ctx.message.author.id
+		if (user != "162357148540469250") and (user != "218919888583000064"):
+			await self.bot.say("Due to the nature of this command, only B_E_P_I_S_M_A_N and Stovven can update OkayBot.")
+			return
+
+		out = subprocess.check_output(["ps", "-a"], shell = True)
+		out = str(out)
+		if "ruby" in out:
+			await self.bot.say("OkayBot seems to already be running.")
+			return
+
+		subprocess.Popen(["ruby", os.path.join(self.okbLocation, "main.rb"), self.okbToken])
+		await self.bot.say(":white_check_mark: OkayBot is now running.")
 
 	@commands.command(pass_context = True)
 	async def fDisable(self, ctx):
