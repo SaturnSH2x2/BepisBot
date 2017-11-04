@@ -45,7 +45,7 @@ class RandomStuff(Base):
 	@commands.command(pass_context = True, hidden = True)
 	async def quote(self, ctx):
 		"Chary's server only.  Picks a quote from TempGenie.  Used when TempGenie is down."
-		if ctx.message.server.id != "255075882320789517":
+		if ctx.message.server.id != "329063968570081281":
 			return
 		
 		data = requests.get("https://raw.githubusercontent.com/gnmmarechal/TempGenie/master/quotes.txt").content
