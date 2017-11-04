@@ -117,19 +117,9 @@ class RandomStuff(Base):
 	    await self.bot.say(":thinking: I'd give {} {} {} out of 10.".format(thing, word, rating))
 
 	@commands.command()
-	async def ship(self, mem1, mem2):
+	async def ship(self, mem1 : str, mem2 : str):
 	    """Ship two people together to create a fanfiction.  Slightly disturbing material may arise out of this.  You have been warned."""
 	    fanfics = util.load_js("cogs/fanfics.json")
-
-	    if isinstance(mem1, discord.User) or isinstance(mem1, discord.Member):
-	        mem1 = mem1.display_name
-	    else:
-	        mem1 = str(mem1)
-
-	    if isinstance(mem2, discord.User) or isinstance(mem2, discord.Member):
-	        mem2 = mem2.display_name
-	    else:
-	        mem2 = str(mem2)
 
 	    message = fanfics[random.randint(0, len(fanfics) - 1)]
 	    msgFormatted = message.format(mem1, mem2)
