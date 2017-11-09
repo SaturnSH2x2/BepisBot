@@ -48,7 +48,7 @@ class RandomStuff(Base):
 
         	await self.bot.send_typing(ctx.message.channel)
 
-        	finalImage = Image.new("RGBA", (768, 1001), "white")
+        	finalImage = Image.new("RGBA", (764, 997), "white")
         	frameImage = Image.open(os.path.join("assets", "wanted.png"))
 
         	url = member.avatar_url
@@ -65,7 +65,7 @@ class RandomStuff(Base):
         	profileImage = Image.open(os.path.join("cache", "{}.webp".format(member.id)))
         	profileImage = profileImage.resize((500,500))
 
-        	finalImage.paste(profileImage, (125,300))
+        	finalImage.paste(profileImage, (123,298))
         	finalImage.paste(frameImage, (0,0), frameImage)
         	finalImage.save("wantedTemp.png", "PNG")
 
