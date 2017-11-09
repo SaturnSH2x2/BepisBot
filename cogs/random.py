@@ -41,6 +41,35 @@ class RandomStuff(Base):
 	    finalImage.save("temp.png", "PNG")
 
 	    await self.bot.send_file(ctx.message.channel, "temp.png")
+		
+	@commands.command(pass_context = True)
+	async def wanted(self, ctx, member : discord.Member):
+        	"""?"""
+
+        	await self.bot.send_typing(ctx.message.channel)
+
+        	finalImage = Image.new("RGBA", (768, 1001), "white")
+        	frameImage = Image.open(os.path.join("assets", "wanted.png"))
+
+        	url = member.avatar_url
+        	if url == "":
+            		url = member.default_avatar_url
+
+        	print(url)
+        	data = requests.get(url)
+
+        	with open(os.path.join("cache", "{}.webp".format(member.id)), "wb+") as f:
+            		f.write(data.content)
+            		f.close()
+
+        	profileImage = Image.open(os.path.join("cache", "{}.webp".format(member.id)))
+        	profileImage = profileImage.resize((500,500))
+
+        	finalImage.paste(profileImage, (125,300))
+        	finalImage.paste(frameImage, (0,0), frameImage)
+        	finalImage.save("wantedTemp.png", "PNG")
+
+        	await self.bot.send_file(ctx.message.channel, "wantedTemp.png")
 
 	@commands.command(pass_context = True, hidden = True)
 	async def quote(self, ctx):
