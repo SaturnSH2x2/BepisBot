@@ -50,6 +50,7 @@ class RandomStuff(Base):
 
         finalImage = Image.new("RGBA", (764, 997), "white")
         frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
+	text=text.replace(",", "")
         try:
             x=int(text)
             if x<1000000:
