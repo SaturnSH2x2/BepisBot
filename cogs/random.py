@@ -42,34 +42,48 @@ class RandomStuff(Base):
 
 	    await self.bot.send_file(ctx.message.channel, "temp.png")
 		
-	@commands.command(pass_context = True)
-	async def wanted(self, ctx, member : discord.Member):
-        	"""?"""
+    @commands.command(pass_context = True)
+    async def wanted(self, ctx, member : discord.Member, text=5000):
+        """?"""
 
-        	await self.bot.send_typing(ctx.message.channel)
+        await self.bot.send_typing(ctx.message.channel)
 
-        	finalImage = Image.new("RGBA", (764, 997), "white")
-        	frameImage = Image.open(os.path.join("assets", "wanted.png"))
+        finalImage = Image.new("RGBA", (764, 997), "white")
+        frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
+	text=text.replace(",", "")
+        try:
+            x=int(text)
+            if x<1000000:
+                text="{:,}".format(int(text))
+            else:
+                text="5,000"
+        except:
+            print(text+" NO")
+            text="5,000"
+        line="$"+text+" REWARD"
+        font  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 83)
+        url = member.avatar_url
+        if url == "":
+            url = member.default_avatar_url
 
-        	url = member.avatar_url
-        	if url == "":
-            		url = member.default_avatar_url
+        print(url)
+        data = requests.get(url)
 
-        	print(url)
-        	data = requests.get(url)
+        with open(os.path.join("cache", "{}.webp".format(member.id)), "wb+") as f:
+            f.write(data.content)
+            f.close()
 
-        	with open(os.path.join("cache", "{}.webp".format(member.id)), "wb+") as f:
-            		f.write(data.content)
-            		f.close()
+        profileImage = Image.open(os.path.join("cache", "{}.webp".format(member.id)))
+        profileImage = profileImage.resize((500,500))
 
-        	profileImage = Image.open(os.path.join("cache", "{}.webp".format(member.id)))
-        	profileImage = profileImage.resize((500,500))
+        finalImage.paste(frameImage, (0,0), frameImage)
+        finalImage.paste(profileImage, (123,298))
+        draw  = ImageDraw.Draw(finalImage)
+        w,h=draw.textsize(line, font=font)
+        draw.multiline_text((((681-w)/2)+42, 806), line, (0, 0, 0), font=font, align="left")
+        finalImage.save("wantedTemp.png", "PNG")
 
-        	finalImage.paste(profileImage, (123,298))
-        	finalImage.paste(frameImage, (0,0), frameImage)
-        	finalImage.save("wantedTemp.png", "PNG")
-
-        	await self.bot.send_file(ctx.message.channel, "wantedTemp.png")
+        await self.bot.send_file(ctx.message.channel, "wantedTemp.png")
 
 	@commands.command(pass_context = True, hidden = True)
 	async def quote(self, ctx):
