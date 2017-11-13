@@ -43,7 +43,7 @@ class RandomStuff(Base):
 	    await self.bot.send_file(ctx.message.channel, "temp.png")
 		
     @commands.command(pass_context = True)
-    async def wanted(self, ctx, member : discord.Member, text : str=None):
+    async def wanted(self, ctx, member : discord.Member, text : int=5000):
         """?"""
 
         await self.bot.send_typing(ctx.message.channel)
