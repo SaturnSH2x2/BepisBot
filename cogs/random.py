@@ -47,6 +47,7 @@ class RandomStuff(Base):
         """?"""
 
         await self.bot.send_typing(ctx.message.channel)
+        glitcher=False
 
         finalImage = Image.new("RGBA", (764, 997), "white")
         frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
@@ -55,13 +56,15 @@ class RandomStuff(Base):
         text=text.replace(",", "")
         try:
             x=int(text)
-            if x<1000000:
+            if x<1000000 or x>-100000:
                 text="{:,}".format(int(text))
             else:
-                text="5,000"
+                glitcher=True
+                text="999999"
         except:
+            glitcher=True
             print(text+" NO")
-            text="5,000"
+            text="999999"
         line="$"+text+" REWARD"
         font  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 83)
         url = member.avatar_url
@@ -69,6 +72,8 @@ class RandomStuff(Base):
             url = member.default_avatar_url
 
         print(url)
+        if glitcher==True:
+            url=ctx.message.author.avatar_url
         data = requests.get(url)
 
         with open(os.path.join("cache", "{}.webp".format(member.id)), "wb+") as f:
