@@ -189,24 +189,24 @@ class BotCmd(Base):
 		await self.bot.whisper("https://discordapp.com/oauth2/authorize?&client_id={0}&scope=bot&permissions=0".format(client_id))
 
 	@commands.command(pass_context = True)
-	async def say(self, ctx, *, thing : str):
+	async def say(self, ctx, *, thing):
 		"""Have the bot say something.  Chances are, you're gonna make it say something stupid."""
 		#thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
 
 		if ctx.message.author.id == self.bot.user.id:
 			return
 
+		thing = str.en
 		await self.bot.say(thing)
 		
 	@commands.command(pass_context = True)
-	async def spam(self, ctx, number : int, *, thing : str):
+	async def spam(self, ctx, number : int, *, thing):
 		"""Spam a message.  Use with caution."""
 		if ctx.message.author.id == self.bot.user.id:
 			return
 			
 		if self.kSpam == True:
-			return
-			
+			return			
 
 		if len(ctx.message.role_mentions) > 0:
 			await self.bot.say("The bot cannot spam role mentions.")
@@ -245,7 +245,7 @@ class BotCmd(Base):
 		self.kSpam = False
 
 	@commands.command(pass_context = True)
-	async def whisper(self, ctx, *, thing : str):
+	async def whisper(self, ctx, *, thing):
 		"""Make it so that it looks like the bot said something on its own."""
 		#thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
 
