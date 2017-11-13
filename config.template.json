@@ -1,0 +1,10 @@
+{
+	"fDisabled": ["servers for which F is disabled here"], 
+	"moderator-roles": ["moderator roles here, they must be integers"], 
+	"main-channels": ["channels to say hello in, must be integers"], 
+	"okaybot-location": "/path/to/okaybot/irrelevant/for/you/probably", 
+	"okaybot-token": "okaybot token, also irrelevant for you probably", 
+	"client-id": "client id, must be int, used for the invite command", 
+	"token": "token here", 
+	"prefix": "prefix here"
+}
