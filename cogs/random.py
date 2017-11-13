@@ -60,11 +60,11 @@ class RandomStuff(Base):
                 text="{:,}".format(int(text))
             else:
                 glitcher=True
-                text="999999"
+                text="999,999"
         except:
             glitcher=True
             print(text+" NO")
-            text="999999"
+            text="999,999"
         line="$"+text+" REWARD"
         font  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 83)
         url = member.avatar_url
