@@ -43,13 +43,15 @@ class RandomStuff(Base):
 	    await self.bot.send_file(ctx.message.channel, "temp.png")
 		
     @commands.command(pass_context = True)
-    async def wanted(self, ctx, member : discord.Member, text=5000):
+    async def wanted(self, ctx, member : discord.Member, text : int=5000):
         """?"""
 
         await self.bot.send_typing(ctx.message.channel)
 
         finalImage = Image.new("RGBA", (764, 997), "white")
         frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
+	if text == None:
+	        text="5,000"
 	text=text.replace(",", "")
         try:
             x=int(text)
