@@ -55,7 +55,7 @@ class RandomStuff(Base):
         text=text.replace(",", "")
         try:
             x=int(text)
-            if x<1000000:
+            if x<1000000 or x<-100000:
                 text="{:,}".format(int(text))
             else:
                 text="5,000"
