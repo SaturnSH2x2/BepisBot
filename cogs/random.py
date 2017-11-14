@@ -289,7 +289,7 @@ class RandomStuff(Base):
             finalImage.paste(profileImage, (123,298))
         draw  = ImageDraw.Draw(finalImage)
         draw2=ImageDraw.Draw(finalImage)
-        w,h=draw.textsize(line, font=font)
+        w,h=draw.textsize(line, font=fontA)
         if reasonBool==True:
             w2,h2=draw.textsize(reason, font=fontB)
             draw.multiline_text((((681-w)/2)+42, 785), line, (0, 0, 0), font=fontA, align="left")
