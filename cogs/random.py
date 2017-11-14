@@ -243,6 +243,8 @@ class RandomStuff(Base):
         if text == None:
             text="5,000"
         splitter=text.split(" ",1)
+        await self.bot.say(text)
+        await self.bot.say(splitter)
         text=splitter[0]
         try:
             reason=splitter[1]
