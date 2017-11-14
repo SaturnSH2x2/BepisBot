@@ -233,8 +233,9 @@ class RandomStuff(Base):
 
 
     @commands.command(pass_context = True)
-    async def wantedTest(self, ctx, member : discord.Member, text : str = "5000"):
+    async def wantedTest(self, ctx, member : discord.Member, text : str = None):
         """?"""
+        await self.bot.say(text)
         await self.bot.send_typing(ctx.message.channel)
         glitcher=False
         reasonBool=False
