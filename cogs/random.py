@@ -235,7 +235,6 @@ class RandomStuff(Base):
     @commands.command(pass_context = True)
     async def wantedTest(self, ctx, member : discord.Member, *, text : str = None):
         """?"""
-        await self.bot.say(text)
         await self.bot.send_typing(ctx.message.channel)
         glitcher=False
         reasonBool=False
@@ -244,13 +243,10 @@ class RandomStuff(Base):
         if text == None:
             text="5,000"
         splitter=text.split(" ",1)
-        await self.bot.say(text)
-        await self.bot.say(splitter)
         text=splitter[0]
         try:
             reason=splitter[1]
-            await self.bot.say(str(splitter[1]))
-            reasonBool=true
+            reasonBool=True
         except:
             reasonBool=False
         text=text.replace(",", "")
