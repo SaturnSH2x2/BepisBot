@@ -246,6 +246,7 @@ class RandomStuff(Base):
         text=splitter[0]
         try:
             reason=splitter[1]
+            await self.bot.say(str(splitter[1]))
             reasonBool=true
         except:
             reasonBool=False
@@ -265,7 +266,7 @@ class RandomStuff(Base):
             reasonBool=True
         line="$"+text+" REWARD"
         fontA  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 83)
-        fontB  = ImageFont.truetype(os.path.join("assets","Nashville.ttf"), 44)
+        fontB  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 44)
         url = member.avatar_url
         if url == "":
             url = member.default_avatar_url
