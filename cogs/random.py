@@ -48,6 +48,7 @@ class RandomStuff(Base):
         await self.bot.send_typing(ctx.message.channel)
         glitcher=False
         reasonBool=False
+        whitelist=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','&','2','9','.']
         finalImage = Image.new("RGBA", (764, 997), "white")
         frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
         if text == None:
@@ -78,8 +79,13 @@ class RandomStuff(Base):
         if reasonBool==True:
             draw=ImageDraw.Draw(finalImage)
             w2,h2=draw.textsize(reason, font=fontB)
+            reason=reason.lower()
             if w2>670:
                 glitcher=True
+            for char in reason:
+                if char not in whitelist:
+                    reasonBool=False
+                    break
         
         if glitcher==True:
             url=ctx.message.author.avatar_url
