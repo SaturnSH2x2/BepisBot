@@ -196,7 +196,6 @@ class BotCmd(Base):
 		if ctx.message.author.id == self.bot.user.id:
 			return
 
-		thing = str.en
 		await self.bot.say(thing)
 		
 	@commands.command(pass_context = True)
