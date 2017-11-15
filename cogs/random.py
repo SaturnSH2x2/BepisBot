@@ -43,16 +43,22 @@ class RandomStuff(Base):
         await self.bot.send_file(ctx.message.channel, "temp.png")
     
     @commands.command(pass_context = True)
-    async def wanted(self, ctx, member : discord.Member, text : str = "5000"):
+    async def wanted(self, ctx, member : discord.Member, *, text : str = None):
         """?"""
-
         await self.bot.send_typing(ctx.message.channel)
         glitcher=False
-
+        reasonBool=False
         finalImage = Image.new("RGBA", (764, 997), "white")
         frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
         if text == None:
             text="5,000"
+        splitter=text.split(" ",1)
+        text=splitter[0]
+        try:
+            reason=splitter[1]
+            reasonBool=True
+        except:
+            reasonBool=False
         text=text.replace(",", "")
         try:
             x=int(text)
@@ -60,20 +66,28 @@ class RandomStuff(Base):
                 text="{:,}".format(int(text))
             else:
                 glitcher=True
-                text="999,999"
         except:
             glitcher=True
-            print(text+" NO")
-            text="999,999"
         line="$"+text+" REWARD"
-        font  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 83)
+        fontA  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 83)
+        fontB  = ImageFont.truetype(os.path.join("assets","Nashville.ttf"), 44)
         url = member.avatar_url
         if url == "":
             url = member.default_avatar_url
-
-        print(url)
+        
+        if reasonBool==True:
+            draw=ImageDraw.Draw(finalImage)
+            w2,h2=draw.textsize(reason, font=fontB)
+            if w2>670:
+                glitcher=True
+        
         if glitcher==True:
             url=ctx.message.author.avatar_url
+            text="999,999"
+            reasonBool=True
+            reason="Trying to break the system"
+            w2,h2=draw.textsize(reason, font=fontB)
+        
         data = requests.get(url)
 
         with open(os.path.join("cache", "{}.webp".format(member.id)), "wb+") as f:
@@ -84,10 +98,20 @@ class RandomStuff(Base):
         profileImage = profileImage.resize((500,500))
 
         finalImage.paste(frameImage, (0,0), frameImage)
-        finalImage.paste(profileImage, (123,298))
+        if reasonBool==True:
+            finalImage.paste(profileImage, (123,277))
+        else:
+            finalImage.paste(profileImage, (123,298))
         draw  = ImageDraw.Draw(finalImage)
-        w,h=draw.textsize(line, font=font)
-        draw.multiline_text((((681-w)/2)+42, 806), line, (0, 0, 0), font=font, align="left")
+        draw2=ImageDraw.Draw(finalImage)
+        w,h=draw.textsize(line, font=fontA)
+        if reasonBool==True:
+            w2,h2=draw.textsize(reason, font=fontB)
+            draw.multiline_text((((681-w)/2)+42, 785), line, (0, 0, 0), font=fontA, align="left")
+            draw2.multiline_text((((681-w2)/2)+42, 865), reason, (0, 0, 0), font=fontB, align="left")
+        else:
+            draw.multiline_text((((681-w)/2)+42, 806), line, (0, 0, 0), font=fontA, align="left")
+
         finalImage.save("wantedTemp.png", "PNG")
 
         await self.bot.send_file(ctx.message.channel, "wantedTemp.png")
@@ -232,74 +256,7 @@ class RandomStuff(Base):
 
 
 
-    @commands.command(pass_context = True)
-    async def wantedTest(self, ctx, member : discord.Member, *, text : str = None):
-        """?"""
-        await self.bot.send_typing(ctx.message.channel)
-        glitcher=False
-        reasonBool=False
-        finalImage = Image.new("RGBA", (764, 997), "white")
-        frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
-        if text == None:
-            text="5,000"
-        splitter=text.split(" ",1)
-        text=splitter[0]
-        try:
-            reason=splitter[1]
-            reasonBool=True
-        except:
-            reasonBool=False
-        text=text.replace(",", "")
-        try:
-            x=int(text)
-            if x<1000000 and x>-100000:
-                text="{:,}".format(int(text))
-            else:
-                glitcher=True
-                text="999,999"
-        except:
-            glitcher=True
-            print(text+" NO")
-            text="999,999"
-            reason="Trying to break the system."
-            reasonBool=True
-        line="$"+text+" REWARD"
-        fontA  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 83)
-        fontB  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 44)
-        url = member.avatar_url
-        if url == "":
-            url = member.default_avatar_url
-
-        print(url)
-        if glitcher==True:
-            url=ctx.message.author.avatar_url
-        data = requests.get(url)
-
-        with open(os.path.join("cache", "{}.webp".format(member.id)), "wb+") as f:
-            f.write(data.content)
-            f.close()
-
-        profileImage = Image.open(os.path.join("cache", "{}.webp".format(member.id)))
-        profileImage = profileImage.resize((500,500))
-
-        finalImage.paste(frameImage, (0,0), frameImage)
-        if reasonBool==True:
-            finalImage.paste(profileImage, (123,277))
-        else:
-            finalImage.paste(profileImage, (123,298))
-        draw  = ImageDraw.Draw(finalImage)
-        draw2=ImageDraw.Draw(finalImage)
-        w,h=draw.textsize(line, font=fontA)
-        if reasonBool==True:
-            w2,h2=draw.textsize(reason, font=fontB)
-            draw.multiline_text((((681-w)/2)+42, 785), line, (0, 0, 0), font=fontA, align="left")
-            draw2.multiline_text((((681-w2)/2)+42, 865), reason, (0, 0, 0), font=fontB, align="left")
-        else:
-            draw.multiline_text((((681-w)/2)+42, 806), line, (0, 0, 0), font=fontA, align="left")
-
-        finalImage.save("wantedTemp.png", "PNG")
-
-        await self.bot.send_file(ctx.message.channel, "wantedTemp.png")
+    
         
         
 def setup(bot):
