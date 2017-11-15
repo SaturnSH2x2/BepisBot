@@ -93,6 +93,9 @@ class BotCmd(Base):
 	@commands.command(pass_context = True)
 	async def setAvatar(self, ctx, link : str):
 		"""Set the bot's avatar."""
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
 		await self.bot.send_typing(ctx.message.channel)
 		image = requests.get(link)
 
@@ -167,6 +170,10 @@ class BotCmd(Base):
 	@commands.command()
 	async def setPlaying(self, *, playing : str):
 		"Set the bot's playing status."""
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+
 		if "emibot" in playing.lower():
 			await self.bot.say("Haha.  Nice try there.")
 			return
@@ -185,6 +192,9 @@ class BotCmd(Base):
 	@commands.command()
 	async def inviteLink(self):
 		"""Invite the bot to your own server!  Sends you a DM with the invite link."""
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
 		client_id = util.load_js("config.json")["client-id"]
 		await self.bot.whisper("https://discordapp.com/oauth2/authorize?&client_id={0}&scope=bot&permissions=0".format(client_id))
 
@@ -257,6 +267,10 @@ class BotCmd(Base):
 	@commands.command(pass_context = True)
 	async def setNick(self, ctx, *, nick : str):
 		"""Nickname test"""
+		perms = await util.check_perms(self, ctx)
+		if not perms:
+			return
+
 		botMember = ctx.message.server.get_member(self.bot.user.id)
 		await self.bot.change_nickname(botMember, nick)
 		await self.bot.say("Set nickname to {}".format(nick))
