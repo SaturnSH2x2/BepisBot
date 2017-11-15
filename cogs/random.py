@@ -51,6 +51,7 @@ class RandomStuff(Base):
         whitelist=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','&','2','9','.']
         finalImage = Image.new("RGBA", (764, 997), "white")
         frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
+        draw=ImageDraw.Draw(finalImage)
         if text == None:
             text="5,000"
         splitter=text.split(" ",1)
@@ -77,7 +78,6 @@ class RandomStuff(Base):
             url = member.default_avatar_url
         
         if reasonBool==True:
-            draw=ImageDraw.Draw(finalImage)
             w2,h2=draw.textsize(reason, font=fontB)
             reason=reason.lower()
             if w2>670:
@@ -109,12 +109,11 @@ class RandomStuff(Base):
         else:
             finalImage.paste(profileImage, (123,298))
         draw  = ImageDraw.Draw(finalImage)
-        draw2=ImageDraw.Draw(finalImage)
         w,h=draw.textsize(line, font=fontA)
         if reasonBool==True:
             w2,h2=draw.textsize(reason, font=fontB)
             draw.multiline_text((((681-w)/2)+42, 785), line, (0, 0, 0), font=fontA, align="left")
-            draw2.multiline_text((((681-w2)/2)+42, 865), reason, (0, 0, 0), font=fontB, align="left")
+            draw.multiline_text((((681-w2)/2)+42, 865), reason, (0, 0, 0), font=fontB, align="left")
         else:
             draw.multiline_text((((681-w)/2)+42, 806), line, (0, 0, 0), font=fontA, align="left")
 
