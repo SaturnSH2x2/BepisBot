@@ -68,7 +68,7 @@ class RandomStuff(Base):
                 glitcher=True
         except:
             glitcher=True
-        line="$"+text+" REWARD"
+        
         fontA  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 83)
         fontB  = ImageFont.truetype(os.path.join("assets","Nashville.ttf"), 44)
         url = member.avatar_url
@@ -87,7 +87,7 @@ class RandomStuff(Base):
             reasonBool=True
             reason="Trying to break the system"
             w2,h2=draw.textsize(reason, font=fontB)
-        
+        line="$"+text+" REWARD"
         data = requests.get(url)
 
         with open(os.path.join("cache", "{}.webp".format(member.id)), "wb+") as f:
