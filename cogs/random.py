@@ -41,6 +41,15 @@ class RandomStuff(Base):
         finalImage.save("temp.png", "PNG")
 
         await self.bot.send_file(ctx.message.channel, "temp.png")
+
+    @commands.command()
+    async def pat(self, member : discord.Member):
+        adjectives = ["gently", "lightly", "meekly"]
+        adjToUse = random.choice(adjectives)
+        if member == self.bot.user:
+            await self.bot.say("*pats myself on head*")
+        else:
+            await self.bot.say("*{} pats <@!{}> on the head*".format(adjToUse, member.id))
     
     @commands.command(pass_context = True)
     async def wanted(self, ctx, member : discord.Member, *, text : str = None):
