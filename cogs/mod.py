@@ -7,6 +7,8 @@ import util
 import cogs.base as base
 
 class Moderator(base.Base):
+	MAXWARNS = 3
+
 	def __init__(self, bot, config):
 		self.mod_roles = config["moderator-roles"]
 		super().__init__(bot)
@@ -40,11 +42,11 @@ class Moderator(base.Base):
 			await self.bot.say("{} does not currently have any warns".format(member.name))
 			return
 
-		if amount > 5:
-			amount = 5
+		if amount > self.MAXWARNS:
+			amount = self.MAXWARNS
 
 		serverWarnList[member.id] -= amount
-		await self.bot.say("<@!{}>, you have had {} warns removed.  {} warnings remain.".format(member.id, amount, 5 - serverWarnList[member.id]))
+		await self.bot.say("<@!{}>, you have had {} warns removed.  {} warnings remain.".format(member.id, amount, self.MAXWARNS - serverWarnList[member.id]))
 		util.save_js(os.path.join("warns", "{}.json".format(ctx.message.server.id)), serverWarnList)
 
 	@commands.command(pass_context = True)
@@ -59,17 +61,17 @@ class Moderator(base.Base):
 			serverWarnList[member.id] = 0
 		serverWarnList[member.id] += 1
 
-		if 5 - serverWarnList[member.id] > 1:
-			await self.bot.say("<@!{}>, you have been given a warning.  You have {} warnings left.".format(member.id, 5 - serverWarnList[member.id]))
-		elif serverWarnList[member.id] >= 5:
+		if self.MAXWARNS - serverWarnList[member.id] > 1:
+			await self.bot.say("<@!{}>, you have been given a warning.  You have {} warnings left.".format(member.id, self.MAXWARNS - serverWarnList[member.id]))
+		elif serverWarnList[member.id] >= self.MAXWARNS:
 			pass
 		else:
 			await self.bot.say("<@!{}>, this is your final warning.  One more warn and you will be banned.".format(member.id))
 		util.save_js(os.path.join("warns", "{}.json".format(ctx.message.server.id)), serverWarnList)
 
-		if serverWarnList[member.id] >= 5:
+		if serverWarnList[member.id] >= self.MAXWARNS:
 			await self.bot.ban(member)
-			await self.bot.say("<@!{}> has been banned from the server for getting 5 warnings.".format(member.id))
+			await self.bot.say("<@!{}> has been banned from the server for getting {} warnings.".format(member.id, self.MAXWARNS))
 		
 
 def setup(bot):
