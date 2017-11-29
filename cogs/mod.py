@@ -72,6 +72,19 @@ class Moderator(base.Base):
 		if serverWarnList[member.id] >= self.MAXWARNS:
 			await self.bot.ban(member)
 			await self.bot.say("<@!{}> has been banned from the server for getting {} warnings.".format(member.id, self.MAXWARNS))
+
+	@commands.command(pass_context=True)
+	async def listWarns(self, ctx, member : discord.Member):
+                perms = await util.check_perms(self, ctx)
+                if not perms:
+                        return
+                serverWarnList = util.load_js(os.path.join("warns", "{}.json".format(ctx.message.server.id)))
+                if member.id not in serverWarnList or serverWarnList[member.id]==0:
+                        await self.bot.say("{} does not currently have any warns.".format(member.name))
+                elif serverWarnList[member.id]>=self.MAXWARNS:
+                        await self.bot.say("<@!{}> recieved ".format(member.name)+str(self.MAXWARNS)+" warnings and was banned.")
+                else:
+                        await self.bot.say("<@!{}> currently has ".format(member.name)+str(serverWarnList[member.id])+" warnings. They will be banned if they recieve "+str(self.MAXWARNS-serverWarnList[member.id])+" more.")
 		
 
 def setup(bot):
