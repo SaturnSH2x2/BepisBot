@@ -80,11 +80,11 @@ class Moderator(base.Base):
                         return
                 serverWarnList = util.load_js(os.path.join("warns", "{}.json".format(ctx.message.server.id)))
                 if member.id not in serverWarnList or serverWarnList[member.id]==0:
-                        await self.bot.say("{} does not currently have any warns.".format(member.name))
+                        await self.bot.say("<@!{}> does not currently have any warns.".format(member.id))
                 elif serverWarnList[member.id]>=self.MAXWARNS:
-                        await self.bot.say("<@!{}> recieved ".format(member.name)+str(self.MAXWARNS)+" warnings and was banned.")
+                        await self.bot.say("<@!{}> recieved ".format(member.id)+str(self.MAXWARNS)+" warnings and was banned.")
                 else:
-                        await self.bot.say("<@!{}> currently has ".format(member.name)+str(serverWarnList[member.id])+" warnings. They will be banned if they recieve "+str(self.MAXWARNS-serverWarnList[member.id])+" more.")
+                        await self.bot.say("<@!{}> currently has ".format(member.id)+str(serverWarnList[member.id])+" warnings. They will be banned if they recieve "+str(self.MAXWARNS-serverWarnList[member.id])+" more.")
 		
 
 def setup(bot):
