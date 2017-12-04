@@ -105,7 +105,7 @@ class Moderator(base.Base):
                 return
         serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
         if member.id not in serverNoteList:
-                serverNoteList[member.id]={'noteNum':-1, 'note':{'0':''},'time':{'0':''},'issuer':{'0':''}}
+                serverNoteList[member.id]={'noteNum':0, 'note':{'1':''},'time':{'1':''},'issuer':{'1':''}}
         serverNoteList[member.id]["noteNum"] += 1
         noteNum=str(serverNoteList[member.id]["noteNum"])
         serverNoteList[member.id]["note"][noteNum] = note
@@ -126,13 +126,12 @@ class Moderator(base.Base):
                             await self.bot.say("That user doesn't have any notes.")
                             return
                     noteNum=str(serverNoteList[member.id]["noteNum"])
-                    for i in range(0,int(noteNum)):
+                    for i in range(1,int(noteNum)+1):
                             output+="<@!{}> ".format(member.id)+str(serverNoteList[member.id]["time"][str(i)])+" "+str(serverNoteList[member.id]["issuer"][str(i)])+" "+str(serverNoteList[member.id]["note"][str(i)])+"\n"
                     output=output[:-1]
                     output+="`"
                     await self.bot.say(output)
                     return
-            note=str(int(note)-1)
             if member.id not in serverNoteList or serverNoteList[member.id]["noteNum"]==0:
                     await self.bot.say("That user doesn't have any notes.")
                     return
@@ -156,7 +155,6 @@ class Moderator(base.Base):
             await self.bot.delete_message(ctx.message)
             if note == None:
                     await self.bot.say("Please provide a note number.")
-            note=str(int(note)-1)
             serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
             if member.id not in serverNoteList or serverNoteList[member.id]["noteNum"]==0:
                     await self.bot.say("That user doesn't have any notes.")
