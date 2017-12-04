@@ -147,7 +147,7 @@ class Moderator(base.Base):
 
 
     @commands.command(pass_context=True)
-    async def deleteNote(self, ctx, member : discord.member, *, note : str = None):
+    async def deleteNote(self, ctx, member : discord.Member, *, note : str = None):
             perms = await util.check_perms(self, ctx)
             if not perms:
                     return
