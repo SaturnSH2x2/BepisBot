@@ -127,7 +127,7 @@ class Moderator(base.Base):
                             return
                     noteNum=str(serverNoteList[member.id]["noteNum"])
                     for i in range(0,int(noteNum)):
-                            output+=user+" "+str(serverNoteList[member.id]["time"][str(i)])+" "+str(serverNoteList[member.id]["issuer"][str(i)])+" "+str(serverNoteList[member.id]["note"][str(i)])+"\n"
+                            output+="<@!{}> ".format(member.id)+str(serverNoteList[member.id]["time"][str(i)])+" "+str(serverNoteList[member.id]["issuer"][str(i)])+" "+str(serverNoteList[member.id]["note"][str(i)])+"\n"
                     output=output[:-1]
                     output+="`"
                     await self.bot.say(output)
