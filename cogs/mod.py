@@ -2,6 +2,7 @@ import asyncio
 import discord
 import os
 from discord.ext import commands
+from datetime import datetime
 
 import util
 import cogs.base as base
@@ -16,6 +17,10 @@ class Moderator(base.Base):
 		# make sure this directory exists
 		try:
 			os.mkdir("warns")
+		except FileExistsError:
+			pass
+		try:
+			os.mkdir("notes")
 		except FileExistsError:
 			pass
 
@@ -85,6 +90,90 @@ class Moderator(base.Base):
                         await self.bot.say("<@!{}> recieved ".format(member.id)+str(self.MAXWARNS)+" warnings and was banned.")
                 else:
                         await self.bot.say("<@!{}> currently has ".format(member.id)+str(serverWarnList[member.id])+" warnings. They will be banned if they recieve "+str(self.MAXWARNS-serverWarnList[member.id])+" more.")
+
+
+        @commands.command(pass_context=True)
+        async def note(self, ctx, member : discord.Member, *, note : str = None):
+                if ctx.message.author.id == self.bot.user.id:
+                        return
+                await self.bot.delete_message(ctx.message)
+                perms = await util.check_perms(self, ctx)
+                if not perms:
+                        return
+                if note==None:
+                        await self.bot.say("You didn't make a note.")
+                        return
+                serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
+                if member.id not in serverNoteList:
+                        serverNoteList[member.id]={'noteNum':-1, 'note':{'0':''},'time':{'0':''},'issuer':{'0':''}}
+                serverNoteList[member.id]["noteNum"] += 1
+                noteNum=str(serverNoteList[member.id]["noteNum"])
+                serverNoteList[member.id]["note"][noteNum] = note
+                serverNoteList[member.id]["time"][noteNum] = str(datetime.now())
+                serverNoteList[member.id]["issuer"][noteNum] = ctx.message.author.id
+                tuil.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
+                await self.bot.say("Your note has been recorded")
+
+        @commands.command(pass_context=True)
+        async def listNote(self, ctx, member : discord.Member, *, note : str = None):
+                perms = await util.check_perms(self, ctx)
+                if not perms:
+                        return
+                serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
+                if note==None:
+                        output="`"
+                        if member.id not in serverNoteList or serverNoteList[member.id]["noteNum"]==0:
+                                await self.bot.say("That user doesn't have any notes.")
+                                return
+                        noteNum=str(serverNoteList[member.id]["noteNum"])
+                        for i in range(0,int(noteNum)):
+                                output+=user+" "+str(serverNoteList[member.id]["time"][str(i)])+" "+str(serverNoteList[member.id]["issuer"][str(i)])+" "+str(serverNoteList[member.id]["note"][str(i)])+"\n"
+                        output=output[:-1]
+                        output+="`"
+                        await self.bot.say(output)
+                        return
+                note=str(int(note)-1)
+                if member.id not in serverNoteList or serverNoteList[member.id]["noteNum"]==0:
+                        await self.bot.say("That user doesn't have any notes.")
+                        return
+                try:
+                        loggedNote = serverNoteList[member.id]["note"][note]
+                        loggedTime = serverNoteList[member.id]["time"][note]
+                        loggedIssuer = serverNoteList[member.id]["issuer"][note]
+                        await self.bot.say(loggedIssuer+""" made a note on """+loggedTime+""" that said
+`"""+loggedNote+"""`""")
+                except KeyError:
+                        await self.bot.say("That note does not exist")
+
+
+        @commands.command(pass_context=True)
+        async def deleteNote(self, ctx, member : discord.member, *, note : str = None):
+                perms = await util.check_perms(self, ctx)
+                if not perms:
+                        return
+                if ctx.message.author.id == self.bot.user.id:
+                        return
+                await self.bot.delete_message(ctx.message)
+                if note == None:
+                        await self.bot.say("Please provide a note number.")
+                note=str(int(note)-1)
+                serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
+                if member.id not in serverNoteList or serverNoteList[member.id]["noteNum"]==0:
+                        await self.bot.say("That user doesn't have any notes.")
+                        return
+                noteNum=str(serverNoteList[member.id]["noteNum"])
+                if note>noteNum:
+                        await self.bot.say("That user doesn't have that many notes.")
+                        return
+                for i in range(int(note),serverNoteList[member.id]["noteNum"]):
+                        try:
+                                serverNoteList[member.id]["note"][i]=serverNoteList[member.id]["note"][i+1]
+                                serverNoteList[member.id]["time"][i]=serverNoteList[member.id]["time"][i+1]
+                                serverNoteList[member.id]["issuer"][i]=serverNoteList[member.id]["issuer"][i+1]
+                        except KeyError:
+                                serverNoteList[member.id]["noteNum"]-=1
+                                util.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
+                                return
 		
 
 def setup(bot):
