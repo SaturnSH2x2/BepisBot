@@ -94,12 +94,12 @@ class Moderator(base.Base):
 
         @commands.command(pass_context=True)
         async def note(self, ctx, member : discord.Member, *, note : str = None):
-                if ctx.message.author.id == self.bot.user.id:
-                        return
-                await self.bot.delete_message(ctx.message)
                 perms = await util.check_perms(self, ctx)
                 if not perms:
                         return
+                if ctx.message.author.id == self.bot.user.id:
+                        return
+                await self.bot.delete_message(ctx.message)
                 if note==None:
                         await self.bot.say("You didn't make a note.")
                         return
