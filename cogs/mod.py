@@ -111,7 +111,7 @@ class Moderator(base.Base):
         serverNoteList[member.id]["note"][noteNum] = note
         serverNoteList[member.id]["time"][noteNum] = str(datetime.now())
         serverNoteList[member.id]["issuer"][noteNum] = ctx.message.author.id
-        tuil.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
+        util.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
         await self.bot.say("Your note has been recorded")
 
     @commands.command(pass_context=True)
