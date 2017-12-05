@@ -181,7 +181,7 @@ class Moderator(base.Base):
                 return
 
     @commands.command(pass_context=True)
-    async def allNotes(self):
+    async def allNotes(self,ctx):
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -200,7 +200,7 @@ class Moderator(base.Base):
             await self.bot.say()
 
     @commands.command(pass_context=True)
-    async def backupNotes(self):
+    async def backupNotes(self,ctx):
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -210,7 +210,7 @@ class Moderator(base.Base):
         await self.bot.say(serverNoteList)
 
     @commands.command(pass_context=True)
-    async def hashNotes(self):
+    async def hashNotes(self,ctx):
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
