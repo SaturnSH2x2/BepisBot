@@ -227,11 +227,11 @@ class Moderator(base.Base):
             return
         if ctx.message.author.id == self.bot.user.id:
             return
-        serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(x)))
+        serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
         key=hashlib.sha256(str(serverNoteList).encode("utf-8")).hexdigest()
         if confirm==key:
             serverNoteList={}
-            util.save_js(os.path.join("notes", "{}.json".format(x)), serverNoteList)
+            util.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
             await self.bot.say("All notes have been wiped.")
             return
         else:
