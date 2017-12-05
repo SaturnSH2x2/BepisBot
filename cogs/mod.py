@@ -218,7 +218,7 @@ class Moderator(base.Base):
             return
         serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
         hashed=hashlib.sha256(str(serverNoteList).encode("utf-8")).hexdigest()
-        return hashed
+        await self.bot.send(hashed)
 
     @commands.command(pass_context=True)
     async def wipeNote(self, ctx, *, confirm : str = None):
@@ -232,10 +232,10 @@ class Moderator(base.Base):
         if confirm==key:
             serverNoteList={}
             save_js(os.path.join("notes", "{}.json".format(x)), serverNoteList)
-            print("All notes have been wiped.")
+            await self.bot.say("All notes have been wiped.")
             return
         else:
-            print("To wipe the notes, you must enter the correct key.")
+            await self.bot.say("To wipe the notes, you must enter the correct key.")
             return
 
 
