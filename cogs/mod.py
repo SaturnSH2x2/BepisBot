@@ -218,7 +218,7 @@ class Moderator(base.Base):
             return
         serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
         hashed=hashlib.sha256(str(serverNoteList).encode("utf-8")).hexdigest()
-        await self.bot.send(hashed)
+        await self.bot.say(hashed)
 
     @commands.command(pass_context=True)
     async def wipeNote(self, ctx, *, confirm : str = None):
