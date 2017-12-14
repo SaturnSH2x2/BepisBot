@@ -190,7 +190,7 @@ class BotCmd(Base):
 		await self.bot.say("Now playing {}".format(playing))
 
 	@commands.command(pass_context = True)
-	async def inviteLink(self):
+	async def inviteLink(self, ctx):
 		"""Invite the bot to your own server!  Sends you a DM with the invite link."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
