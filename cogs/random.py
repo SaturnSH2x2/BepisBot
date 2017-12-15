@@ -43,6 +43,10 @@ class RandomStuff(Base):
         await self.bot.send_file(ctx.message.channel, "temp.png")
 
     @commands.command()
+    async def techSupport(self,ctx):
+        await self.bot.send_file(ctx.message.channel, "assets/support.gif")
+
+    @commands.command()
     async def pat(self, member : discord.Member):
         adjectives = ["gently", "lightly", "meekly"]
         adjToUse = random.choice(adjectives)
