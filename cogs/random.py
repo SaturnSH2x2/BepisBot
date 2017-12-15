@@ -42,9 +42,9 @@ class RandomStuff(Base):
 
         await self.bot.send_file(ctx.message.channel, "temp.png")
 
-    @commands.command()
-    async def techSupport(self,ctx):
-        await self.bot.send_file(ctx.message.channel, "assets/support.gif")
+    @commands.command(pass_context = True)
+    async def techSupport(self):
+        await self.bot.upload("assets/support.gif")
 
     @commands.command()
     async def pat(self, member : discord.Member):
