@@ -46,6 +46,16 @@ class RandomStuff(Base):
     async def techSupport(self):
         await self.bot.upload("assets/support.gif")
 
+    @commands.command(pass_context=True)
+    async def slap(self):
+        files=os.listdir('assets')
+        index=random.randrange(0,len(files))
+        x=''
+        while str(x).startswith('slap')==False:
+            x=getRandomFile("/Users/Ike1/Desktop/BepisBotDev/BepisBot/assets/")
+        await self.bot.upload("assets/"+str(x))
+        
+
     @commands.command()
     async def pat(self, member : discord.Member):
         adjectives = ["gently", "lightly", "meekly"]
