@@ -49,10 +49,10 @@ class RandomStuff(Base):
     @commands.command(pass_context=True)
     async def slap(self):
         files=os.listdir('assets')
-        index=random.randrange(0,len(files))
+        
         x=''
         while str(x).startswith('slap')==False:
-            x=getRandomFile("/Users/Ike1/Desktop/BepisBotDev/BepisBot/assets/")
+            x=index=random.randrange(0,len(files))
         await self.bot.upload("assets/"+str(x))
         
 
