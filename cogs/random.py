@@ -48,14 +48,12 @@ class RandomStuff(Base):
 
     @commands.command(pass_context=True)
     async def slap(self):
-        files=os.listdir('assets')
-        
-        x=''
-        while str(x).startswith('slap')==False:
-            x=index=random.randrange(0,len(files))
-        await self.bot.upload("assets/"+str(x))
-        
-
+        x=random.randint(1,2)
+        if x==1:
+            await self.bot.upload("assets/slap1.gif")
+        else:
+            await self.bot.upload("assets/slap2.gif")
+    
     @commands.command()
     async def pat(self, member : discord.Member):
         adjectives = ["gently", "lightly", "meekly"]
