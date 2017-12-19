@@ -48,11 +48,10 @@ class RandomStuff(Base):
 
     @commands.command(pass_context=True)
     async def slap(self):
-        x=random.randint(1,2)
-        if x==1:
-            await self.bot.upload("assets/slap1.gif")
-        else:
-            await self.bot.upload("assets/slap2.gif")
+        path='assets/slap'
+        files=os.listdir(path)
+        index=random.randrange(0,len(files))
+        await self.bot.upload(os.path.join(path,files[index]))
     
     @commands.command()
     async def pat(self, member : discord.Member):
