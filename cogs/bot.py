@@ -167,8 +167,8 @@ class BotCmd(Base):
 		await self.bot.close()
 		os.system("python3.5 main.py")
 		
-	@commands.command()
-	async def setPlaying(self, *, playing : str):
+	@commands.command(pass_context = True)
+	async def setPlaying(self, ctx, *, playing : str):
 		"Set the bot's playing status."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
