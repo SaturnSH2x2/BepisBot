@@ -47,11 +47,21 @@ class RandomStuff(Base):
         await self.bot.upload("assets/support.gif")
 
     @commands.command(pass_context=True)
-    async def slap(self):
-        path='assets/slap'
-        files=os.listdir(path)
-        index=random.randrange(0,len(files))
-        await self.bot.upload(os.path.join(path,files[index]))
+    async def slap(self, ctx, member : discord.Member):
+        """Slap ya friends"""
+        titles = ["oof", "ouch", "owie", "hngh", "ouchie ouch", "ow"]
+        pics = util.load_js(os.path.join("assets", "slap.json"))
+        
+        if ctx.message.author.id == member.id:
+            d = "{} slapped themselves.".format(member.name)
+        elif self.bot.user.id == member.id:
+            d = "{} slapped me!  ;-;".format(ctx.message.author.name)
+        else:
+            d = "{} got slapped by {}.".format(member.name, ctx.message.author.name)
+        
+        e = discord.Embed(title = random.choice(titles), description = d)
+        e.set_image(url = random.choice(pics))
+        await self.bot.say(embed = e)
     
     @commands.command()
     async def pat(self, member : discord.Member):
