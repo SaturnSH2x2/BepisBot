@@ -39,9 +39,10 @@ class Tarot(Base):
 		self.server_decks = util.load_js("server-deck-tarot.json")
 		super().__init__(bot)
 
+    """
 	@commands.command(pass_context = True)
 	async def setDeck(self, ctx, deckName):
-		"""Set the Tarot Deck to use in readings (Rider-Waite only for now)"""
+		Set the Tarot Deck to use in readings.
 
 		# simple formatting
 		origDeckName = deckName
@@ -60,9 +61,10 @@ class Tarot(Base):
 
 	@commands.command(pass_context = True)
 	async def makeDeck(self, ctx):
-		"""Sends you a sample template to make a Tarot Deck with."""
+		Sends you a sample template to make a Tarot Deck with.
 		await self.bot.whisper("You can create your own deck using JSON files.  In the future, the bot will be able to accept said JSON files and use them as decks, which you can then use in different servers!  Here's the JSON for the default Rider-Waite deck, in case you want to get a head start on your own deck: ")
 		await self.bot.send_file( ctx.message.author, os.path.join("assets", "tarot", "rider-waite.json") )
+    """
 
 	@commands.command(pass_context = True)
 	async def disableExplanations(self, ctx):
@@ -88,7 +90,7 @@ class Tarot(Base):
 
 	@commands.command(pass_context = True)
 	async def drawCard(self, ctx):
-		"""Draws a Tarot Card (Major Arcana only for now)"""
+		"""Draws a Tarot Card."""
 		try:
 			deck = util.load_js( os.path.join("assets", "tarot", self.server_decks[ctx.message.server.id]["deck"]) )
 		except KeyError:
