@@ -85,13 +85,13 @@ class RandomStuff(Base):
         await self.bot.send_typing(ctx.message.channel)
         glitcher=False
         reasonBool=False
-        whitelist=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','&','2','9','.']
+        whitelist=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','&','2','9','.',' ']
         finalImage = Image.new("RGBA", (764, 997), "white")
         frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
         draw=ImageDraw.Draw(finalImage)
         if text == None:
             text="5,000"
-        splitter=text.split(" ",1)
+        splitter=text.split(" ",maxsplit=1)
         text=splitter[0]
         try:
             reason=splitter[1]
@@ -115,14 +115,13 @@ class RandomStuff(Base):
             url = member.default_avatar_url
         
         if reasonBool==True:
-            w2,h2=draw.textsize(reason, font=fontB)
             reason=reason.lower()
+            w2,h2=draw.textsize(reason, font=fontB)
             if w2>670:
                 glitcher=True
             for char in reason:
                 if char not in whitelist:
                     reasonBool=False
-                    break
         
         if glitcher==True:
             url=ctx.message.author.avatar_url
