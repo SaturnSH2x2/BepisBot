@@ -191,11 +191,11 @@ class Moderator(base.Base):
         for item in serverNoteList:
             await self.bot.say(str(item))
             for i in range(1,serverNoteList[item]["noteNum"]+1):
-                await self.bot.say(serverNoteList[member.id]["name"][i])
-                await self.bot.say(serverNoteList[member.id]["time"][i])
-                await self.bot.say(serverNoteList[member.id]["issuerName"][i])
-                await self.bot.say(serverNoteList[member.id]["issuer"][i])
-                await self.bot.say(serverNoteList[member.id]["note"][i])
+                await self.bot.say(serverNoteList[item]["name"][i])
+                await self.bot.say(serverNoteList[item]["time"][i])
+                await self.bot.say(serverNoteList[item]["issuerName"][i])
+                await self.bot.say(serverNoteList[item]["issuer"][i])
+                await self.bot.say(serverNoteList[item]["note"][i])
                 await self.bot.say()
             await self.bot.say()
 
