@@ -3,6 +3,7 @@ import discord
 import time
 import os
 import random
+import traceback
 
 from discord.ext import commands
 from discord.ext.commands.view import StringView
@@ -113,7 +114,7 @@ async def on_command_error(error, ctx):
 	elif isinstance(error, commands.errors.CommandNotFound):
 		pass
 	else:
-		await bot.send_message(ctx.message.channel, "An error has occurred.  {}".format(error))
+		await bot.send_message(ctx.message.channel, "An error has occurred.  {}\n\n{}".format(error), traceback.format_tb(error.__traceback__))
 		print("An error has occurred.  {}".format(error))
 
 @bot.event

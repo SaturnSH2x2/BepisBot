@@ -160,6 +160,7 @@ class Moderator(base.Base):
         await self.bot.delete_message(ctx.message)
         if note == None:
             await self.bot.say("Please provide a note number.")
+            return
         serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
         if member.id not in serverNoteList or serverNoteList[member.id]["noteNum"]==0:
             await self.bot.say("That user doesn't have any notes.")
@@ -168,17 +169,34 @@ class Moderator(base.Base):
         if note>noteNum:
             await self.bot.say("That user doesn't have that many notes.")
             return
+        
+        if serverNoteList[member.id]["noteNum"] <= 1:
+            serverNoteList.pop(member.id, None)
+            
         for i in range(int(note),serverNoteList[member.id]["noteNum"]):
+            for key, item in serverNoteList[member.id].items():
+                if key == "noteNum":
+                    continue
+                
+                if serverNoteList[member.id]["noteNum"] == 1:
+                    serverNoteList[member.id][key].pop(str(i), None)
+                else:
+                    serverNoteList[member.id][key][str(i)] = serverNoteList[member.id][key][str(i+1)]
+        
+        """
             try:
-                serverNoteList[member.id]["note"][i]=serverNoteList[member.id]["note"][i+1]
-                serverNoteList[member.id]["name"][i]=serverNoteList[member.id]["name"][i+1]
-                serverNoteList[member.id]["time"][i]=serverNoteList[member.id]["time"][i+1]
-                serverNoteList[member.id]["issuer"][i]=serverNoteList[member.id]["issuer"][i+1]
-                serverNoteList[member.id]["issuerName"][i]=serverNoteList[member.id]["issuerName"][i+1]
+                
+                serverNoteList[member.id]["note"][str(i)]=serverNoteList[member.id]["note"][str(i+1)]
+                serverNoteList[member.id]["name"][str(i)]=serverNoteList[member.id]["name"][str(i+1)]
+                serverNoteList[member.id]["time"][str(i)]=serverNoteList[member.id]["time"][str(i+1)]
+                serverNoteList[member.id]["issuer"][str(i)]=serverNoteList[member.id]["issuer"][str(i+1)]
+                serverNoteList[member.id]["issuerName"][str(i)]=serverNoteList[member.id]["issuerName"][str(i+1)]
             except KeyError:
                 serverNoteList[member.id]["noteNum"]-=1
                 util.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
                 return
+        """
+        util.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
 
     @commands.command(pass_context=True)
     async def allNote(self,ctx):
@@ -188,16 +206,20 @@ class Moderator(base.Base):
         if ctx.message.author.id == self.bot.user.id:
             return
         serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
+        
+        noteStr = ""
         for item in serverNoteList:
-            await self.bot.say(str(item))
-            for i in range(1,serverNoteList[item]["noteNum"]+1):
-                await self.bot.say(serverNoteList[item]["name"][i])
-                await self.bot.say(serverNoteList[item]["time"][i])
-                await self.bot.say(serverNoteList[item]["issuerName"][i])
-                await self.bot.say(serverNoteList[item]["issuer"][i])
-                await self.bot.say(serverNoteList[item]["note"][i])
-                await self.bot.say()
-            await self.bot.say()
+            for i in range(0,serverNoteList[item]["noteNum"]):
+                noteStr += "Note: " + serverNoteList[item]["note"][str(i+1)] + "\n" 
+                noteStr += "Time: " + serverNoteList[item]["time"][str(i+1)] + "\n"
+                noteStr += "Issuer: " + serverNoteList[item]["issuer"][str(i+1)] + "\n"
+                noteStr += "Name: " + serverNoteList[item]["name"][str(i+1)] + "\n"
+                noteStr += "Issuer Name: " + serverNoteList[item]["issuerName"][str(i+1)] + "\n"
+                noteStr += "\n"
+            noteStr += "\n"
+            
+        e = discord.Embed(title = "Note List", description = noteStr)
+        await self.bot.say(embed = e)
 
     @commands.command(pass_context=True)
     async def backupNote(self,ctx):
