@@ -44,10 +44,12 @@ class RandomStuff(Base):
 
     @commands.command(pass_context = True)
     async def techSupport(self):
+        await self.bot.send_typing(ctx.message.channel)
         await self.bot.upload("assets/support.gif")
 
     @commands.command(pass_context=True)
     async def slap(self, ctx, target : str = ""):
+        await self.bot.send_typing(ctx.message.channel)
         """Slap ya friends"""
         titles = ["oof", "ouch", "owie", "hngh", "ouchie ouch", "ow"]
         pics = util.load_js(os.path.join("assets", "slap.json"))
@@ -72,6 +74,7 @@ class RandomStuff(Base):
     
     @commands.command()
     async def pat(self, member : discord.Member):
+        await self.bot.send_typing(ctx.message.channel)
         adjectives = ["gently", "lightly", "meekly"]
         adjToUse = random.choice(adjectives)
         if member == self.bot.user:
