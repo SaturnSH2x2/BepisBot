@@ -43,7 +43,7 @@ class RandomStuff(Base):
         await self.bot.send_file(ctx.message.channel, "temp.png")
 
     @commands.command(pass_context = True)
-    async def techSupport(self):
+    async def techSupport(self,ctx):
         await self.bot.send_typing(ctx.message.channel)
         await self.bot.upload("assets/support.gif")
 
@@ -73,7 +73,7 @@ class RandomStuff(Base):
         await self.bot.say(embed = e)
     
     @commands.command()
-    async def pat(self, member : discord.Member):
+    async def pat(self, ctx, member : discord.Member):
         await self.bot.send_typing(ctx.message.channel)
         adjectives = ["gently", "lightly", "meekly"]
         adjToUse = random.choice(adjectives)
@@ -206,6 +206,7 @@ class RandomStuff(Base):
 
     @commands.command(pass_context = True)
     async def rate(self, ctx):
+        await self.bot.send_typing(ctx.message.channel)
         """Rate anything, on a scale frrom 0 to 10."""
         rating = 0
 
