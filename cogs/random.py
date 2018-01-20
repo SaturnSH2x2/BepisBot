@@ -71,6 +71,52 @@ class RandomStuff(Base):
         e = discord.Embed(title = random.choice(titles), description = d)
         e.set_image(url = random.choice(pics))
         await self.bot.say(embed = e)
+
+    @commands.command(pass_context=True)
+    async def hug(self, ctx, target : str = ""):
+        await self.bot.send_typing(ctx.message.channel)
+        """Hug ya friends"""
+        titles = ["hugs", "aww", "yay", "huggie hug"]
+        pics = util.load_js(os.path.join("assets", "hug.json"))
+        
+        memberID = target.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
+        member = ctx.message.server.get_member(memberID)
+        if member != None:
+            target = member.name
+        
+        if ctx.message.author.id == memberID:
+            d = "{} hugged themselves.".format(target)
+        elif self.bot.user.id == memberID:
+            d = "{} hugged me!  ;-;".format(ctx.message.author.name)
+        elif member == None and target == "":
+            d = "hugs"
+        else:
+            d = "{} got hugged by {}.".format(target, ctx.message.author.name)
+        urlText = random.choice(pics)
+        titleText = random.choice(titles)
+        if urlText=="https://i.imgur.com/oQ8J3Za.gif":
+            titleText="oops"
+            if ctx.message.author.id == memberID:
+                d = "{} got pizza.".format(target)
+            elif self.bot.user.id == memberID:
+                d = "{} gave me pizza!".format(ctx.message.author.name)
+            elif member == None and target == "":
+                d = "pizza"
+            else:
+                d = "{} gave {} pizza.".format(ctx.message.author.name, target)
+        if urlText=="https://i.imgur.com/MnszwT3.gif":
+            titleText="no"
+            if ctx.message.author.id == memberID:
+                d = "{} didn't want the hug.".format(target)
+            elif self.bot.user.id == memberID:
+                d = "{} didn't want my hugs! ;-;".format(ctx.message.author.name)
+            elif member == None and target == "":
+                d = "no"
+            else:
+                d = "{} didn't want {}'s hug.".format(target, ctx.message.author.name)
+        e = discord.Embed(title=titleText, description = d)
+        e.set_image(url=urlText)
+        await self.bot.say(embed = e)
     
     @commands.command()
     async def pat(self, ctx, member : discord.Member):
@@ -298,6 +344,16 @@ class RandomStuff(Base):
             fil = "oo"
             
         await self.bot.say("S{}n:tm:".format(fil))
+
+    @commands.command()
+    async def no(self):
+        """no"""
+        if random.randint(1, 25) == 13:
+            fil = "no"
+        else:
+            fil = "no u"
+            
+        await self.bot.say(fil)
 
 
 
