@@ -349,9 +349,9 @@ class RandomStuff(Base):
     async def no(self):
         """no"""
         if random.randint(1, 25) == 13:
-            fil = "no"
-        else:
             fil = "no u"
+        else:
+            fil = "no"
             
         await self.bot.say(fil)
 
