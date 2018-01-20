@@ -87,7 +87,7 @@ class RandomStuff(Base):
         if ctx.message.author.id == memberID:
             d = "{} hugged themselves.".format(target)
         elif self.bot.user.id == memberID:
-            d = "{} hugged me!  ;-;".format(ctx.message.author.name)
+            d = "{} hugged me!".format(ctx.message.author.name)
         elif member == None and target == "":
             d = "hugs"
         else:
