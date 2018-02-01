@@ -113,6 +113,10 @@ async def on_command_error(error, ctx):
         await bot.send_message(ctx.message.channel, bot.formatter.format_help_for(ctx, ctx.command)[0])
     elif isinstance(error, commands.errors.CommandNotFound):
         pass
+    elif error="Command raised an exception: Forbidden: FORBIDDEN (status code: 403): Cannot send messages to this user":
+        e = discord.Embed(title = "DM Failed", description = "{} wouldn't let me send help. :(".format(ctx.message.author.name))
+        e.set_image(url="https://i.imgur.com/qJ5hNzG.gif")
+        await self.bot.say(embed = e)
     else:
         await bot.send_message(ctx.message.channel, "An error has occurred.  {}\n\n".format(error))
         print("An error has occurred.  {}".format(error))
