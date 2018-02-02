@@ -115,13 +115,17 @@ async def on_command_error(error, ctx):
         await bot.send_message(ctx.message.channel, bot.formatter.format_help_for(ctx, ctx.command)[0])
     elif isinstance(error, commands.errors.CommandNotFound):
         pass
-    elif "Cannot send messages to this user" in "{}".format(error):
-        e = discord.Embed(title = "DM Failed", description = "{} wouldn't let me send help. :(".format(ctx.message.author.name))
-        e.set_image(url="https://i.imgur.com/qJ5hNzG.gif")
-        await self.bot.say(embed = e)
+
+    elif isinstance(error, discord.ext.commands.errors.CommandInvokeError):
+        if (ctx.command.name == "help"):
+            e = discord.Embed(title = "DM Failed", description = "{} wouldn't let me send help. :(  Try enabling DMs for this server.".format(ctx.message.author.name))
+            e.set_image(url="https://i.imgur.com/qJ5hNzG.gif")
+            await bot.send_message(ctx.message.channel, embed=e)
+        else:
+            await bot.send_message(ctx.message.channel, "The action cannot be performed.")
     else:
         await bot.send_message(ctx.message.channel, "An error has occurred.  {}\n\n".format(error))
-        print("An error has occurred.  {}".format(error))
+        print("An error has occurred.  {}, ()".format(error, type(error)))
 
 @bot.event
 async def on_ready():
