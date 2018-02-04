@@ -3,5 +3,10 @@
         "title" : "One Punch'd",
         "description" : "{} was defeated by {} in just one punch.",
         "image-url" : "https://i.fl0.co/wh0unj.gif"
+    },
+    {
+        "title" : "punch",
+        "description" : "{} was punched by Chuck Norris.  Who got here via {}.",
+        "image-url" : "https://media.giphy.com/media/Fs8pXeLXuKUGA/giphy.gif"
     }
 ]
