@@ -122,7 +122,8 @@ async def on_command_error(error, ctx):
             e.set_image(url="https://i.imgur.com/qJ5hNzG.gif")
             await bot.send_message(ctx.message.channel, embed=e)
         else:
-            await bot.send_message(ctx.message.channel, "The action cannot be performed.")
+            await bot.send_message(ctx.message.channel, "An error has occurred.  {}\n\n".format(error))
+            print("An error has occurred.  {}, ()".format(error, type(error)))
     else:
         await bot.send_message(ctx.message.channel, "An error has occurred.  {}\n\n".format(error))
         print("An error has occurred.  {}, ()".format(error, type(error)))
