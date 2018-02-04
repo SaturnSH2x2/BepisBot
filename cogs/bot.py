@@ -431,6 +431,26 @@ class BotCmd(Base):
             
         util.save_js("config.json", conf)
         await self.bot.say("The 'no one cares' reaction has been enabled for this server.")
+        
+    @commands.command()
+    async def listServers(self):
+        print("list servers")
+    
+        e = discord.Embed()
+        e.title = "List of Severs BepisBot is in:"
+        
+        print("embed seemed to be created correctly")
+        
+        serverList = ""
+        
+        for server in self.bot.servers:
+            print(server.name)
+            serverList += "* {}\n".format(server.name)
+            
+        e.description = serverList
+        
+        await self.bot.say(embed = e)
+            
     
 def setup(bot):
     bot.add_cog(BotCmd(bot))
