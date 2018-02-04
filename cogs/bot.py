@@ -432,14 +432,14 @@ class BotCmd(Base):
         util.save_js("config.json", conf)
         await self.bot.say("The 'no one cares' reaction has been enabled for this server.")
         
-    @commands.command()
-    async def listServers(self):
-        print("list servers")
+    @commands.command(pass_context = True)
+    async def listServers(self, ctx):
+        perms = util.check_perms(self, ctx)
+        if not perms:
+            return
     
         e = discord.Embed()
-        e.title = "List of Severs BepisBot is in:"
-        
-        print("embed seemed to be created correctly")
+        e.title = "List of Servers BepisBot is in:"
         
         serverList = ""
         
