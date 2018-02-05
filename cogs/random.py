@@ -144,7 +144,7 @@ class RandomStuff(Base):
         
         await self.bot.say(embed = e)
     
-    @commands.command()
+    @commands.command(pass_context = True)
     async def pat(self, ctx, member : discord.Member):
         await self.bot.send_typing(ctx.message.channel)
         adjectives = ["gently", "lightly", "meekly"]
