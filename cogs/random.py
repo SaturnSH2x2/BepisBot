@@ -131,12 +131,13 @@ class RandomStuff(Base):
         imgDict = random.choice(images)
         
         e = discord.Embed()
-        if member.id == ctx.message.author.id:
-            e.title = "Ya done punched urself"
-            e.description = "{} punched themselves!".format(ctx.message.author.name)
-        elif member != None and self.bot.user.id == member.id:
-            e.title = "aw  :("
-            e.description = "{} punched me.".format(ctx.message.author.name)
+        if member != None:
+            if member.id == ctx.message.author.id:
+                e.title = "Ya done punched urself"
+                e.description = "{} punched themselves!".format(ctx.message.author.name)
+            elif self.bot.user.id == member.id:
+                e.title = "aw  :("
+                e.description = "{} punched me.".format(ctx.message.author.name)
         else:
             e.title = imgDict["title"]
             e.description = imgDict["description"].format(user, ctx.message.author.name)
