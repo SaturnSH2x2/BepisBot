@@ -48,7 +48,7 @@ class RandomStuff(Base):
         await self.bot.upload("assets/support.gif")
 
     @commands.command(pass_context=True)
-    async def slap(self, ctx, target : str = ""):
+    async def slap(self, ctx, *, target : str = ""):
         await self.bot.send_typing(ctx.message.channel)
         """Slap ya friends"""
         titles = ["oof", "ouch", "owie", "hngh", "ouchie ouch", "ow"]
@@ -73,7 +73,7 @@ class RandomStuff(Base):
         await self.bot.say(embed = e)
 
     @commands.command(pass_context=True)
-    async def hug(self, ctx, target : str = ""):
+    async def hug(self, ctx, *, target : str = ""):
         await self.bot.send_typing(ctx.message.channel)
         """Hug ya friends"""
         titles = ["hugs", "aww", "yay", "huggie hug"]
@@ -119,7 +119,7 @@ class RandomStuff(Base):
         await self.bot.say(embed = e)
         
     @commands.command(pass_context = True)
-    async def punch(self, ctx, user : str):
+    async def punch(self, ctx, *, user : str = ""):
         await self.bot.send_typing(ctx.message.channel)
         
         user = user.replace("<", "").replace(">", "").replace("!", "").replace("@", "")
