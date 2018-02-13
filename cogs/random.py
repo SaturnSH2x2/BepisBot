@@ -195,6 +195,8 @@ class RandomStuff(Base):
         embed.description = description
         embed.set_image(url = "https://i.imgur.com/oBadUcY.gif")
         await self.bot.say(embed=embed)
+        
+    
     
     @commands.command(pass_context = True)
     async def pat(self, ctx, member : discord.Member):
@@ -433,7 +435,12 @@ class RandomStuff(Base):
             
         await self.bot.say(fil)
 
-
+    @commands.command()
+    async def maybe(self):
+        if random.randint(1, 1337) == 420:
+            await self.bot.say("most definitely")
+        else:
+            await self.bot.say("maybe")
 
     
         
