@@ -146,22 +146,24 @@ class RandomStuff(Base):
 ##        await self.bot.say(embed = e)
 
     @commands.command(pass_context = True)
-    async def punch(self, ctx, *, user=""):
+    async def punch(self, ctx, *, user : str=""):
         await self.bot.send_typing(ctx.message.channel)
         images = util.load_js(os.path.join("assets", "punch.json"))
         imgDict = random.choice(images)
-        if isinstance(user, discord.User):
-            if user is ctx.message.author:
+        memberID = user.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
+        member = ctx.message.server.get_member(memberID)
+        if member:
+            user=member.name
+            if member is ctx.message.author:
                 title = "Ya done punched urself"
                 description = "{} punched themselves!".format(ctx.message.author.name)
-            elif self.bot.user is user:
+            elif self.bot.user.id == memberID:
                 title = "aw  :("
                 description = "{} punched me.".format(ctx.message.author.name)
             else:
                 title = imgDict["title"]
                 description = imgDict["description"].format(user, ctx.message.author.name)
         else:
-            user = user.replace("<", "").replace(">", "").replace("!", "").replace("@", "")
             title = imgDict["title"]
             description = imgDict["description"].format(user, ctx.message.author.name)
         embed = discord.Embed()
@@ -187,7 +189,6 @@ class RandomStuff(Base):
                 title = "Uh oh!"
                 description = "{} got beaned by {}!".format(user, ctx.message.author.name)
         else:
- #           user = user.replace("<", "").replace(">", "").replace("!", "").replace("@", "")
             title = "Uh oh!"
             description = "{} got beaned by {}!".format(user, ctx.message.author.name)
         embed = discord.Embed()
