@@ -182,7 +182,7 @@ class RandomStuff(Base):
                 description = "{} beaned me.".format(ctx.message.author.name)
             else:
                 title = "Uh oh!"
-                description = "{} got beaned by {}!".format(user, ctx.message.author.name)
+                description = "{} got beaned by {}!".format(user.name, ctx.message.author.name)
         else:
             user = user.replace("<", "").replace(">", "").replace("!", "").replace("@", "")
             title = "Uh oh!"
