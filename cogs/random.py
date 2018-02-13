@@ -171,20 +171,23 @@ class RandomStuff(Base):
         await self.bot.say(embed=embed)
 
     @commands.command(pass_context = True)
-    async def bean(self, ctx, *, user=""):
+    async def bean(self, ctx, *, user : str = ""):
         await self.bot.send_typing(ctx.message.channel)
-        if isinstance(user, discord.User):
-            if user is ctx.message.author:
+        memberID = user.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
+        member = ctx.message.server.get_member(memberID)
+        if member:
+            user=member.name
+            if member is ctx.message.author:
                 title = "Ya done beaned urself"
                 description = "{} beaned themselves!".format(ctx.message.author.name)
-            elif self.bot.user is user:
+            elif self.bot.user is member:
                 title = "aw  :("
                 description = "{} beaned me.".format(ctx.message.author.name)
             else:
                 title = "Uh oh!"
-                description = "{} got beaned by {}!".format(user.name, ctx.message.author.name)
+                description = "{} got beaned by {}!".format(user, ctx.message.author.name)
         else:
-            user = user.replace("<", "").replace(">", "").replace("!", "").replace("@", "")
+ #           user = user.replace("<", "").replace(">", "").replace("!", "").replace("@", "")
             title = "Uh oh!"
             description = "{} got beaned by {}!".format(user, ctx.message.author.name)
         embed = discord.Embed()
