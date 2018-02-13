@@ -144,6 +144,30 @@ class RandomStuff(Base):
         e.set_image(url = imgDict["image-url"])
         
         await self.bot.say(embed = e)
+
+    @commands.command(pass_context = True)
+    async def bean(self, ctx, *, user : str = ""):
+        await self.bot.send_typing(ctx.message.channel)
+        
+        user = user.replace("<", "").replace(">", "").replace("!", "").replace("@", "")
+        member = ctx.message.server.get_member(user)
+        if member != None:
+            user = member.name
+        
+        e = discord.Embed()
+        if member != None:
+            if member.id == ctx.message.author.id:
+                e.title = "Ya done beaned urself"
+                e.description = "{} beaned themselves!".format(ctx.message.author.name)
+            elif self.bot.user.id == member.id:
+                e.title = "aw  :("
+                e.description = "{} beaned me.".format(ctx.message.author.name)
+        else:
+            e.title = "Uh oh!"
+            e.description = "{} got beaned by {}!".format(user, ctx.message.author.name)
+        e.set_image(url = "https://i.imgur.com/oBadUcY.gif")
+        
+        await self.bot.say(embed = e)
     
     @commands.command(pass_context = True)
     async def pat(self, ctx, member : discord.Member):
