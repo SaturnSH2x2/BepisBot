@@ -180,7 +180,7 @@ class RandomStuff(Base):
             if member is ctx.message.author:
                 title = "Ya done beaned urself"
                 description = "{} beaned themselves!".format(ctx.message.author.name)
-            elif self.bot.user is member:
+            elif self.bot.user.id is memberID:
                 title = "aw  :("
                 description = "{} beaned me.".format(ctx.message.author.name)
             else:
