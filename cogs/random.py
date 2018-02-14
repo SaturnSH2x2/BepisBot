@@ -172,12 +172,28 @@ class RandomStuff(Base):
         embed.set_image(url = imgDict["image-url"])
         await self.bot.say(embed=embed)
 
+    @commands.command()
+    async def beanRegister(self,ctx):
+        await self.bot.send_typing(ctx.message.channel)
+        with open(os.path.join("assets","bean.txt"),"a") as f:
+            member=ctx.message.author.id
+            memberID=member.replace("<","").replace(">", "").replace("@", "").replace("!", "")
+            f.write("\n"+str(memberID))
+
     @commands.command(pass_context = True)
     async def bean(self, ctx, *, user : str = ""):
         await self.bot.send_typing(ctx.message.channel)
+        whitelist=[]
+        imageUrl="https://i.imgur.com/sncYgfx.png"
         memberID = user.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
         member = ctx.message.server.get_member(memberID)
+        with open(os.path.join("assets","bean.txt"),"r") as f:
+            rawWhitelist=f.readlines()
+        for i in range(len(rawWhitelist)):
+            whitelist.append(int(rawWhitelist[i].replace("\n","")))
         if member:
+            if member.id in whitelist:
+                imageUrl="https://i.imgur.com/oBadUcY.gif"
             user=member.name
             if member is ctx.message.author:
                 title = "Ya done beaned urself"
@@ -194,7 +210,7 @@ class RandomStuff(Base):
         embed = discord.Embed()
         embed.title = title
         embed.description = description
-        embed.set_image(url = "https://i.imgur.com/oBadUcY.gif")
+        embed.set_image(url = imageUrl)
         await self.bot.say(embed=embed)
         
     
