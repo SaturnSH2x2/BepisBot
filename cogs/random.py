@@ -180,22 +180,14 @@ class RandomStuff(Base):
         if member:
             user=member.name
             if member is ctx.message.author:
-                title = "Ya done beaned urself"
                 description = "{} beaned themselves!".format(ctx.message.author.name)
             elif self.bot.user.id == memberID:
-                title = "aw  :("
                 description = "{} beaned me.".format(ctx.message.author.name)
             else:
-                title = "Uh oh!"
                 description = "{} got beaned by {}!".format(user, ctx.message.author.name)
         else:
-            title = "Uh oh!"
             description = "{} got beaned by {}!".format(user, ctx.message.author.name)
-        embed = discord.Embed()
-        embed.title = title
-        embed.description = description
-        embed.set_image(url = "https://i.imgur.com/oBadUcY.gif")
-        await self.bot.say(embed=embed)
+        await self.bot.send_file(ctx.channel, content=description, fp="https://i.imgur.com/oBadUcY.gif")
         
     
     
