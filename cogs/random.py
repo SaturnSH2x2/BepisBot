@@ -191,7 +191,7 @@ class RandomStuff(Base):
             rawWhitelist.replace("\n"+str(memberID),"")
             f.truncate()
             f.write(rawWhitelist)
-        await self.bot.say("{} has been unregistered!".format(ctx.message.author.name)
+        await self.bot.say("{} has been unregistered!".format(ctx.message.author.name))
 
     @commands.command(pass_context = True)
     async def bean(self, ctx, *, user : str = ""):
