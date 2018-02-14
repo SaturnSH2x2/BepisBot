@@ -172,13 +172,26 @@ class RandomStuff(Base):
         embed.set_image(url = imgDict["image-url"])
         await self.bot.say(embed=embed)
 
-    @commands.command()
+    @commands.command(pass_context=True)
     async def beanRegister(self,ctx):
         await self.bot.send_typing(ctx.message.channel)
         with open(os.path.join("assets","bean.txt"),"a") as f:
             member=ctx.message.author.id
-            memberID=member.replace("<","").replace(">", "").replace("@", "").replace("!", "")
+            memberID=member.replace("<","").replace(">", "").replace("@", "").replace("!","")
             f.write("\n"+str(memberID))
+        await self.bot.say("{} has been registered!".format(ctx.message.author.name))
+
+    @commands.command(pass_context=True)
+    async def beanUnregister(self,ctx):
+        await self.bot.send_typing(ctx.message.channel)
+        with open(os.path.join("assets","bean.txt"),"r+") as f:
+            rawWhitelist=f.read()
+            member=ctx.message.author.id
+            memberID=member.replace("<","").replace(">", "").replace("@", "").replace("!","")
+            rawWhitelist.replace("\n"+str(memberID),"")
+            f.truncate()
+            f.write(rawWhitelist)
+        await self.bot.say("{} has been unregistered!".format(ctx.message.author.name)
 
     @commands.command(pass_context = True)
     async def bean(self, ctx, *, user : str = ""):
