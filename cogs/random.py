@@ -171,42 +171,57 @@ class RandomStuff(Base):
         embed.description = description
         embed.set_image(url = imgDict["image-url"])
         await self.bot.say(embed=embed)
+    
+    @commands.command(pass_context = True)
+    async def beanUnregister(self, ctx):
+        if os.path.isfile(os.path.join("assets","bean.json")):
+            beanlist = util.load_js(os.path.join("assets", "bean.json"))
+        else:
+            await self.bot.say("**{}**, you aren't on the beanlist.".format(ctx.author.mention))
+            return
+        for user in beanlist:
+            if str(ctx.author.id) == str(user["id"]):
+                beanlist.remove(user)
+                util.save_js("bean.json", beanlist)
+                await self.bot.say("**{}**, you have been removed from beanlist.".format(ctx.author.mention))
+                return
+        await self.bot.say("{}, you aren't on the beanlist.".format(ctx.author.name))
 
-    @commands.command(pass_context=True)
-    async def beanRegister(self,ctx):
-        await self.bot.send_typing(ctx.message.channel)
-        with open(os.path.join("assets","bean.txt"),"a") as f:
-            member=ctx.message.author.id
-            memberID=member.replace("<","").replace(">", "").replace("@", "").replace("!","")
-            f.write("\n"+str(memberID))
-        await self.bot.say("{} has been registered!".format(ctx.message.author.name))
-
-    @commands.command(pass_context=True)
-    async def beanUnregister(self,ctx):
-        await self.bot.send_typing(ctx.message.channel)
-        with open(os.path.join("assets","bean.txt"),"r+") as f:
-            rawWhitelist=f.read()
-            member=ctx.message.author.id
-            memberID=member.replace("<","").replace(">", "").replace("@", "").replace("!","")
-            rawWhitelist.replace("\n"+str(memberID),"")
-            f.truncate()
-            f.write(rawWhitelist)
-        await self.bot.say("{} has been unregistered!".format(ctx.message.author.name))
-
+    @commands.command(pass_context = True)
+    async def beanRegister(self, ctx):
+        if os.path.isfile(os.path.join("assets","bean.json")):
+            beanlist = util.load_js(os.path.join("assets", "bean.json"))
+        else:
+            await self.bot.say("**{}**, you aren't on the beanlist.".format(ctx.author.mention))
+            return
+        for user in beanlist:
+            if str(ctx.author.id) == str(user["id"]):
+                await self.bot.say("{} is already in the beanlist.".format(ctx.author.name))
+                return
+        beanlist.append( {"id" : ctx.author.id} )
+        util.save_js("bean.json", beanlist)
+        await self.bot.say("**{}**, you have been added to the beanlist.".format(ctx.author.mention, reason))
+        
     @commands.command(pass_context = True)
     async def bean(self, ctx, *, user : str = ""):
         await self.bot.send_typing(ctx.message.channel)
         whitelist=[]
+        beans=False
         imageUrl="https://i.imgur.com/sncYgfx.png"
         memberID = user.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
         member = ctx.message.server.get_member(memberID)
-        with open(os.path.join("assets","bean.txt"),"r") as f:
-            rawWhitelist=f.readlines()
+        if os.path.isfile(os.path.join("assets","bean.json")):
+            beanlist = util.load_js(os.path.join("assets", "bean.json"))
+            beans=True
+        else:
+            beans=False
         for i in range(len(rawWhitelist)):
             whitelist.append(int(rawWhitelist[i].replace("\n","")))
         if member:
-            if member.id in whitelist:
-                imageUrl="https://i.imgur.com/oBadUcY.gif"
+            if beans:
+                for userList in self.blacklistList:
+                    if str(memberID) == str(userList["id"]):
+                        imageUrl="https://i.imgur.com/oBadUcY.gif"
             user=member.name
             if member is ctx.message.author:
                 title = "Ya done beaned urself"
