@@ -182,7 +182,7 @@ class RandomStuff(Base):
         for user in beanlist:
             if str(ctx.message.author.id) == str(user["id"]):
                 beanlist.remove(user)
-                util.save_js("bean.json", beanlist)
+                util.save_js("assets/bean.json", beanlist)
                 await self.bot.say("**{}**, you have been removed from beanlist.".format(ctx.message.author.mention))
                 return
         await self.bot.say("{}, you aren't on the beanlist.".format(ctx.message.author.name))
@@ -198,7 +198,7 @@ class RandomStuff(Base):
                 await self.bot.say("{} is already in the beanlist.".format(ctx.message.author.name))
                 return
         beanlist.append( {"id" : ctx.message.author.id} )
-        util.save_js("bean.json", beanlist)
+        util.save_js("assets/bean.json", beanlist)
         await self.bot.say("**{}**, you have been added to the beanlist.".format(ctx.message.author.mention))
         
     @commands.command(pass_context = True)
