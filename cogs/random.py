@@ -215,11 +215,9 @@ class RandomStuff(Base):
             beans=True
         else:
             beans=False
-        for i in range(len(rawWhitelist)):
-            whitelist.append(int(rawWhitelist[i].replace("\n","")))
         if member:
             if beans:
-                for userList in self.blacklistList:
+                for userList in beanlist:
                     if str(memberID) == str(userList["id"]):
                         imageUrl="https://i.imgur.com/oBadUcY.gif"
             user=member.name
