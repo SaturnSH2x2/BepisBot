@@ -177,30 +177,30 @@ class RandomStuff(Base):
         if os.path.isfile(os.path.join("assets","bean.json")):
             beanlist = util.load_js(os.path.join("assets", "bean.json"))
         else:
-            await self.bot.say("**{}**, you aren't on the beanlist.".format(ctx.author.mention))
+            await self.bot.say("**{}**, you aren't on the beanlist.".format(ctx.mesage.author.mention))
             return
         for user in beanlist:
-            if str(ctx.author.id) == str(user["id"]):
+            if str(ctx.mesage.author.id) == str(user["id"]):
                 beanlist.remove(user)
                 util.save_js("bean.json", beanlist)
-                await self.bot.say("**{}**, you have been removed from beanlist.".format(ctx.author.mention))
+                await self.bot.say("**{}**, you have been removed from beanlist.".format(ctx.mesage.author.mention))
                 return
-        await self.bot.say("{}, you aren't on the beanlist.".format(ctx.author.name))
+        await self.bot.say("{}, you aren't on the beanlist.".format(ctx.mesage.author.name))
 
     @commands.command(pass_context = True)
     async def beanRegister(self, ctx):
         if os.path.isfile(os.path.join("assets","bean.json")):
             beanlist = util.load_js(os.path.join("assets", "bean.json"))
         else:
-            await self.bot.say("**{}**, you aren't on the beanlist.".format(ctx.author.mention))
+            await self.bot.say("**{}**, you aren't on the beanlist.".format(ctx.mesage.author.mention))
             return
         for user in beanlist:
-            if str(ctx.author.id) == str(user["id"]):
-                await self.bot.say("{} is already in the beanlist.".format(ctx.author.name))
+            if str(ctx.mesage.author.id) == str(user["id"]):
+                await self.bot.say("{} is already in the beanlist.".format(ctx.mesage.author.name))
                 return
-        beanlist.append( {"id" : ctx.author.id} )
+        beanlist.append( {"id" : ctx.mesage.author.id} )
         util.save_js("bean.json", beanlist)
-        await self.bot.say("**{}**, you have been added to the beanlist.".format(ctx.author.mention, reason))
+        await self.bot.say("**{}**, you have been added to the beanlist.".format(ctx.mesage.author.mention))
         
     @commands.command(pass_context = True)
     async def bean(self, ctx, *, user : str = ""):
