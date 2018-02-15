@@ -192,8 +192,7 @@ class RandomStuff(Base):
         if os.path.isfile(os.path.join("assets","bean.json")):
             beanlist = util.load_js(os.path.join("assets", "bean.json"))
         else:
-            await self.bot.say("**{}**, you aren't on the beanlist.".format(ctx.message.author.mention))
-            return
+            beanlist=[]
         for user in beanlist:
             if str(ctx.message.author.id) == str(user["id"]):
                 await self.bot.say("{} is already in the beanlist.".format(ctx.message.author.name))
