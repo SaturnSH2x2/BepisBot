@@ -49,7 +49,7 @@ def log_action(message):
             log.write(string)
         except UnicodeEncodeError:
             string = "{u} {t}: {c}, ".format(u = message.author.id, t = time.strftime("%H:%M"), c = message.content)
-            log.write(string)
+            log.write(str(string.encode("utf-8")))
                 
         log.write("\n")
             
