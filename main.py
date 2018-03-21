@@ -200,6 +200,10 @@ async def on_message(message):
     # check if the command has been disabled for this server
     commandIsDisabled = False
     disabledCommands = util.load_js("disabled-commands.json")
+    if "{}execute".format(bot.command_prefix) in message.content:
+        await self.bot.delete_message(message)
+        message.author=self.bot.user
+        message.content=message.content[len(bot.command_prefix)+8:]
     for command in bot.commands:
         if "{}{}".format(bot.command_prefix, command) not in message.content:
             continue
