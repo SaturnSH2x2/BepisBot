@@ -222,14 +222,20 @@ class Moderator(base.Base):
         await self.bot.say(embed = e)
 
     @commands.command(pass_context=True)
-    async def backupNote(self,ctx):
+    async def backupNote(self, ctx, *, text : str = None):
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
         if ctx.message.author.id == self.bot.user.id:
             return
-        serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
-        await self.bot.say(serverNoteList)
+        if text == None:
+            await self.bot.upload(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
+        else:
+            serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
+            noteListRaw=[serverNoteList[i:i+1750] for i in range(0, len(serverNoteList), 1750)]
+            for i in range(len(noteListRaw)):
+                await self.bot.say(noteListRaw[i])
+#        await self.bot.say(serverNoteList)
 
     @commands.command(pass_context=True)
     async def hashNote(self,ctx):
@@ -252,6 +258,8 @@ class Moderator(base.Base):
         serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
         key=hashlib.sha256(str(serverNoteList).encode("utf-8")).hexdigest()
         if confirm==key:
+            await self.bot.say("Emergency note backup.")
+            await self.bot.upload(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
             serverNoteList={}
             util.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
             await self.bot.say("All notes have been wiped.")
