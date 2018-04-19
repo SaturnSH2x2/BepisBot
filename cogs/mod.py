@@ -232,9 +232,11 @@ class Moderator(base.Base):
             await self.bot.upload(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
         else:
             serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
-            noteListRaw=[serverNoteList[i:i+1750] for i in range(0, len(serverNoteList), 1750)]
-            for i in range(len(noteListRaw)):
-                await self.bot.say(noteListRaw[i])
+            length=len(str(serverNoteList))
+            currentPos=0
+            while currentPos<length:
+                await self.bot.say(str(serverNoteList)[currentPos:currentPos+2000])
+                currentPos+=2000
 #        await self.bot.say(serverNoteList)
 
     @commands.command(pass_context=True)
