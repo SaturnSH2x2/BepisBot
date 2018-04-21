@@ -68,6 +68,7 @@ class Tarot(Base):
 
     @commands.command(pass_context = True)
     async def disableExplanations(self, ctx):
+        util.nullifyExecute()
         """Disable explanations when doing Tarot Readings."""
         if ctx.message.server.id not in self.server_decks:
             self.server_decks[ctx.message.server.id] = {}
@@ -79,6 +80,7 @@ class Tarot(Base):
 
     @commands.command(pass_context = True)
     async def enableExplanations(self, ctx):
+        util.nullifyExecute()
         """Enable explanations when doing Tarot Readings."""
         if ctx.message.server.id not in self.server_decks:
             self.server_decks[ctx.message.server.id] = {}
@@ -91,6 +93,7 @@ class Tarot(Base):
     @commands.command(pass_context = True)
     async def drawCard(self, ctx):
         """Draws a Tarot Card."""
+        ctx=util.execute(self,ctx)
         try:
             deck = util.load_js( os.path.join("assets", "tarot", self.server_decks[ctx.message.server.id]["deck"]) )
         except KeyError:

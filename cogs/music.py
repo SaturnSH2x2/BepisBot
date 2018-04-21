@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import util
 
 from ctypes.util import find_library
 from discord.ext import commands
@@ -24,6 +25,7 @@ class Music(Base):
 
 	@commands.command(pass_context = True)
 	async def join(self, ctx):
+		util.nullifyExecute()
 		if not self.checkOpus:
 			return
 			
@@ -41,6 +43,7 @@ class Music(Base):
 			
 	@commands.command(pass_context = True)
 	async def mikeWazowski(self, ctx):
+		util.nullifyExecute()
 		if self.voice == None:
 			await self.bot.say("Connect to a voice channel, call me with {}join, then call this command.".format(self.bot.command_prefix))
 			return

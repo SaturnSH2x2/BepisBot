@@ -20,6 +20,7 @@ class BlackWhiteList(Base):
 		
 	@commands.command(pass_context = True)
 	async def wlsAddUser(self, ctx, member : discord.Member):
+		util.nullifyExecute()
 		"""Adds a user to the whitelist.  This requires special perms"""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
@@ -37,6 +38,7 @@ class BlackWhiteList(Base):
 		
 	@commands.command(pass_context = True)
 	async def wlsAddRole(self, ctx, role : discord.Role):
+		util.nullifyExecute()
 		"""Adds a role to the whitelist.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
@@ -54,6 +56,7 @@ class BlackWhiteList(Base):
 		
 	@commands.command(pass_context = True)
 	async def wlsRemoveUser(self, ctx, member : discord.Member):
+		util.nullifyExecute()
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return
@@ -70,6 +73,7 @@ class BlackWhiteList(Base):
 			
 	@commands.command(pass_context = True)
 	async def wlsRemoveRole(self, ctx, role : discord.Role):
+		util.nullifyExecute()
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return
@@ -86,6 +90,7 @@ class BlackWhiteList(Base):
 			
 	@commands.command(pass_context = True)
 	async def blacklist(self, ctx, member : discord.Member, *, reason : str = "None given."):
+		util.nullifyExecute()
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return
@@ -105,6 +110,7 @@ class BlackWhiteList(Base):
 		
 	@commands.command(pass_context = True)
 	async def unblacklist(self, ctx, member : discord.Member):
+		util.nullifyExecute()
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return
@@ -121,6 +127,7 @@ class BlackWhiteList(Base):
 
 	@commands.command(pass_context = True)
 	async def wlsPrintList(self, ctx):
+		util.nullifyExecute()
 		perms = await util.check_perms(self, ctx)
 		if not perms:
 			return

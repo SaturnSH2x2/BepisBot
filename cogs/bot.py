@@ -19,6 +19,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def disableCommand(self, ctx, passedCommand : str):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -43,6 +44,7 @@ class BotCmd(Base):
         
     @commands.command(pass_context = True)
     async def enableCommand(self, ctx, passedCommand : str):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -62,6 +64,7 @@ class BotCmd(Base):
                 
     @commands.command(pass_context = True)
     async def printDisabledCommands(self, ctx):
+        util.nullifyExecute()
         disabledCommands = util.load_js("disabled-commands.json")
         e = discord.Embed()
         eContent = ""
@@ -80,6 +83,7 @@ class BotCmd(Base):
     
     @commands.command(pass_context = True)
     async def deleteMessages(self, ctx, number : int = 10):
+        util.nullifyExecute()
         """Delete the number of messages specified.  Deletes 10 by default.  This requires special perms."""
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -92,6 +96,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def setAvatar(self, ctx, link : str):
+        util.nullifyExecute()
         """Set the bot's avatar."""
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -109,6 +114,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def setUsername(self, ctx, *, name : str):
+        util.nullifyExecute()
         """Set the bot's username.  This requires special perms."""
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -124,6 +130,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def updateBot(self, ctx):
+        util.nullifyExecute()
         """Update the bot to the latest version.  This requires special perms."""
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -138,6 +145,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def leaveServer(self, ctx):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -147,6 +155,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def shutdown(self, ctx):
+        util.nullifyExecute()
         """Shutdown the bot.  Useful.  Occasionally."""
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -158,6 +167,7 @@ class BotCmd(Base):
         
     @commands.command(pass_context = True)
     async def restart(self, ctx):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -169,6 +179,7 @@ class BotCmd(Base):
         
     @commands.command(pass_context = True)
     async def setPlaying(self, ctx, *, playing : str):
+        util.nullifyExecute()
         "Set the bot's playing status."""
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -191,6 +202,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def inviteLink(self, ctx):
+        util.nullifyExecute()
         """Invite the bot to your own server!  Sends you a DM with the invite link."""
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -200,6 +212,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def say(self, ctx, *, thing):
+        util.nullifyExecute()
         """Have the bot say something.  Chances are, you're gonna make it say something stupid."""
         #thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
 
@@ -210,6 +223,7 @@ class BotCmd(Base):
         
     @commands.command(pass_context = True)
     async def spam(self, ctx, number : int, *, thing):
+        util.nullifyExecute()
         """Spam a message.  Use with caution."""
         if ctx.message.author.id == self.bot.user.id:
             return
@@ -244,6 +258,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def killSpam(self, ctx):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -255,6 +270,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def whisper(self, ctx, *, thing):
+        util.nullifyExecute()
         """Make it so that it looks like the bot said something on its own."""
         #thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
 
@@ -266,6 +282,7 @@ class BotCmd(Base):
         
     @commands.command(pass_context = True)
     async def setNick(self, ctx, *, nick : str):
+        util.nullifyExecute()
         """Nickname test"""
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -277,6 +294,7 @@ class BotCmd(Base):
         
     @commands.command(pass_context = True)
     async def enableLogging(self, ctx):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -292,6 +310,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def updateOkaybot(self, ctx):
+        util.nullifyExecute()
         """Updates OkayBot.  I'm only able to do this because OkayBot is hosted on the same VPS."""
         user = ctx.message.author.id
         files = ctx.message.attachments
@@ -330,6 +349,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def startOkaybot(self, ctx):
+        util.nullifyExecute()
         "Starts OkayBot. Useful for when it's down. Only B_E_P_I_S_M_A_N and Stovven can use this command."
         user = ctx.message.author.id
         if (user != "162357148540469250") and (user != "218919888583000064"):
@@ -347,6 +367,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def fDisable(self, ctx):
+        util.nullifyExecute()
         "Don't want SpongeBob's ugly mug staring you down every time you pay your respects? Use this. Requires special perms."
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -365,6 +386,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def fEnable(self, ctx):
+        util.nullifyExecute()
         "Enables the bot to react accordingly whenever you pay your respects. Requires special perms."
         perms = await util.check_perms(self, ctx)
         if not perms:
@@ -386,6 +408,7 @@ class BotCmd(Base):
 
     @commands.command(pass_context = True)
     async def disableLogging(self, ctx):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -398,6 +421,7 @@ class BotCmd(Base):
         
     @commands.command(pass_context = True)
     async def noOneCaresDisable(self, ctx):
+        util.nullifyExecute()
         """Getting annoyed?  No one cares, but are you?"""
         perms = util.check_perms(self, ctx)
         if not perms:
@@ -415,6 +439,7 @@ class BotCmd(Base):
         
     @commands.command(pass_context = True)
     async def noOneCaresEnable(self, ctx):
+        util.nullifyExecute()
         perms = util.check_perms(self, ctx)
         if not perms:
             return
@@ -434,6 +459,7 @@ class BotCmd(Base):
         
     @commands.command(pass_context = True)
     async def listServers(self, ctx):
+        util.nullifyExecute()
         perms = util.check_perms(self, ctx)
         if not perms:
             return

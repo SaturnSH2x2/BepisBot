@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import util
 
 from discord.ext import commands
 from cogs.base import Base
@@ -7,6 +8,7 @@ from cogs.base import Base
 class Server(Base):
 	@commands.command(pass_context = True)
 	async def serverInfo(self, ctx):
+		util.nullifyExecute()
 		"""Gives various statistics regarding a server."""
 		s = ctx.message.server
 		e = discord.Embed()

@@ -13,6 +13,7 @@ class UserRole(base.Base):
 
 	@commands.command(pass_context = True)
 	async def giveRole(self, ctx, member : discord.Member, role : discord.Role):
+		util.nullifyExecute()
 		"""Give someone a role.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:
@@ -26,6 +27,7 @@ class UserRole(base.Base):
 
 	@commands.command(pass_context = True)
 	async def removeRole(self, ctx, member : discord.Member, role : discord.Role):
+		util.nullifyExecute()
 		"""Revoke a role from someone.  This requires special perms."""
 		perms = await util.check_perms(self, ctx)
 		if not perms:

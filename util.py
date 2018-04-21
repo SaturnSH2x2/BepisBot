@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import os
 from discord.ext import commands
 
 import json
@@ -38,3 +39,18 @@ def save_js(path, data):
 	js.close()
 	
 	return
+
+def execute(obj, ctx):
+        if os.path.isfile(os.path.join("cache","{}.bepis".format(ctx.message.id))):
+                os.remove(os.path.join("cache","{}.bepis".format(ctx.message.id)))
+                ctx.author=ctx.message.server.get_member(obj.bot.user.id)
+                ctx.message.author=ctx.message.server.get_member(obj.bot.user.id)
+        return ctx
+
+
+
+def nullifyExecute():
+	files=os.listdir('cache')
+	for file in files:
+                if file.endswith('.bepis'):
+                        os.remove(os.path.join('cache',file))

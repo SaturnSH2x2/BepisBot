@@ -1,5 +1,3 @@
-#!/usr/bin/python3.5
-
 import asyncio
 import discord
 import time
@@ -199,11 +197,16 @@ async def on_message(message):
             
     # check if the command has been disabled for this server
     commandIsDisabled = False
+    executeCalled = False
     disabledCommands = util.load_js("disabled-commands.json")
     if "{}execute".format(bot.command_prefix) in message.content:
-        await self.bot.delete_message(message)
-        message.author=self.bot.user
+        executeCalled = True
+        with open('cache/{}.bepis'.format(message.id),'w+') as f:
+            f.write('{}'.format(message.content))
         message.content=message.content[len(bot.command_prefix)+8:]
+        print(message.content)
+        await bot.delete_message(message)
+            
     for command in bot.commands:
         if "{}{}".format(bot.command_prefix, command) not in message.content:
             continue
@@ -224,8 +227,12 @@ async def on_message(message):
         e.set_thumbnail(url = "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.starrgymnastics.com%2F_includes%2Fmobile%2Fred-x-icon.png&f=1")
 
         await bot.send_message(message.channel, embed = e)
+        if (executeCalled):
+            os.remove(os.path.join("cache","{}.txt".format(message.id)))
     elif commandIsDisabled:
         await bot.send_message(message.channel, "That command is disabled for use in this server.")
+        if (executeCalled):
+            os.remove(os.path.join("cache","{}.txt".format(message.id)))
     else:
         await bot.process_commands(message)
 

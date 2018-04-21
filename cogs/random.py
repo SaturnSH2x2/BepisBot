@@ -16,6 +16,7 @@ class RandomStuff(Base):
     @commands.command(pass_context = True)
     async def art(self, ctx, member : discord.Member):
         """?"""
+        ctx=util.execute(self,ctx)
 
         await self.bot.send_typing(ctx.message.channel)
 
@@ -44,6 +45,7 @@ class RandomStuff(Base):
 
     @commands.command(pass_context = True)
     async def techSupport(self,ctx):
+        util.nullifyExecute()
         await self.bot.send_typing(ctx.message.channel)
         await self.bot.upload("assets/support.gif")
 
@@ -51,6 +53,7 @@ class RandomStuff(Base):
     async def slap(self, ctx, *, target : str = ""):
         await self.bot.send_typing(ctx.message.channel)
         """Slap ya friends"""
+        ctx=util.execute(self,ctx)
         titles = ["oof", "ouch", "owie", "hngh", "ouchie ouch", "ow"]
         pics = util.load_js(os.path.join("assets", "slap.json"))
         
@@ -76,6 +79,7 @@ class RandomStuff(Base):
     async def hug(self, ctx, *, target : str = ""):
         await self.bot.send_typing(ctx.message.channel)
         """Hug ya friends"""
+        ctx=util.execute(self,ctx)
         titles = ["hugs", "aww", "yay", "huggie hug"]
         pics = util.load_js(os.path.join("assets", "hug.json"))
         
@@ -148,6 +152,7 @@ class RandomStuff(Base):
     @commands.command(pass_context = True)
     async def punch(self, ctx, *, user : str=""):
         await self.bot.send_typing(ctx.message.channel)
+        ctx=util.execute(self,ctx)
         images = util.load_js(os.path.join("assets", "punch.json"))
         imgDict = random.choice(images)
         memberID = user.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
@@ -174,6 +179,7 @@ class RandomStuff(Base):
     
     @commands.command(pass_context = True)
     async def beanUnregister(self, ctx):
+        util.nullifyExecute()
         if os.path.isfile(os.path.join("assets","bean.json")):
             beanlist = util.load_js(os.path.join("assets", "bean.json"))
         else:
@@ -189,6 +195,7 @@ class RandomStuff(Base):
 
     @commands.command(pass_context = True)
     async def beanRegister(self, ctx):
+        util.nullifyExecute()
         if os.path.isfile(os.path.join("assets","bean.json")):
             beanlist = util.load_js(os.path.join("assets", "bean.json"))
         else:
@@ -204,6 +211,7 @@ class RandomStuff(Base):
     @commands.command(pass_context = True)
     async def bean(self, ctx, *, user : str = ""):
         await self.bot.send_typing(ctx.message.channel)
+        ctx=util.execute(self,ctx)
         whitelist=[]
         beans=False
         imageUrl="https://i.imgur.com/sncYgfx.png"
@@ -242,6 +250,7 @@ class RandomStuff(Base):
     
     @commands.command(pass_context = True)
     async def pat(self, ctx, member : discord.Member):
+        util.nullifyExecute()
         await self.bot.send_typing(ctx.message.channel)
         adjectives = ["gently", "lightly", "meekly"]
         adjToUse = random.choice(adjectives)
@@ -253,6 +262,7 @@ class RandomStuff(Base):
     @commands.command(pass_context = True)
     async def wanted(self, ctx, member : discord.Member, *, text : str = None):
         """?"""
+        ctx=util.execute(self,ctx)
         await self.bot.send_typing(ctx.message.channel)
         glitcher=False
         reasonBool=False
@@ -330,6 +340,7 @@ class RandomStuff(Base):
 
     @commands.command(pass_context = True, hidden = True)
     async def quote(self, ctx):
+        util.nullifyExecute()
         "Chary's server only.  Picks a quote from TempGenie.  Used when TempGenie is down."
         if ctx.message.server.id != "329063968570081281":
             return
@@ -347,6 +358,7 @@ class RandomStuff(Base):
 
     @commands.command(pass_context = True)
     async def fidgetSpinner(self, ctx, *, line : str = None):
+        util.nullifyExecute()
         """hahaha dead meme"""
         # font found here: http://www.fontspace.com/jake-luedecke-motion-and-graphic-design/ldfcomicsans
         # code based off this: https://stackoverflow.com/questions/25255206/alternatives-to-pil-pillow-for-overlaying-an-image-with-text#25255348
@@ -374,6 +386,7 @@ class RandomStuff(Base):
 
     @commands.command(pass_context = True)
     async def rate(self, ctx):
+        ctx=util.execute(self,ctx)
         await self.bot.send_typing(ctx.message.channel)
         """Rate anything, on a scale frrom 0 to 10."""
         rating = 0
@@ -411,6 +424,7 @@ class RandomStuff(Base):
 
     @commands.command()
     async def ship(self, mem1 : str, mem2 : str):
+        util.nullifyExecute()
         """Ship two people together to create a fanfiction.  Slightly disturbing material may arise out of this.  You have been warned."""
         fanfics = util.load_js("cogs/fanfics.json")
 
@@ -421,6 +435,7 @@ class RandomStuff(Base):
 
     @commands.command()
     async def downloadMoreRAM(self, memorySize : int = 16):
+        util.nullifyExecute()
         msg = await self.bot.say(":thumbsup: Alright, downloading {}GB of RAM...  0%".format(memorySize))
         for i in range(1, 100, 15):
             await self.bot.edit_message(msg, ":thumbsup: Alright, downloading {}GB of RAM...  {}%".format(memorySize, i))
@@ -432,11 +447,14 @@ class RandomStuff(Base):
 
     @commands.command()
     async def dioTest(self):
+        util.nullifyExecute()
         await self.bot.say("Just a test -Dionicio3")
 
     @commands.command(pass_context = True)
     async def kill(self, ctx, member = None):
         """kys"""
+        ctx=util.execute(self,ctx)
+        await self.bot.say(ctx.message.author.name)
         if ctx.message.mention_everyone or "@everyone" in ctx.message.content:
             await self.bot.say(":boom::gun: Welp, {} killed everyone, the absolute madman.".format(ctx.message.author.mention))
             return
@@ -465,6 +483,7 @@ class RandomStuff(Base):
 
     @commands.command()
     async def soon(self):
+        util.nullifyExecute()
         """shitty hacker meme"""
         if random.randint(1, 25) == 13:
             fil = "uu"
@@ -475,6 +494,7 @@ class RandomStuff(Base):
 
     @commands.command()
     async def no(self):
+        util.nullifyExecute()
         """no"""
         if random.randint(1, 25) == 13:
             fil = "no u"
@@ -485,11 +505,16 @@ class RandomStuff(Base):
 
     @commands.command()
     async def maybe(self):
+        util.nullifyExecute()
         if random.randint(1, 1337) == 420:
             await self.bot.say("most definitely")
         else:
             await self.bot.say("maybe")
 
+ #   @commands.command(pass_context=True)
+#    async def test(self,ctx, member = None):
+#        ctx.author=ctx.message.server.get_member(self.bot.user.id)
+#        ctx.message.author=ctx.message.server.get_member(self.bot.user.id)
     
         
         

@@ -27,6 +27,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context = True)
     async def kick(self, ctx, member : discord.Member):
+        util.nullifyExecute()
         """Kick a member from a server.  This requires special perms."""
         perms = await util.check_perms(self, ctx)
         print(perms)
@@ -39,6 +40,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context = True)
     async def unwarn(self, ctx, member : discord.Member, amount : int = 1):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -57,6 +59,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context = True)
     async def warn(self, ctx, member : discord.Member):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -81,6 +84,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context=True)
     async def listWarns(self, ctx, member : discord.Member):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -95,6 +99,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context=True)
     async def note(self, ctx, member : discord.Member, *, note : str = None):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -119,6 +124,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context=True)
     async def listNote(self, ctx, member : discord.Member, *, note : str = None):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -152,6 +158,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context=True)
     async def deleteNote(self, ctx, member : discord.Member, *, note : str = None):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -200,6 +207,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context=True)
     async def allNote(self,ctx):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -223,6 +231,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context=True)
     async def backupNote(self, ctx, *, text : str = None):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -232,15 +241,14 @@ class Moderator(base.Base):
             await self.bot.upload(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
         else:
             serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
-            length=len(str(serverNoteList))
-            currentPos=0
-            while currentPos<length:
-                await self.bot.say(str(serverNoteList)[currentPos:currentPos+2000])
-                currentPos+=2000
+            noteListRaw=[serverNoteList[i:i+1750] for i in range(0, len(serverNoteList), 1750)]
+            for i in range(len(noteListRaw)):
+                await self.bot.say(noteListRaw[i])
 #        await self.bot.say(serverNoteList)
 
     @commands.command(pass_context=True)
     async def hashNote(self,ctx):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
@@ -252,6 +260,7 @@ class Moderator(base.Base):
 
     @commands.command(pass_context=True)
     async def wipeNote(self, ctx, *, confirm : str = None):
+        util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
         if not perms:
             return
