@@ -454,7 +454,6 @@ class RandomStuff(Base):
     async def kill(self, ctx, member = None):
         """kys"""
         ctx=util.execute(self,ctx)
-        await self.bot.say(ctx.message.author.name)
         if ctx.message.mention_everyone or "@everyone" in ctx.message.content:
             await self.bot.say(":boom::gun: Welp, {} killed everyone, the absolute madman.".format(ctx.message.author.mention))
             return
