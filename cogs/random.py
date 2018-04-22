@@ -479,7 +479,7 @@ class RandomStuff(Base):
         ctx=util.execute(self,ctx)
         if ctx.message.mention_everyone and self.bot.user.id==ctx.message.author.id or "@everyone" in ctx.message.content and self.bot.user.id==ctx.message.author.id:
             await self.bot.say(":boom::gun: I just killed everyone! Does that really suprise anyryone?")
-        if ctx.message.mention_everyone or "@everyone" in ctx.message.content:
+        elif ctx.message.mention_everyone or "@everyone" in ctx.message.content:
             await self.bot.say(":boom::gun: Welp, {} killed everyone, the absolute madman.".format(ctx.message.author.mention))
             return
 
