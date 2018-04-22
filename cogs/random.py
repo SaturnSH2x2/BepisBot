@@ -62,7 +62,9 @@ class RandomStuff(Base):
         if member != None:
             target = member.name
         
-        if ctx.message.author.id == memberID:
+        if self.bot.user.id==ctx.message.author.id:
+            d = "I slapped myself... Why did I do that?"
+        elif ctx.message.author.id == memberID:
             d = "{} slapped themselves.".format(target)
         elif self.bot.user.id == memberID:
             d = "{} slapped me!  ;-;".format(ctx.message.author.name)
@@ -87,8 +89,10 @@ class RandomStuff(Base):
         member = ctx.message.server.get_member(memberID)
         if member != None:
             target = member.name
-        
-        if ctx.message.author.id == memberID:
+
+        if self.bot.user.id==ctx.message.author.id:
+            d = "I hugged myself!"
+        elif ctx.message.author.id == memberID:
             d = "{} hugged themselves.".format(target)
         elif self.bot.user.id == memberID:
             d = "{} hugged me!".format(ctx.message.author.name)
@@ -100,7 +104,9 @@ class RandomStuff(Base):
         titleText = random.choice(titles)
         if urlText=="https://i.imgur.com/oQ8J3Za.gif":
             titleText="oops"
-            if ctx.message.author.id == memberID:
+            if self.bot.user.id==ctx.message.author.id:
+                d = "I got pizza!"
+            elif ctx.message.author.id == memberID:
                 d = "{} got pizza.".format(target)
             elif self.bot.user.id == memberID:
                 d = "{} gave me pizza!".format(ctx.message.author.name)
@@ -110,7 +116,9 @@ class RandomStuff(Base):
                 d = "{} gave {} pizza.".format(ctx.message.author.name, target)
         if urlText=="https://i.imgur.com/MnszwT3.gif":
             titleText="no"
-            if ctx.message.author.id == memberID:
+            if self.bot.user.id==ctx.message.author.id:
+                d = "I didn't want to hug myself"
+            elif ctx.message.author.id == memberID:
                 d = "{} didn't want the hug.".format(target)
             elif self.bot.user.id == memberID:
                 d = "{} didn't want my hugs! ;-;".format(ctx.message.author.name)
@@ -159,7 +167,10 @@ class RandomStuff(Base):
         member = ctx.message.server.get_member(memberID)
         if member:
             user=member.name
-            if member is ctx.message.author:
+            if self.bot.user.id==ctx.message.author.id:
+                title = "I punched my self..."
+                description = "Why did I do that?"
+            elif member is ctx.message.author:
                 title = "Ya done punched urself"
                 description = "{} punched themselves!".format(ctx.message.author.name)
             elif self.bot.user.id == memberID:
@@ -228,7 +239,10 @@ class RandomStuff(Base):
                     if str(memberID) == str(userList["id"]):
                         imageUrl="https://i.imgur.com/oBadUcY.gif"
             user=member.name
-            if member is ctx.message.author:
+            if self.bot.user.id==ctx.message.author.id:
+                title = "I beaned myself"
+                description = "Why did I do that?"
+            elif member is ctx.message.author:
                 title = "Ya done beaned urself"
                 description = "{} beaned themselves!".format(ctx.message.author.name)
             elif self.bot.user.id == memberID:
@@ -262,6 +276,7 @@ class RandomStuff(Base):
     @commands.command(pass_context = True)
     async def wanted(self, ctx, member : discord.Member, *, text : str = None):
         """?"""
+        backup=ctx.message.author.avatar_url
         ctx=util.execute(self,ctx)
         await self.bot.send_typing(ctx.message.channel)
         glitcher=False
@@ -309,6 +324,13 @@ class RandomStuff(Base):
             text="999,999"
             reasonBool=True
             reason="Trying to break the system"
+            w2,h2=draw.textsize(reason, font=fontB)
+        
+        if self.bot.user.id==ctx.message.author.id:
+            url=backup
+            text="999,999"
+            reasonBool=True
+            reason="Trying to frame me!"
             w2,h2=draw.textsize(reason, font=fontB)
         line="$"+text+" REWARD"
         data = requests.get(url)
@@ -453,12 +475,17 @@ class RandomStuff(Base):
     @commands.command(pass_context = True)
     async def kill(self, ctx, member = None):
         """kys"""
+        backup=ctx.message.author.mention
         ctx=util.execute(self,ctx)
+        if ctx.message.mention_everyone and self.bot.user.id==ctx.message.author.id or "@everyone" in ctx.message.content and self.bot.user.id==ctx.message.author.id:
+            await self.bot.say(":boom::gun: I just killed everyone! Does that really suprise anyryone?")
         if ctx.message.mention_everyone or "@everyone" in ctx.message.content:
             await self.bot.say(":boom::gun: Welp, {} killed everyone, the absolute madman.".format(ctx.message.author.mention))
             return
 
         if member == None:
+            if self.bot.user.id==ctx.message.author.id:
+                await self.bot.say(":boom::gun: **{}**, you have been killed by me!".format(backup.message.author.mention))
             await self.bot.say("Please specify a member!")
             return
 
@@ -466,7 +493,21 @@ class RandomStuff(Base):
         victims = ctx.message.mentions
 
         for victim in victims:
-            if ctx.message.author.id == victim.id:
+            if self.bot.user.id==ctx.message.author.id:
+                if ctx.message.author.id == victim.id:
+                    if random.randint(1, 100) == 42:
+                        await self.bot.say(":boom::gun: I summoned your Persona!")
+                    else:
+                        await self.bot.say(":boom::gun: I killed myself!")
+                elif victim.id == "162357148540469250":
+                    await self.bot.say("I can\'t touch this, **{}**!".format(backup))
+                elif victim.id == "191238543828451329":
+                    await self.bot.say("I can\'t touch this, **{}**!".format(backup))
+                elif victim.id == "172898048702283776":
+                    await self.bot.say("I can\'t touch this, **{}**!".format(backup))
+                else:
+                    await self.bot.say(":boom::gun: **{}**, you have been killed by me!".format(victim.mention))
+            elif ctx.message.author.id == victim.id:
                 if random.randint(1, 100) == 42:
                     await self.bot.say(":boom::gun: **{}**, you summoned your Persona!".format(offender))
                 else:
@@ -476,6 +517,8 @@ class RandomStuff(Base):
             elif victim.id == "162357148540469250":
                 await self.bot.say("Hey **{}**, can\'t touch this!".format(offender))
             elif victim.id == "191238543828451329":
+                await self.bot.say("Hey **{}**, can\'t touch this!".format(offender))
+            elif victim.id == "172898048702283776":
                 await self.bot.say("Hey **{}**, can\'t touch this!".format(offender))
             else:
                 await self.bot.say(":boom::gun: **{}**, you have been killed by **{}**!".format(victim.mention, offender))
