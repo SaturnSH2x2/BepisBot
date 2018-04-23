@@ -168,8 +168,12 @@ class RandomStuff(Base):
         if member:
             user=member.name
             if self.bot.user.id==ctx.message.author.id:
-                title = "I punched my self..."
-                description = "Why did I do that?"
+                if member is ctx.message.author:
+                    title = "I punched my self..."
+                    description = "Why did I do that?"
+                else:
+                    title = imgDict["title"]
+                    description = "{} was punched by me!".format(user)
             elif member is ctx.message.author:
                 title = "Ya done punched urself"
                 description = "{} punched themselves!".format(ctx.message.author.name)
@@ -553,10 +557,20 @@ class RandomStuff(Base):
         else:
             await self.bot.say("maybe")
 
- #   @commands.command(pass_context=True)
-#    async def test(self,ctx, member = None):
-#        ctx.author=ctx.message.server.get_member(self.bot.user.id)
-#        ctx.message.author=ctx.message.server.get_member(self.bot.user.id)
+##    @commands.command(pass_context=True)
+##    async def test(self,ctx, *, t : str = None):
+##        util.nullifyExecute()
+##        """Update the bot to the latest version.  This requires special perms."""
+##        perms = await util.check_perms(self, ctx)
+##        if not perms:
+##            return
+##        if ctx.message.author.id=="172898048702283776" and ctx.message.server.id=="349283770689519617":
+##            serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
+##            key="a"#hashlib.sha256(str(serverNoteList).encode("utf-8")).hexdigest()
+##            if t!=key:
+##                await self.bot.say(":pedro:")
+##                return
+##        await self.bot.say(":doot:")
     
         
         
