@@ -276,8 +276,10 @@ class BotCmd(Base):
 
         if ctx.message.author.id == self.bot.user.id:
             return
-
-        await self.bot.delete_message(ctx.message)
+        try:
+            await self.bot.delete_message(ctx.message)
+        except:
+            pass
         await self.bot.say(thing)
         
     @commands.command(pass_context = True)
