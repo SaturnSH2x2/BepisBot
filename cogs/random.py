@@ -63,7 +63,10 @@ class RandomStuff(Base):
             target = member.name
         
         if self.bot.user.id==ctx.message.author.id:
-            d = "I slapped myself... Why did I do that?"
+            if target==ctx.message.author.name:
+                d = "I slapped myself... Why did I do that?"
+            elif member != None and target !="":
+                d = "{} got slapped by me.".format(target, ctx.message.author.name)
         elif ctx.message.author.id == memberID:
             d = "{} slapped themselves.".format(target)
         elif self.bot.user.id == memberID:
@@ -556,6 +559,56 @@ class RandomStuff(Base):
             await self.bot.say("most definitely")
         else:
             await self.bot.say("maybe")
+
+##    @commands.command(pass_context=True)
+##    async def test(self,ctx):
+##        s=ctx.message.server
+##        r=s.roles
+##        for i in range(len(r)):
+##            permissionText=""""""
+##            print(r[i].name)
+##            if r[i].permissions.administrator==True:
+##                permissionText="""Administrator"""
+##            else:
+##                if r[i].permissions.create_instant_invite:
+##                    permissionText+="""Create Instant Invites, """
+##                if r[i].permissions.kick_members:
+##                    permissionText+="""Kick Members, """
+##                if r[i].permissions.ban_members:
+##                    permissionText+="""Ban Members, """
+##                if r[i].permissions.manage_channels:
+##                    permissionText+="""Manage Channels, """
+##                if r[i].permissions.manage_server:
+##                    permissionText+="""Manage Server, """
+##                if r[i].permissions.add_reactions:
+##                    permissionText+="""Add Reactions, """
+##                if r[i].permissions.view_audit_logs:
+##                    permissionText+="""View Audit Logs, """
+##                if r[i].permissions.manage_messages:
+##                    permissionText+="""Manage Messages, """
+##                if r[i].permissions.mention_everyone:
+##                    permissionText+="""Mention Everyone, """
+##                if r[i].permissions.mute_members:
+##                    permissionText+="""Mute Members, """
+##                if r[i].permissions.deafen_members:
+##                    permissionText+="""Deafen Members, """
+##                if r[i].permissions.move_members:
+##                    permissionText+="""Move Members, """
+##                if r[i].permissions.change_nickname:
+##                    permissionText+="""Change Nickname, """
+##                if r[i].permissions.manage_nicknames:
+##                    permissionText+="""Manage Nicknames, """
+##                if r[i].permissions.manage_roles:
+##                    permissionText+="""Manage Roles, """
+##                if r[i].permissions.manage_webhooks:
+##                    permissionText+="""Manage Webhooks, """
+##                if r[i].permissions.manage_emojis:
+##                    permissionText+="""Manage Emojis, """
+##                if len(permissionText)>0:
+##                    permissionText=permissionText[:-2]
+##                else:
+##                    permissionText+="""None"""
+##            print(permissionText)
 
 ##    @commands.command(pass_context=True)
 ##    async def test(self,ctx, *, t : str = None):
