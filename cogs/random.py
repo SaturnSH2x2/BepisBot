@@ -82,12 +82,12 @@ class RandomStuff(Base):
 
     @commands.command(pass_context=True)
     async def hug(self, ctx, *, target : str = ""):
+ #   async def hug(self, ctx, *, hugNum : int = -1, target : str = ""):
         await self.bot.send_typing(ctx.message.channel)
         """Hug ya friends"""
         ctx=util.execute(self,ctx)
         titles = ["hugs", "aww", "yay", "huggie hug"]
         pics = util.load_js(os.path.join("assets", "hug.json"))
-        
         memberID = target.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
         member = ctx.message.server.get_member(memberID)
         if member != None:
@@ -103,7 +103,8 @@ class RandomStuff(Base):
             d = "hugs"
         else:
             d = "{} got hugged by {}.".format(target, ctx.message.author.name)
-        urlText = random.choice(pics)
+        i=random.randint(0,len(pics)-1)
+        urlText = pics[i]
         titleText = random.choice(titles)
         if urlText=="https://i.imgur.com/oQ8J3Za.gif":
             titleText="oops"
@@ -132,6 +133,34 @@ class RandomStuff(Base):
         e = discord.Embed(title=titleText, description = d)
         e.set_image(url=urlText)
         await self.bot.say(embed = e)
+
+    @commands.command(pass_context=True)
+    async def addHug(self, ctx, *, url : str = ""):
+        util.nullifyExecute()
+        perms = await util.check_perms(self, ctx)
+        if not perms:
+            return
+        pics = util.load_js(os.path.join("assets", "hug.json"))
+        if url == "":
+            await self.bot.say("Please provide a url.")
+        elif not url.startswith("http"):
+            await self.bot.say("Please provide a valid url.")
+        elif url.startswith("https://i.imgur.com/"):
+            pics.append(url)
+            util.save_js("assets/hug.json",pics)
+            await self.bot.say("Successfully added "+link+" to hugs.json")
+        else:
+            try:
+                payload={"image":url,"type":"URL"}
+                headers = {"Authorization": "Client-ID 2397de93cc488b8"}
+                r=requests.post("https://api.imgur.com/3/image",headers=headers,data=payload)
+                link=r.json()["data"]["link"]
+                pics.append(link)
+                util.save_js("assets/hug.json",pics)
+                await self.bot.say("Successfully added "+link+" to hugs.json")
+            except:
+                await self.bot.say("nope")
+        
         
 ##    @commands.command(pass_context = True)
 ##    async def punch(self, ctx, *, user : str = ""):

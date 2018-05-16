@@ -8,6 +8,8 @@ import hashlib
 import util
 import cogs.base as base
 
+import shutil
+
 class Moderator(base.Base):
     MAXWARNS = 3
 
@@ -278,6 +280,27 @@ class Moderator(base.Base):
         else:
             await self.bot.say("To wipe the notes, you must enter the correct key.")
             return
+
+##    @commands.command(pass_context=True)
+##    async def clearCache(self, ctx):
+##        util.nullifyExecute()
+##        perms = await util.check_perms(self, ctx)
+##        if not perms:
+##            return
+##        if ctx.message.author.id == self.bot.user.id:
+##            return
+##        folder = 'cache'
+##        print(os.listdir(folder))
+##        for the_file in os.listdir(folder):
+##            file_path = os.path.join(folder, the_file)
+##            try:
+##                if os.path.isfile(file_path):
+##                    os.unlink(file_path)
+##                elif os.path.isdir(file_path): shutil.rmtree(file_path)
+##            except Exception as e:
+##                await self.bot.say(e)
+##        await self.bot.say("Done")
+##        return
 
 
 def setup(bot):
