@@ -49,6 +49,13 @@ class RandomStuff(Base):
         await self.bot.send_typing(ctx.message.channel)
         await self.bot.upload("assets/support.gif")
 
+    @commands.command(pass_context = True)
+    async def doYouKnowDeWae(self,ctx):
+        util.nullifyExecute()
+        """Dead meme killer"""
+        await self.bot.send_typing(ctx.message.channel)
+        await self.bot.upload("assets/wae.mp4")
+
     @commands.command(pass_context=True)
     async def slap(self, ctx, *, target : str = ""):
         await self.bot.send_typing(ctx.message.channel)
