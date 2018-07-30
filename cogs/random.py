@@ -615,6 +615,7 @@ class RandomStuff(Base):
             else:
                 for i in range(len(options)):
                     toReact.append(emoji[i])
+                    question+="\n"+options[i]+"\t"+emoji[i]
                 postedMessage = await self.bot.say(question)
                 for reaction in toReact:
                     await self.bot.add_reaction(postedMessage, reaction)
