@@ -167,17 +167,15 @@ async def on_message(message):
         if message.content.lower() == "f" and message.server.id not in conf["fDisabled"]:
             await bot.send_file(message.channel, "assets/f.jpg")
         if message.server.id not in b:
-            if ( "no one cares" in message.content.lower() ) and ( len(message.content) < 30 ):
+            if ( "no one cares" in message.content.lower() ): # and ( len(message.content) < 30 ):
                 await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
-            elif ("ñô öñé çãrës" in message.content.lower() ) and ( len(message.content) < 30 ):
+            elif ("ñô öñé çãrës" in message.content.lower() ): # and ( len(message.content) < 30 ):
                 await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
-            elif ("nobody gives a shit" in message.content.lower() ) and ( len(message.content) < 40 ):
+            elif ("nobody gives a shit" in message.content.lower() ): # and ( len(message.content) < 40 ):
                 await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
-            elif ( "nobody cares" in message.content.lower() ) and ( len(message.content) < 30 ):
+            elif ( "nobody cares" in message.content.lower() ): # and ( len(message.content) < 30 ):
                 await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
             elif ( "stfu" in message.content.lower() ):
-                await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
-            elif ( "no" in message.content.lower() ) and ( "one" in message.content.lower() ) and ( "cares" in message.content.lower() ) and ( message.author.id == "275353479701069825" ):
                 await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
 
     # make sure that we're processing actual commands here
