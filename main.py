@@ -27,6 +27,7 @@ STARTUP_MESSAGES = ["No one is probably gonna care, but BepisBot is back up.  Th
                     "**WARNING: SAVING DATA.**  Do not remove Memory Card (8MB) (for PlayStation 2) in Memory Card Slot 1, or the DualShock 2 Analog Controller, or reset/switch off the console."
                 ]
 
+"""
 def log_action(message):
     string = "{u} {t}: {c}".format(u = message.author.name, t = time.strftime("%H:%M"), c = message.content)
 
@@ -57,7 +58,7 @@ def log_action(message):
             
         log.flush()
         log.close()
-
+"""
 COGS = ["cogs.userrole",
     "cogs.mod",
     "cogs.random",
@@ -81,6 +82,7 @@ if not os.path.exists("logs"):  os.mkdir("logs")
 
 bot = commands.Bot(command_prefix = prefix, pm_help = True)
 
+"""
 @bot.event
 async def on_server_update(before, after):
     if after.id not in serverLogList:
@@ -105,6 +107,7 @@ async def on_channel_update(before, after):
     if os.path.exists( os.path.join("logs", server_name_formatted, before.name) ):
         print("Channel renamed?")
         os.rename( os.path.join("logs", server_name_formatted, before.name), os.path.join("logs", server_name_formatted, after.name) )
+"""
 
 @bot.event
 async def on_command_error(error, ctx):
@@ -121,29 +124,33 @@ async def on_command_error(error, ctx):
             await bot.send_message(ctx.message.channel, embed=e)
         else:
             await bot.send_message(ctx.message.channel, "An error has occurred.  {}\n\n".format(error))
-            print("An error has occurred.  {}, ()".format(error, type(error)))
+            #print("An error has occurred.  {}, ()".format(error, type(error)))
     else:
         await bot.send_message(ctx.message.channel, "An error has occurred.  {}\n\n".format(error))
-        print("An error has occurred.  {}, ()".format(error, type(error)))
+        #print("An error has occurred.  {}, ()".format(error, type(error)))
 
+"""
 @bot.event
 async def on_ready():
     for channel in main_c:
         msg = await bot.send_message(bot.get_channel(str(channel)), random.choice(STARTUP_MESSAGES))
         await asyncio.sleep(10)
         await bot.delete_message(msg)
+"""
 
 @bot.event
 async def on_message(message):
+    """
     try:
         print("{}: {}".format(message.author.name, message.content))
     except UnicodeEncodeError:
         print("{}: {}".format(message.author.name.encode("utf-8"), message.content.encode("utf-8")))
     print(message.attachments)
-        
+    """   
+    
     serverLogList = util.load_js("logs/server-list.json")
-    if str(message.server.id) in str(serverLogList):
-        log_action(message)
+    #if str(message.server.id) in str(serverLogList):
+        #log_action(message)
 
     blacklisted = None
     is_command = False
@@ -164,8 +171,9 @@ async def on_message(message):
         return
 
     if prefix not in message.content.lower():
-        if message.content.lower() == "f" and message.server.id not in conf["fDisabled"]:
+        if message.content.lower() == "f": #and message.server.id not in conf["fDisabled"]:
             await bot.send_file(message.channel, "assets/f.jpg")
+        """
         if message.server.id not in b:
             if ( "no one cares" in message.content.lower() ): # and ( len(message.content) < 30 ):
                 await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
@@ -177,6 +185,7 @@ async def on_message(message):
                 await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
             elif ( "stfu" in message.content.lower() ):
                 await bot.send_message(message.channel, "oh wow {} that was kinda rude kys".format(message.author.mention))
+        """
 
     # make sure that we're processing actual commands here
     for command in bot.commands:
