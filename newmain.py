@@ -4,12 +4,17 @@ import sys
 import logging
 
 import util
+import cogs
 
 from src.bepisbotclient import BepisBotClient
 from discord.ext import commands
 
-def main():
+# list of cogs for the bot client to load
+COGS = [
+    "cogs.newrandom"
+]
 
+def main():
     # load config file
     if len(sys.argv) < 2:
         conf = util.load_js("config.json")
@@ -25,7 +30,12 @@ def main():
     logging.basicConfig(level=logging.INFO)
 
     # create and run the bot
-    bot = BepisBotClient(command_prefix = conf["prefix"], pm_help = True)
+    bot = BepisBotClient(command_prefix = conf["prefix"], pm_help = True,
+          description = "A complete rewrite of BepisBot using the rewrite branch of discord.py")
+
+    for ext in COGS:
+        bot.load_extension(ext)
+
     bot.run(conf["token"])
 
 if __name__ == "__main__":

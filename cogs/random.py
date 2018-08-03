@@ -13,9 +13,12 @@ from discord.ext import commands
 from cogs.base import Base
 
 class RandomStuff(Base):
+
+    # perhaps rewrite this method to work better with async
+    """
     @commands.command(pass_context = True)
     async def art(self, ctx, member : discord.Member):
-        """?"""
+        """"""
         ctx=util.execute(self,ctx)
 
         await self.bot.send_typing(ctx.message.channel)
@@ -42,6 +45,7 @@ class RandomStuff(Base):
         finalImage.save("temp.png", "PNG")
 
         await self.bot.send_file(ctx.message.channel, "temp.png")
+    """
 
     @commands.command(pass_context = True)
     async def techSupport(self,ctx):
@@ -49,12 +53,15 @@ class RandomStuff(Base):
         await self.bot.send_typing(ctx.message.channel)
         await self.bot.upload("assets/support.gif")
 
+    # no dead memes pls thx
+    """
     @commands.command(pass_context = True)
     async def doYouKnowDeWae(self,ctx):
         util.nullifyExecute()
-        """Dead meme killer"""
+        
         await self.bot.send_typing(ctx.message.channel)
         await self.bot.upload("assets/wae.mp4")
+    """
 
     @commands.command(pass_context=True)
     async def slap(self, ctx, *, target : str = ""):
@@ -89,7 +96,6 @@ class RandomStuff(Base):
 
     @commands.command(pass_context=True)
     async def hug(self, ctx, *, target : str = ""):
- #   async def hug(self, ctx, *, hugNum : int = -1, target : str = ""):
         await self.bot.send_typing(ctx.message.channel)
         """Hug ya friends"""
         ctx=util.execute(self,ctx)

@@ -23,7 +23,7 @@ class Music(Base):
 			await self.bot.send_message(ctx.message.channel, "The Opus Library is not loaded.  Voice commands are not available at this time.")
 			return False
 
-	@commands.command(pass_context = True)
+	@commands.command(pass_context = True, no_pm = True)
 	async def join(self, ctx):
 		util.nullifyExecute()
 		if not self.checkOpus:

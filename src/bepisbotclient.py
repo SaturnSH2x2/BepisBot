@@ -9,5 +9,8 @@ class BepisBotClient(commands.Bot):
         print("User Name:  %s" % self.user.name)
         print("User ID:    %s" % self.user.id)
 
+    """
     async def on_message(self, message):
         print("%s: %s" % (message.author.name, message.content))
+        await self.process_commands(message)
+    """

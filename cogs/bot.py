@@ -221,8 +221,8 @@ class BotCmd(Base):
 
         await self.bot.say(thing)
         
-    @commands.command(pass_context = True)
-    async def spam(self, ctx, number : int, *, thing):
+    @commands.command()
+    async def spam(self, ctx, *, number : int, thing : str):
         util.nullifyExecute()
         """Spam a message.  Use with caution."""
         if ctx.message.author.id == self.bot.user.id:
