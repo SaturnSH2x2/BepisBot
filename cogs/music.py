@@ -28,6 +28,7 @@ def downloadVideo(ytLink : str, filename : str):
         ydl.download([ytLink])
 
 class Music(Base):
+    "Commands for playing music and audio from YouTube video links."
     def __init__(self, bot):
         if discord.opus.is_loaded():
             pass
@@ -46,11 +47,24 @@ class Music(Base):
                 "Voice commands are not available at this time.")
             return False
 
+    # helper function to avoid repeating code for checking certain
+    # command conditions
+    async def checkPermissions(self, ctx):
+        if self.voice == None:
+            await ctx.send("Not currently in a voice channel.")
+            return False
+        if self.voice.channel != ctx.author.voice.channel:
+            await ctx.send("I need to be in the same voice channel as you " +
+                            "to do that!")
+            return False
+
+        return True
+
     @commands.command()
     async def join(self, ctx):
         """Joins a voice channel. You must be in VC for this to work."""
         util.nullifyExecute()
-        if not self._check_opus(ctx):
+        if not await self._check_opus(ctx):
             return
             
         # get the voice channel the user is currently in
@@ -72,11 +86,7 @@ class Music(Base):
     @commands.command()
     async def leave(self, ctx):
         """Disconnects from a voice channel. Does nothing if not connected."""
-        if self.voice == None:
-            await ctx.send("Not currently in a voice channel.")
-        elif self.voice.channel != ctx.author.voice.channel:
-            await ctx.send("I need to be in the same voice channel as you " +
-                            "to do that!")
+        if not await self.checkPermissions(ctx):
             return
 
         await self.voice.disconnect()
@@ -85,60 +95,58 @@ class Music(Base):
     @commands.command()
     async def play(self, ctx, ytLink : str):
         """Download and play a YouTube video. Direct links only, at the moment."""
-        if self.voice == None:
-            await ctx.send("I need to be in a voice channel to do that!")
+
+        # sanity checks
+        if not await self.checkPermissions(ctx):
             return
         elif self.voice.is_playing():
             await ctx.send("I'm already playing audio!")
             return
-        elif self.voice.channel != ctx.author.voice.channel:
-            await ctx.send("I need to be in the same voice channel as you " + 
-                            "to do that!")
-            return
 
+        # determine filename, start downloading the video
         filename = opj(self.TEMP_PATH, "%s-%f" % (ctx.guild.id, time.time()))
         process = mp.Process(target = downloadVideo, args = [ytLink, filename])
         process.start()
 
         await ctx.send("Please wait while I download the video for streaming...")
 
+        # wait for the process to complete without holding up
+        # the main process
         while process.is_alive():
             await asyncio.sleep(0.75)
 
+        # load newly-downloaded file as AudioSource
         ffas = discord.FFmpegPCMAudio(filename + ".opus")
         self.voice.play(ffas)
         await ctx.send("Now playing.")
 
-        while (self.voice.is_playing()):
+        # wait for the audio playback to stop
+        while (self.voice.is_playing() or self.voice.is_paused()):
             await asyncio.sleep(0.75)
-
         await ctx.send("Playback stopped.")
 
         # the bot doesn't cache music files, so get rid of them
         # once we're done streaming the music
         os.remove(filename + ".opus")
 
+    # the rest of these commands should be fairly self-explanatory
     @commands.command()
     async def stop(self, ctx):
         """Stop playback. Does nothing if not playing audio."""
-        if self.voice == None or \
-            not self.voice.is_playing():
+        if not await self.checkPermissions(ctx):
+            return
+        elif not self.voice.is_playing():
             await ctx.send("I'm not playing audio at the moment.")
-        elif self.voice.channel != ctx.author.voice.channel:
-            await ctx.send("I'm not in the same voice channel as you are!")
         else:
             self.voice.stop()
 
     @commands.command()
     async def pause(self, ctx):
         """Pauses playback. Does nothing if not playing audio."""
-        if self.voice == None or \
-            not self.voice.is_playing():
+        if not await self.checkPermissions(ctx):
+            return
+        elif not self.voice.is_playing():
             await ctx.send("I'm not playing audio at the moment.")
-        elif self.voice.is_paused():
-            await ctx.send("Playback has already been paused!")
-        elif self.voice.channel != ctx.author.voice.channel:
-            await ctx.send("I'm not in the same voice channel as you are!")
         else:
             self.voice.pause()
             await ctx.send("Pausing audio playback.")
@@ -146,13 +154,10 @@ class Music(Base):
     @commands.command()
     async def resume(self, ctx):
         """Resumes audio playback, if paused. Does nothing otherwise."""
-        if self.voice == None or \
-            not self.voice.is_playing():
-            await ctx.send("I'm not playing audio at the moment.")
+        if not await self.checkPermissions(ctx):
+            return
         elif not self.voice.is_paused():
             await ctx.send("Playback isn't paused!")
-        elif self.voice.channel != ctx.author.voice.channel:
-            await ctx.send("I'm not in the same voice channel as you are!")
         else:
             self.voice.resume()
             await ctx.send("Resuming audio playback.")

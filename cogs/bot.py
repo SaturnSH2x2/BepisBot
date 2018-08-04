@@ -138,11 +138,12 @@ class BotCmd(Base):
 
         await self.bot.say("Updating the bot...")
         os.system("git fetch origin")
-        os.system("git checkout --force origin/master")
+        os.system("git checkout --force origin/bepisbot-mk3")
         await self.bot.say("Bot is updated!  Restarting...")
         await self.bot.close()
         os.system("python3.5 main.py")
 
+    """
     @commands.command(pass_context = True)
     async def leaveServer(self, ctx):
         util.nullifyExecute()
@@ -152,6 +153,7 @@ class BotCmd(Base):
             
         await self.bot.say("Leaving server.  Bye... :cry:")
         await self.bot.leave_server(ctx.message.server)
+    """
 
     @commands.command(pass_context = True)
     async def shutdown(self, ctx):
