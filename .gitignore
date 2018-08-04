@@ -11,3 +11,6 @@ track.txt
 whitelist.json
 wantedTemp.png
 warns/
+temp/
+metadata/
+jsondata/

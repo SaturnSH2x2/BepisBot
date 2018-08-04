@@ -31,7 +31,8 @@ def main():
 
     # create and run the bot
     bot = BepisBotClient(command_prefix = conf["prefix"], pm_help = True,
-          description = "A complete rewrite of BepisBot using the rewrite branch of discord.py")
+          description = "A complete rewrite of BepisBot using the rewrite " + 
+          "branch of discord.py")
 
     for ext in COGS:
         bot.load_extension(ext)
