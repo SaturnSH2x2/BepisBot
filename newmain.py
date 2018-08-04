@@ -11,7 +11,7 @@ from discord.ext import commands
 
 # list of cogs for the bot client to load
 COGS = [
-    "cogs.newrandom"
+    "cogs.music",
 ]
 
 def main():
