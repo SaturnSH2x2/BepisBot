@@ -128,6 +128,7 @@ class BotCmd(Base):
         except:
             await self.bot.say("Something went wrong.  Sorry.")
 
+
     @commands.command(pass_context = True)
     async def updateBot(self, ctx):
         util.nullifyExecute()
@@ -143,7 +144,7 @@ class BotCmd(Base):
         await self.bot.close()
         os.system("python3.5 main.py")
 
-    """
+
     @commands.command(pass_context = True)
     async def leaveServer(self, ctx):
         util.nullifyExecute()
@@ -153,7 +154,6 @@ class BotCmd(Base):
             
         await self.bot.say("Leaving server.  Bye... :cry:")
         await self.bot.leave_server(ctx.message.server)
-    """
 
     @commands.command(pass_context = True)
     async def shutdown(self, ctx):

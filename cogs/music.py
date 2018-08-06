@@ -3,6 +3,7 @@ import discord
 import time
 import io
 import os
+import queue
 import multiprocessing as mp
 import youtube_dl
 import util
@@ -14,7 +15,7 @@ from os.path import join as opj
 
 # function to download YouTube videos to stream as needed.
 # Run as a separate process.
-def downloadVideo(ytLink : str, filename : str):
+def downloadVideo(ytLink : str, filename : str, q : mp.Queue):
     opts = {
         "outtmpl" : filename,
         "postprocessors" : [{
@@ -25,8 +26,12 @@ def downloadVideo(ytLink : str, filename : str):
     }
     
     with youtube_dl.YoutubeDL(opts) as ydl:
+        info = ydl.extract_info(ytLink, download = False)
+        q.put(info)
         ydl.download([ytLink])
 
+# TODO: this code won't work on a per-server basis. Keep track of what VC
+# the bot is in on by server (you may need to use dictionaries for this)
 class Music(Base):
     "Commands for playing music and audio from YouTube video links."
     def __init__(self, bot):
@@ -36,6 +41,7 @@ class Music(Base):
             discord.opus.load_opus(find_library("opus"))
             
         self.voice = None
+        self.musicList = []
         super().__init__(bot)
         
     # helper function to test if Opus is loaded
@@ -62,7 +68,7 @@ class Music(Base):
 
     @commands.command()
     async def join(self, ctx):
-        """Joins a voice channel. You must be in VC for this to work."""
+        "Joins a voice channel. You must be in VC for this to work."
         util.nullifyExecute()
         if not await self._check_opus(ctx):
             return
@@ -85,7 +91,7 @@ class Music(Base):
 
     @commands.command()
     async def leave(self, ctx):
-        """Disconnects from a voice channel. Does nothing if not connected."""
+        "Disconnects from a voice channel. Does nothing if not connected."
         if not await self.checkPermissions(ctx):
             return
 
@@ -94,55 +100,81 @@ class Music(Base):
         
     @commands.command()
     async def play(self, ctx, ytLink : str):
-        """Download and play a YouTube video. Direct links only, at the moment."""
+        "Download and play a YouTube video. Direct links only, at the moment. \
+        If a video is already playing, yours will be added to a queue."
 
         # sanity checks
         if not await self.checkPermissions(ctx):
             return
-        elif self.voice.is_playing():
-            await ctx.send("I'm already playing audio!")
-            return
 
         # determine filename, start downloading the video
         filename = opj(self.TEMP_PATH, "%s-%f" % (ctx.guild.id, time.time()))
-        process = mp.Process(target = downloadVideo, args = [ytLink, filename])
+        vidInfoQueue = mp.Queue()
+        process = mp.Process(target = downloadVideo, args = [ytLink, filename, vidInfoQueue])
         process.start()
 
         await ctx.send("Please wait while I download the video for streaming...")
+        await ctx.trigger_typing()
 
         # wait for the process to complete without holding up
         # the main process
         while process.is_alive():
             await asyncio.sleep(0.75)
 
-        # load newly-downloaded file as AudioSource
-        ffas = discord.FFmpegPCMAudio(filename + ".opus")
-        self.voice.play(ffas)
-        await ctx.send("Now playing.")
+        vidInfo = vidInfoQueue.get()
+        self.musicList += [[filename, vidInfo["title"]]]
+    
+        if self.voice.is_playing():
+            await ctx.send("**%s** has been added to the queue (position in queue: %i)" % \
+                    (vidInfo["title"], len(self.musicList)))
+            return
 
-        # wait for the audio playback to stop
-        while (self.voice.is_playing() or self.voice.is_paused()):
-            await asyncio.sleep(0.75)
+        # playback everything in the list
+        while len(self.musicList) > 0:
+            listEntry = self.musicList[0]
+            filename = listEntry[0]
+            title = listEntry[1]
+
+            ffas = discord.FFmpegPCMAudio(filename + ".opus")
+            self.voice.play(ffas)
+            await ctx.send("Now playing: **%s**" % (title))
+
+            # wait for the audio playback to stop
+            while (self.voice.is_playing() or self.voice.is_paused()):
+                await asyncio.sleep(0.75)
+
+            # the bot doesn't cache music files, so get rid of them
+            # once we're done streaming the music
+            os.remove(filename + ".opus")
+            self.musicList.remove(listEntry)
+        
         await ctx.send("Playback stopped.")
-
-        # the bot doesn't cache music files, so get rid of them
-        # once we're done streaming the music
-        os.remove(filename + ".opus")
 
     # the rest of these commands should be fairly self-explanatory
     @commands.command()
-    async def stop(self, ctx):
-        """Stop playback. Does nothing if not playing audio."""
+    async def queue(self, ctx):
+        "List all items in the current playback queue."
+        queueString = ""
+
+        queueString += "Now playing: **%s**\n\n" % (self.musicList[0][1])
+        for i in range(1, len(self.musicList)):
+            queueString += "%i.  **%s**\n" % (i + 1, self.musicList[i][1])
+        await ctx.send(queueString)
+
+    @commands.command()
+    async def skip(self, ctx):
+        "Skips the video currently playing in the queue."
         if not await self.checkPermissions(ctx):
             return
         elif not self.voice.is_playing():
             await ctx.send("I'm not playing audio at the moment.")
         else:
+            await ctx.send("Skipping: **%s**" % (self.musicList[0][1]))
             self.voice.stop()
 
     @commands.command()
     async def pause(self, ctx):
-        """Pauses playback. Does nothing if not playing audio."""
+        "Pauses playback. Does nothing if not playing audio."
         if not await self.checkPermissions(ctx):
             return
         elif not self.voice.is_playing():
@@ -153,7 +185,7 @@ class Music(Base):
 
     @commands.command()
     async def resume(self, ctx):
-        """Resumes audio playback, if paused. Does nothing otherwise."""
+        "Resumes audio playback, if paused. Does nothing otherwise."
         if not await self.checkPermissions(ctx):
             return
         elif not self.voice.is_paused():
