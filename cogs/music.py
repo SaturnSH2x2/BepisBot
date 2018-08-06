@@ -47,22 +47,24 @@ class Music(Base):
         if discord.opus.is_loaded():
             return True
         else:
-            await ctx.send("The Opus Library is not loaded.  " + 
-                "Voice commands are not available at this time.")
+            await ctx.send("The Opus Library is not loaded. \
+                Voice commands are not available at this time.")
             return False
 
     # helper function to avoid repeating code for checking certain
     # command conditions
     async def checkPermissions(self, ctx):
         if ctx.guild.id not in self.voice.keys() or \
-            self.voice[ctx.guild.id] == None or \
-            ctx.author.voice == None:
-            await ctx.send("You're not connected to a voice channel.  " + 
-                "Do that first, then call this command.")
+            self.voice[ctx.guild.id] == None:
+            await ctx.send("I need to be connected to a voice channel to \
+                            do that. Use %sjoin." % (self.bot.command_prefix))
             return False
+        elif ctx.author.voice == None:
+            await ctx.send("You're not connected to a voice channel. \
+                Do that first, then call this command.")
         elif self.voice[ctx.guild.id].channel != ctx.author.voice.channel:
-            await ctx.send("I need to be in the same voice channel as you " +
-                            "to do that!")
+            await ctx.send("I need to be in the same voice channel as you \
+                            to do that!")
             return False
 
         return True
@@ -78,8 +80,8 @@ class Music(Base):
         try:
             vChannel = ctx.message.author.voice.channel
         except AttributeError:
-            await ctx.send("You're not connected to a voice channel.  " + 
-                "Do that first, then call this command.")
+            await ctx.send("You're not connected to a voice channel. \
+                Do that first, then call this command.")
             return
             
         # connect to a voice channel. If bot is in another voice channel, switch
