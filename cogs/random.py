@@ -3,7 +3,11 @@ import discord
 import requests
 import random
 import os
+import time
+import multiprocessing as mp
 import util
+
+from os.path import join as opj
 
 from PIL import Image
 from PIL import ImageDraw
@@ -12,87 +16,10 @@ from discord.ext import commands
 
 from cogs.base import Base
 
+
+
 class RandomStuff(Base):
 
-    # perhaps rewrite this method to work better with async
-    """
-    @commands.command(pass_context = True)
-    async def art(self, ctx, member : discord.Member):
-        """"""
-        ctx=util.execute(self,ctx)
-
-        await self.bot.send_typing(ctx.message.channel)
-
-        finalImage = Image.new("RGBA", (811, 444), "white")
-        frameImage = Image.open(os.path.join("assets", "Art.png"))
-
-        url = member.avatar_url
-        if url == "":
-            url = member.default_avatar_url
-
-        print(url)
-        data = requests.get(url)
-
-        with open(os.path.join("cache", "{}.webp".format(member.id)), "wb+") as f:
-            f.write(data.content)
-            f.close()
-
-        profileImage = Image.open(os.path.join("cache", "{}.webp".format(member.id)))
-        profileImage = profileImage.resize((300,300))
-
-        finalImage.paste(profileImage, (290,155))
-        finalImage.paste(frameImage, (0,0), frameImage)
-        finalImage.save("temp.png", "PNG")
-
-        await self.bot.send_file(ctx.message.channel, "temp.png")
-    """
-
-    @commands.command(pass_context = True)
-    async def techSupport(self,ctx):
-        util.nullifyExecute()
-        await self.bot.send_typing(ctx.message.channel)
-        await self.bot.upload("assets/support.gif")
-
-    # no dead memes pls thx
-    """
-    @commands.command(pass_context = True)
-    async def doYouKnowDeWae(self,ctx):
-        util.nullifyExecute()
-        
-        await self.bot.send_typing(ctx.message.channel)
-        await self.bot.upload("assets/wae.mp4")
-    """
-
-    @commands.command(pass_context=True)
-    async def slap(self, ctx, *, target : str = ""):
-        await self.bot.send_typing(ctx.message.channel)
-        """Slap ya friends"""
-        ctx=util.execute(self,ctx)
-        titles = ["oof", "ouch", "owie", "hngh", "ouchie ouch", "ow"]
-        pics = util.load_js(os.path.join("assets", "slap.json"))
-        
-        memberID = target.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
-        member = ctx.message.server.get_member(memberID)
-        if member != None:
-            target = member.name
-        
-        if self.bot.user.id==ctx.message.author.id:
-            if target==ctx.message.author.name:
-                d = "I slapped myself... Why did I do that?"
-            elif member != None and target !="":
-                d = "{} got slapped by me.".format(target, ctx.message.author.name)
-        elif ctx.message.author.id == memberID:
-            d = "{} slapped themselves.".format(target)
-        elif self.bot.user.id == memberID:
-            d = "{} slapped me!  ;-;".format(ctx.message.author.name)
-        elif member == None and target == "":
-            d = "slappity slappity"
-        else:
-            d = "{} got slapped by {}.".format(target, ctx.message.author.name)
-        
-        e = discord.Embed(title = random.choice(titles), description = d)
-        e.set_image(url = random.choice(pics))
-        await self.bot.say(embed = e)
 
     @commands.command(pass_context=True)
     async def hug(self, ctx, *, target : str = ""):
@@ -173,69 +100,8 @@ class RandomStuff(Base):
                 await self.bot.say("Successfully added "+link+" to hugs.json")
             except:
                 await self.bot.say("nope")
-        
-        
-##    @commands.command(pass_context = True)
-##    async def punch(self, ctx, *, user : str = ""):
-##        await self.bot.send_typing(ctx.message.channel)
-##        
-##        user = user.replace("<", "").replace(">", "").replace("!", "").replace("@", "")
-##        member = ctx.message.server.get_member(user)
-##        if member != None:
-##            user = member.name  
-##        
-##        images = util.load_js(os.path.join("assets", "punch.json"))
-##        imgDict = random.choice(images)
-##        
-##        e = discord.Embed()
-##        if member != None:
-##            if member.id == ctx.message.author.id:
-##                e.title = "Ya done punched urself"
-##                e.description = "{} punched themselves!".format(ctx.message.author.name)
-##            elif self.bot.user.id == member.id:
-##                e.title = "aw  :("
-##                e.description = "{} punched me.".format(ctx.message.author.name)
-##        else:
-##            e.title = imgDict["title"]
-##            e.description = imgDict["description"].format(user, ctx.message.author.name)
-##        e.set_image(url = imgDict["image-url"])
-##        
-##        await self.bot.say(embed = e)
 
-    @commands.command(pass_context = True)
-    async def punch(self, ctx, *, user : str=""):
-        await self.bot.send_typing(ctx.message.channel)
-        ctx=util.execute(self,ctx)
-        images = util.load_js(os.path.join("assets", "punch.json"))
-        imgDict = random.choice(images)
-        memberID = user.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
-        member = ctx.message.server.get_member(memberID)
-        if member:
-            user=member.name
-            if self.bot.user.id==ctx.message.author.id:
-                if member is ctx.message.author:
-                    title = "I punched my self..."
-                    description = "Why did I do that?"
-                else:
-                    title = imgDict["title"]
-                    description = "{} was punched by me!".format(user)
-            elif member is ctx.message.author:
-                title = "Ya done punched urself"
-                description = "{} punched themselves!".format(ctx.message.author.name)
-            elif self.bot.user.id == memberID:
-                title = "aw  :("
-                description = "{} punched me.".format(ctx.message.author.name)
-            else:
-                title = imgDict["title"]
-                description = imgDict["description"].format(user, ctx.message.author.name)
-        else:
-            title = imgDict["title"]
-            description = imgDict["description"].format(user, ctx.message.author.name)
-        embed = discord.Embed()
-        embed.title = title
-        embed.description = description
-        embed.set_image(url = imgDict["image-url"])
-        await self.bot.say(embed=embed)
+
     
     @commands.command(pass_context = True)
     async def beanUnregister(self, ctx):
@@ -322,92 +188,7 @@ class RandomStuff(Base):
         else:
             await self.bot.say("*{} pats <@!{}> on the head*".format(adjToUse, member.id))
     
-    @commands.command(pass_context = True)
-    async def wanted(self, ctx, member : discord.Member, *, text : str = None):
-        """?"""
-        backup=ctx.message.author.avatar_url
-        ctx=util.execute(self,ctx)
-        await self.bot.send_typing(ctx.message.channel)
-        glitcher=False
-        reasonBool=False
-        whitelist=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','&','2','9','.',' ']
-        finalImage = Image.new("RGBA", (764, 997), "white")
-        frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
-        draw=ImageDraw.Draw(finalImage)
-        if text == None:
-            text="5,000"
-        splitter=text.split(" ",maxsplit=1)
-        text=splitter[0]
-        try:
-            reason=splitter[1]
-            reasonBool=True
-        except:
-            reasonBool=False
-        text=text.replace(",", "")
-        try:
-            x=int(text)
-            if x<1000000 and x>-100000:
-                text="{:,}".format(int(text))
-            else:
-                glitcher=True
-        except:
-            glitcher=True
-        
-        fontA  = ImageFont.truetype(os.path.join("assets","RodeoClown.ttf"), 83)
-        fontB  = ImageFont.truetype(os.path.join("assets","Nashville.ttf"), 44)
-        url = member.avatar_url
-        if url == "":
-            url = member.default_avatar_url
-        
-        if reasonBool==True:
-            reason=reason.lower()
-            w2,h2=draw.textsize(reason, font=fontB)
-            if w2>670:
-                glitcher=True
-            for char in reason:
-                if char not in whitelist:
-                    reasonBool=False
-        
-        if glitcher==True:
-            url=ctx.message.author.avatar_url
-            text="999,999"
-            reasonBool=True
-            reason="Trying to break the system"
-            w2,h2=draw.textsize(reason, font=fontB)
-        
-        if self.bot.user.id==ctx.message.author.id:
-            url=backup
-            text="999,999"
-            reasonBool=True
-            reason="Trying to frame me!"
-            w2,h2=draw.textsize(reason, font=fontB)
-        line="$"+text+" REWARD"
-        data = requests.get(url)
 
-        with open(os.path.join("cache", "{}.webp".format(member.id)), "wb+") as f:
-            f.write(data.content)
-            f.close()
-
-        profileImage = Image.open(os.path.join("cache", "{}.webp".format(member.id)))
-        profileImage = profileImage.resize((500,500))
-
-        finalImage.paste(frameImage, (0,0), frameImage)
-        if reasonBool==True:
-            finalImage.paste(profileImage, (123,277))
-        else:
-            finalImage.paste(profileImage, (123,298))
-        draw  = ImageDraw.Draw(finalImage)
-        w,h=draw.textsize(line, font=fontA)
-        if reasonBool==True:
-            w2,h2=draw.textsize(reason, font=fontB)
-            draw.multiline_text((((681-w)/2)+42, 785), line, (0, 0, 0), font=fontA, align="left")
-            draw.multiline_text((((681-w2)/2)+42, 865), reason, (0, 0, 0), font=fontB, align="left")
-        else:
-            draw.multiline_text((((681-w)/2)+42, 806), line, (0, 0, 0), font=fontA, align="left")
-
-        finalImage.save("wantedTemp.png", "PNG")
-
-        await self.bot.send_file(ctx.message.channel, "wantedTemp.png")
 
     @commands.command(pass_context = True, hidden = True)
     async def quote(self, ctx):
@@ -427,33 +208,7 @@ class RandomStuff(Base):
         chosenQuote = random.choice(data)        
         await self.bot.say(chosenQuote)
 
-    @commands.command(pass_context = True)
-    async def fidgetSpinner(self, ctx, *, line : str = None):
-        util.nullifyExecute()
-        """hahaha dead meme"""
-        # font found here: http://www.fontspace.com/jake-luedecke-motion-and-graphic-design/ldfcomicsans
-        # code based off this: https://stackoverflow.com/questions/25255206/alternatives-to-pil-pillow-for-overlaying-an-image-with-text#25255348
-        await self.bot.send_typing(ctx.message.channel)
-        POSSIBLE_LINES = [    "vsssssssssshhhhhhh",
-                    "spinning to winning",
-                    "end my life",
-                    "God is dead and we killed him",
-                    "go away mom i'm FIDGET SPINNING",
-                    "download FidgetSpinner3DS by B_E_P_I_S_M_A_N",
-                    "cancer",
-                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                ]
-        if line == None:
-            line = POSSIBLE_LINES[random.randint(0, len(POSSIBLE_LINES) - 1)]
 
-        image = Image.open(os.path.join("assets", "fidgetspinner.jpg"))
-        draw  = ImageDraw.Draw(image)
-        font  = ImageFont.truetype(os.path.join("assets","comicsans.ttf"), 50)
-
-        draw.text((10, 10), line, (0, 255, 0), font=font)
-        image.save("fidgetspinner.png")
-
-        await self.bot.upload("fidgetspinner.png")
 
     @commands.command(pass_context = True)
     async def rate(self, ctx):
@@ -625,75 +380,6 @@ class RandomStuff(Base):
                 postedMessage = await self.bot.say(question)
                 for reaction in toReact:
                     await self.bot.add_reaction(postedMessage, reaction)
-            
-        
-
-##    @commands.command(pass_context=True)
-##    async def test(self,ctx):
-##        s=ctx.message.server
-##        r=s.roles
-##        for i in range(len(r)):
-##            permissionText=""""""
-##            print(r[i].name)
-##            if r[i].permissions.administrator==True:
-##                permissionText="""Administrator"""
-##            else:
-##                if r[i].permissions.create_instant_invite:
-##                    permissionText+="""Create Instant Invites, """
-##                if r[i].permissions.kick_members:
-##                    permissionText+="""Kick Members, """
-##                if r[i].permissions.ban_members:
-##                    permissionText+="""Ban Members, """
-##                if r[i].permissions.manage_channels:
-##                    permissionText+="""Manage Channels, """
-##                if r[i].permissions.manage_server:
-##                    permissionText+="""Manage Server, """
-##                if r[i].permissions.add_reactions:
-##                    permissionText+="""Add Reactions, """
-##                if r[i].permissions.view_audit_logs:
-##                    permissionText+="""View Audit Logs, """
-##                if r[i].permissions.manage_messages:
-##                    permissionText+="""Manage Messages, """
-##                if r[i].permissions.mention_everyone:
-##                    permissionText+="""Mention Everyone, """
-##                if r[i].permissions.mute_members:
-##                    permissionText+="""Mute Members, """
-##                if r[i].permissions.deafen_members:
-##                    permissionText+="""Deafen Members, """
-##                if r[i].permissions.move_members:
-##                    permissionText+="""Move Members, """
-##                if r[i].permissions.change_nickname:
-##                    permissionText+="""Change Nickname, """
-##                if r[i].permissions.manage_nicknames:
-##                    permissionText+="""Manage Nicknames, """
-##                if r[i].permissions.manage_roles:
-##                    permissionText+="""Manage Roles, """
-##                if r[i].permissions.manage_webhooks:
-##                    permissionText+="""Manage Webhooks, """
-##                if r[i].permissions.manage_emojis:
-##                    permissionText+="""Manage Emojis, """
-##                if len(permissionText)>0:
-##                    permissionText=permissionText[:-2]
-##                else:
-##                    permissionText+="""None"""
-##            print(permissionText)
-
-##    @commands.command(pass_context=True)
-##    async def test(self,ctx, *, t : str = None):
-##        util.nullifyExecute()
-##        """Update the bot to the latest version.  This requires special perms."""
-##        perms = await util.check_perms(self, ctx)
-##        if not perms:
-##            return
-##        if ctx.message.author.id=="172898048702283776" and ctx.message.server.id=="349283770689519617":
-##            serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
-##            key="a"#hashlib.sha256(str(serverNoteList).encode("utf-8")).hexdigest()
-##            if t!=key:
-##                await self.bot.say(":pedro:")
-##                return
-##        await self.bot.say(":doot:")
-    
-        
         
 def setup(bot):
     bot.add_cog(RandomStuff(bot))

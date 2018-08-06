@@ -12,6 +12,7 @@ from discord.ext import commands
 # list of cogs for the bot client to load
 COGS = [
     "cogs.music",
+    "cogs.images"
 ]
 
 def main():

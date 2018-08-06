@@ -40,6 +40,7 @@ def save_js(path, data):
 	
 	return
 
+# deprecated, the rewrite branch already passes member objects automatically
 def execute(obj, ctx):
         if os.path.isfile(os.path.join("cache","{}.bepis".format(ctx.message.id))):
                 os.remove(os.path.join("cache","{}.bepis".format(ctx.message.id)))
@@ -48,7 +49,7 @@ def execute(obj, ctx):
         return ctx
 
 
-
+# should also be deprecated for reasons stated above
 def nullifyExecute():
 	files=os.listdir('cache')
 	for file in files:
