@@ -18,10 +18,23 @@ class Images(Base):
     "Commands that upload/mess around with images. Consists of reacts, messing \
     around with avatars, and other fun stuff like that."
 
-    def artProcess(self, url : str, filename : str, mID : str):
+    # Helper function for downloading a Discord member's avatar.
+    # Used for some image commands.
+    def getMemberAvatar(self, member : discord.Member):
+        url = member.avatar_url
         if url == "":
             url = member.default_avatar_url
 
+        data = requests.get(url)
+        path = opj(self.TEMP_PATH, "%s.webp" % (member.id))
+
+        with open(path, "wb+") as f:
+            f.write(data.content)
+            f.close()
+
+        return path
+
+    def artProcess(self, member : discord.Member, filename : str):
         finalImage = Image.new("RGBA", (811, 444), "white")
         frameImage = Image.open(opj("assets", "Art.png"))
 
@@ -31,100 +44,71 @@ class Images(Base):
             f.write(data.content)
             f.close()
 
-        profileImage = Image.open(opj(self.TEMP_PATH, "%s.webp" % (mID)))
+        avPath = getMemberAvatar(member)
+        profileImage = Image.open(avPath)
         profileImage = profileImage.resize((300,300))
 
         finalImage.paste(profileImage, (290,155))
         finalImage.paste(frameImage, (0,0), frameImage)
         finalImage.save(filename, "PNG")
 
-        os.remove(opj(self.TEMP_PATH, "%s.webp" % (mID)))
+        os.remove(avPath)
 
     def wantedProcess(self, member : discord.Member, ctx : commands.Context, 
-                            text : str, filename : str, backup : str):
-        glitcher=False
-        reasonBool=False
-        whitelist=['a','b','c','d','e','f','g','h','i','j','k',
-                    'l','m','n','o','p','q','r','s','t','u','v',
-                    'w','x','y','z','&','2','9','.',' ']
+                            amount : int, reason : str, filename : str, 
+                            backup : str):
         finalImage = Image.new("RGBA", (764, 997), "white")
         frameImage = Image.open(os.path.join("assets", "wanted.png")).convert("RGBA")
         draw = ImageDraw.Draw(finalImage)
-        if text == None:
-            text="5,000"
-        splitter = text.split(" ",maxsplit=1)
-        text = splitter[0]
-        try:
-            reason=splitter[1]
-            reasonBool=True
-        except:
-            reasonBool=False
-        text = text.replace(",", "")
-        try:
-            x = int(text)
-            if x < 1000000 and x > -100000:
-                text="{:,}".format(int(text))
-            else:
-                glitcher = True
-        except:
-            glitcher = True
         
         fontA  = ImageFont.truetype(opj("assets","RodeoClown.ttf"), 83)
         fontB  = ImageFont.truetype(opj("assets","Nashville.ttf"), 44)
+
         url = member.avatar_url
         if url == "":
             url = member.default_avatar_url
-        
-        if reasonBool == True:
+
+        # make sure the user isn't entering in an ungodly amount
+        if not (-100000 < amount < 1000000):
+            url = ctx.author.avatar_url
+            amount = 999999
+            reason = "trying to break the system"
+
+        # make sure the reason provided isn't too long
+        elif reason != None:
             reason = reason.lower()
             w2,h2 = draw.textsize(reason, font=fontB)
+            print(w2)
             if w2 > 670:
-                glitcher = True
-            for char in reason:
-                if char not in whitelist:
-                    reasonBool = False
-        
-        if glitcher == True:
-            url = ctx.message.author.avatar_url
-            text = "999,999"
-            reasonBool = True
-            reason = "Trying to break the system"
-            w2,h2 = draw.textsize(reason, font=fontB)
-        
-        if self.bot.user.id == ctx.message.author.id:
+                url = ctx.author.avatar_url
+                amount = 999999
+                reason = "Giving a long reason"
+
+        # in case the user is trying to frame the bot
+        elif self.bot.user.id == member.id:
             url = backup
-            text = "999,999"
-            reasonBool = True
+            amount = 999999
             reason = "Trying to frame me!"
-            w2, h2 = draw.textsize(reason, font=fontB)
-        line = "$"+text+" REWARD"
-        data = requests.get(url)
-
-        with open(opj(self.TEMP_PATH, "{}.webp".format(member.id)), "wb+") as f:
-            f.write(data.content)
-            f.close()
-
-        profileImage = Image.open(opj(self.TEMP_PATH, "{}.webp".format(member.id)))
+            
+        line = "$%i REWARD" % (amount)
+        avPath = self.getMemberAvatar(member)
+        profileImage = Image.open(avPath)
         profileImage = profileImage.resize((500,500))
 
         finalImage.paste(frameImage, (0,0), frameImage)
-        if reasonBool == True:
-            finalImage.paste(profileImage, (123,277))
-        else:
-            finalImage.paste(profileImage, (123,298))
+        finalImage.paste(profileImage, (123,277))
         draw = ImageDraw.Draw(finalImage)
+        
         w,h = draw.textsize(line, font=fontA)
-        if reasonBool == True:
+        draw.multiline_text((((681-w)/2)+42, 785), line, (0, 0, 0), \
+                font = fontA, align = "left")
+        if reason != None:
             w2,h2=draw.textsize(reason, font = fontB)
-            draw.multiline_text((((681-w)/2)+42, 785), line, (0, 0, 0), \
-                    font = fontA, align = "left")
             draw.multiline_text((((681-w2)/2)+42, 865), reason, (0, 0, 0), \
                     font = fontB, align = "left")
-        else:
-            draw.multiline_text((((681-w)/2)+42, 806), line, (0, 0, 0), \
-                    font = fontA, align = "left")
 
         finalImage.save(filename, "PNG")
+        os.remove(avPath)
 
     def fsProcess(self, line : str, filename : str):
         # font found here: 
@@ -161,7 +145,7 @@ class Images(Base):
                         ctx.guild.id))
         
         process = mp.Process(target=self.artProcess, \
-                        args=(url, filename, member.id))
+                        args=(member, filename))
         process.start()
 
         while process.is_alive():
@@ -173,7 +157,8 @@ class Images(Base):
         os.remove(filename)
 
     @commands.command()
-    async def wanted(self, ctx, member : discord.Member, *, text : str = None):
+    async def wanted(self, ctx, member : discord.Member, amount : int = 5000, 
+                        *, reason : str = None):
         "Make any server member the most wanted Discord user in the West."
         await ctx.trigger_typing()
         backup=ctx.message.author.avatar_url
@@ -181,7 +166,7 @@ class Images(Base):
                         (member.id, time.time(), ctx.guild.id))
 
         process = mp.Process(target=self.wantedProcess, 
-                                args=(member, ctx, text, filename, backup))
+                                args=(member, ctx, amount, reason, filename, backup))
         process.start()
 
         while process.is_alive():
