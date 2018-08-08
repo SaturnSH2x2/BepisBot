@@ -7,7 +7,7 @@ import os
 from discord.ext import commands
 from cogs.base import Base
 
-HAPPY_SQUIRREL = "http://askthecards.info/tarot/happy_squirrels/simpsons_happy_squirrel.jpg"
+from os.path import join as opj
 
 MAJOR_ARCANA =  [
                 "Fool",
@@ -36,86 +36,51 @@ MAJOR_ARCANA =  [
 
 class Tarot(Base):
     def __init__(self, bot):
-        self.server_decks = util.load_js("server-deck-tarot.json")
+        self.cfgPath = opj(self.JSON_PATH, "tarot.json")
+        self.guild_decks = util.load_js(self.cfgPath)
+        self.deck = util.load_js( opj("assets", "tarot", "rider-waite.json") )
+        self.explanations = util.load_js( opj("assets", 
+                            "tarot", "descriptions.json") )
         super().__init__(bot)
 
-    """
-    @commands.command(pass_context = True)
-    async def setDeck(self, ctx, deckName):
-        Set the Tarot Deck to use in readings.
+        print(self.guild_decks)
 
-        # simple formatting
-        origDeckName = deckName
-        deckName = deckName.lower()
-        deckName = deckName.replace(" ", "-")
+    @commands.command()
+    async def setExplanations(self, ctx, setEx : bool):
+        self.guild_decks[str(ctx.guild.id)] = setEx
+        util.save_js(self.cfgPath, self.guild_decks)
 
-        if os.path.exists(os.path.join("assets", "tarot", "{}.json".format(deckName))):
-            if ctx.message.server.id not in self.server_decks:
-                self.server_decks[ctx.message.server.id] = {}
-
-            self.server_decks[ctx.message.server.id]["deck"] = "{}.json".format(deckName)
-            util.save_js("server-deck-tarot.json", self.server_decks)
-            await self.bot.say(":thumbsup: Set readings in this server to use the {} deck.".format(origDeckName))
+        if setEx:
+            enStr = "enabled"
         else:
-            await self.bot.say(":thumbsdown: That deck doesn't seem to exist. You'll be able to create and upload your own deck soon, though! Type '{}makeDeck' for more info.".format(self.bot.command_prefix))
+            enStr = "disabled"
 
-    @commands.command(pass_context = True)
-    async def makeDeck(self, ctx):
-        Sends you a sample template to make a Tarot Deck with.
-        await self.bot.whisper("You can create your own deck using JSON files.  In the future, the bot will be able to accept said JSON files and use them as decks, which you can then use in different servers!  Here's the JSON for the default Rider-Waite deck, in case you want to get a head start on your own deck: ")
-        await self.bot.send_file( ctx.message.author, os.path.join("assets", "tarot", "rider-waite.json") )
-    """
+        await ctx.send("Explanations for readings have been **%s**." % (enStr))
 
-    @commands.command(pass_context = True)
-    async def disableExplanations(self, ctx):
-        util.nullifyExecute()
-        """Disable explanations when doing Tarot Readings."""
-        if ctx.message.server.id not in self.server_decks:
-            self.server_decks[ctx.message.server.id] = {}
-
-        self.server_decks[ctx.message.server.id]["explanations-enabled"] = False
-        util.save_js("server-deck-tarot.json", self.server_decks)
-
-        await self.bot.say(":thumbsup: OK, explanations will be disabled when doing tarot readings.")
-
-    @commands.command(pass_context = True)
-    async def enableExplanations(self, ctx):
-        util.nullifyExecute()
-        """Enable explanations when doing Tarot Readings."""
-        if ctx.message.server.id not in self.server_decks:
-            self.server_decks[ctx.message.server.id] = {}
-
-        self.server_decks[ctx.message.server.id]["explanations-enabled"] = True
-        util.save_js("server-deck-tarot.json", self.server_decks)
-
-        await self.bot.say(":thumbsup: OK, explanations will be enabled when doing tarot readings.")
-
-    @commands.command(pass_context = True)
+    @commands.command()
     async def drawCard(self, ctx):
-        """Draws a Tarot Card."""
-        ctx=util.execute(self,ctx)
-        try:
-            deck = util.load_js( os.path.join("assets", "tarot", self.server_decks[ctx.message.server.id]["deck"]) )
-        except KeyError:
-            deck = util.load_js( os.path.join("assets", "tarot", "rider-waite.json") )
-        explanations = util.load_js( os.path.join("assets", "tarot", "descriptions.json") )
-
+        """Draws a Tarot Card. Major Arcana only, at the moment."""
         if random.randint(0, 1):
             card = random.choice(MAJOR_ARCANA)
         else:
-            card = random.choice(MAJOR_ARCANA)   # TODO: set this to be of the minor arcana
+            card = random.choice(MAJOR_ARCANA)
         cardName = card.replace("-", " ")
 
         e = discord.Embed()
         e.title = "You drew the {} card.".format(cardName)
-        e.set_image( url = deck[card] )
+        e.set_image( url = self.deck[card] )
 
-        if ( (ctx.message.server.id in self.server_decks) and (self.server_decks[ctx.message.server.id]["explanations-enabled"]) ) or \
-                (ctx.message.server.id not in self.server_decks):
-            e.description = explanations[card]
-            e.set_footer( text = explanations["source"] )
+        print(ctx.guild.id, self.guild_decks)
+        try:
+            if self.guild_decks[str(ctx.guild.id)]:
+                e.description = self.explanations[card]
+                e.set_footer( text = self.explanations["source"] )
+        except KeyError:
+            self.guild_decks[str(ctx.guild.id)] = True
+            e.description = self.explanations[card]
+            e.set_footer( text = self.explanations["source"] )
 
-        await self.bot.say(embed = e)
+        await ctx.send(embed = e)
 
 def setup(bot):
     bot.add_cog(Tarot(bot))
