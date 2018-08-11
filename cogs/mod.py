@@ -281,6 +281,30 @@ class Moderator(base.Base):
             await self.bot.say("To wipe the notes, you must enter the correct key.")
             return
 
+    @commands.command(pass_context = True)
+    async def poll(self, ctx, *, msg : str = None):
+        util.nullifyExecute()
+        options = msg.split(" | ")
+        try:
+            await self.bot.delete_message(ctx.message)
+        except:
+            pass
+        if len(options)<1:
+            await self.bot.say("Not enough parameters")
+        else:
+            emoji = ['1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '9⃣']
+            toReact = []
+            question=options.pop(0)
+            if len(options)>len(emoji):
+                await self.bot.say("Too many options")
+            else:
+                for i in range(len(options)):
+                    toReact.append(emoji[i])
+                    question+="\n"+options[i]+"\t"+emoji[i]
+                postedMessage = await self.bot.say(question)
+                for reaction in toReact:
+                    await self.bot.add_reaction(postedMessage, reaction)
+
 ##    @commands.command(pass_context=True)
 ##    async def clearCache(self, ctx):
 ##        util.nullifyExecute()
