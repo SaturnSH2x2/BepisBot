@@ -15,9 +15,6 @@ from cogs.base import Base
 from os.path import join as opj
 
 class Images(Base):
-    "Commands that upload/mess around with images. Consists of reacts, messing \
-    around with avatars, and other fun stuff like that."
-
     # Helper function for downloading a Discord member's avatar.
     # Used for some image commands.
     def getMemberAvatar(self, member : discord.Member):
