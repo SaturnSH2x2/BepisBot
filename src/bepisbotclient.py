@@ -30,4 +30,3 @@ class BepisBotClient(commands.Bot):
             for line in eList:
                 eText += line
             await ctx.send("```%s```" % eText)
-            # raise exception
