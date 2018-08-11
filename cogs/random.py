@@ -8,10 +8,6 @@ import multiprocessing as mp
 import util
 
 from os.path import join as opj
-
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
 from discord.ext import commands
 
 from cogs.base import Base
@@ -64,6 +60,20 @@ class RandomStuff(Base):
         msgFormatted = message.format(mem1, mem2)
         print(msgFormatted)
         await self.bot.say(msgFormatted)
+
+    @commands.command()
+    async def pat(self, ctx, member : discord.Member):
+        "Pat someone on the head~"
+        await ctx.trigger_typing()
+
+        adjectives = ["gently", "lightly", "meekly"]
+        adjToUse = random.choice(adjectives)
+
+        if member == self.bot.user:
+            await ctx.send("*pats myself on head*")
+        else:
+            await ctx.send("*%s pats %s on the head*" % \
+                    (adjToUse, member.mention))
 
     @commands.command()
     async def downloadMoreRAM(self, ctx, memorySize : int = 16):

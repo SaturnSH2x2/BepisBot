@@ -23,13 +23,22 @@ async def check_perms(obj, ctx):
 	await obj.bot.say("You do not have permission to perform this action.")
 	return False
 
-def load_js(path):
+def getMemberName(member : discord.Member):
+	if member.nick != None:
+		return member.nick
+	else:
+		return member.name
+
+def load_js(path, returnListIfEmpty = False):
 	try:
 		with open(path, "r") as js:
 			data = json.load(js)
 			js.close()
 	except FileNotFoundError:
-		data = {}
+		if returnListIfEmpty:
+			data = []
+		else:
+			data = {}
 
 	return data
 

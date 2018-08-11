@@ -80,7 +80,6 @@ class Images(Base):
         elif reason != None:
             reason = reason.lower()
             w2,h2 = draw.textsize(reason, font=fontB)
-            print(w2)
             if w2 > 670:
                 url = ctx.author.avatar_url
                 amount = 999999
@@ -217,15 +216,8 @@ class Images(Base):
         pics = util.load_js(opj("assets", "slap.json"))
         
         # handle nicknames
-        if ctx.author.nick != None:
-            slapper = ctx.author.nick
-        else:
-            slapper = ctx.author.name
-
-        if member.nick != None:
-            target = member.nick
-        else:
-            target = member.name
+        slapper = util.getMemberName(ctx.author)
+        target = util.getMemberName(member)
 
         if ctx.message.author == member:
             d = "%s slapped themselves." % (target)
@@ -241,40 +233,29 @@ class Images(Base):
         await ctx.send(embed = e)
 
     @commands.command()
-    async def punch(self, ctx, *, user : str=""):
+    async def punch(self, ctx, member : discord.Member):
         await ctx.trigger_typing()
         images = util.load_js(os.path.join("assets", "punch.json"))
         imgDict = random.choice(images)
-        memberID = user.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
-        member = ctx.message.guild.get_member(memberID)
-        if member:
-            user=member.name
-            if self.bot.user.id==ctx.message.author.id:
-                if member is ctx.message.author:
-                    title = "I punched my self..."
-                    description = "Why did I do that?"
-                else:
-                    title = imgDict["title"]
-                    description = "{} was punched by me!".format(user)
-            elif member is ctx.message.author:
-                title = "Ya done punched urself"
-                description = "{} punched themselves!".format(ctx.message.author.name)
-            elif self.bot.user.id == memberID:
-                title = "aw  :("
-                description = "{} punched me.".format(ctx.message.author.name)
-            else:
-                title = imgDict["title"]
-                description = imgDict["description"].format(user, ctx.message.author.name)
+
+        name = util.getMemberName(member)
+        puncher = util.getMemberName(ctx.author)
+
+        if member is ctx.message.author:
+            title = "Ya done punched urself"
+            description = "%s punched themselves!" % (ctx.message.author.name)
+        elif self.bot.user == member:
+            title = "aw  :("
+            description = "%s punched me." % (ctx.message.author.name)
         else:
             title = imgDict["title"]
-            description = imgDict["description"].format(user, ctx.message.author.name)
+            description = imgDict["description"].format(name, puncher)
+
         embed = discord.Embed()
         embed.title = title
         embed.description = description
         embed.set_image(url = imgDict["image-url"])
         await ctx.send(embed=embed)
-
-
 
     @commands.command(pass_context=True)
     async def hug(self, ctx, *, target : str = ""):
@@ -356,92 +337,61 @@ class Images(Base):
             except:
                 await self.bot.say("nope")
 
+    @commands.command()
+    async def beanRegister(self, ctx, register : bool):
+        "Add or remove yourself to the beanlist. Affects the bean command."
+        filename = opj(self.JSON_PATH, "bean.json")
+        strID = str(ctx.author.id)
 
+        beanList = util.load_js(filename, returnListIfEmpty = True)
+
+        name = util.getMemberName(ctx.author)
+
+        if register == True:
+            if strID in beanList:
+                await ctx.send("**%s**, you're already on the beanlist." % name)
+                return
+
+            beanList.append(strID)
+            await ctx.send("**%s**, you have been added to the beanlist." % name)   
+        else:
+            if strID not in beanList:
+                await ctx.send("**%s**, you aren't on the beanlist." % name)
+                return
+
+            beanList.remove(str(ctx.author.id))
+            await ctx.send("**%s**, you've been removed from the beanlist." % \
+                            name)
+
+        util.save_js(filename, beanList)
     
     @commands.command(pass_context = True)
-    async def beanUnregister(self, ctx):
-        util.nullifyExecute()
-        if os.path.isfile(os.path.join("assets","bean.json")):
-            beanlist = util.load_js(os.path.join("assets", "bean.json"))
-        else:
-            await self.bot.say("**{}**, you aren't on the beanlist.".format(ctx.message.author.mention))
-            return
-        for user in beanlist:
-            if str(ctx.message.author.id) == str(user["id"]):
-                beanlist.remove(user)
-                util.save_js("assets/bean.json", beanlist)
-                await self.bot.say("**{}**, you have been removed from beanlist.".format(ctx.message.author.mention))
-                return
-        await self.bot.say("{}, you aren't on the beanlist.".format(ctx.message.author.name))
-
-    @commands.command(pass_context = True)
-    async def beanRegister(self, ctx):
-        util.nullifyExecute()
-        if os.path.isfile(os.path.join("assets","bean.json")):
-            beanlist = util.load_js(os.path.join("assets", "bean.json"))
-        else:
-            beanlist=[]
-        for user in beanlist:
-            if str(ctx.message.author.id) == str(user["id"]):
-                await self.bot.say("{} is already in the beanlist.".format(ctx.message.author.name))
-                return
-        beanlist.append( {"id" : ctx.message.author.id} )
-        util.save_js("assets/bean.json", beanlist)
-        await self.bot.say("**{}**, you have been added to the beanlist.".format(ctx.message.author.mention))
-        
-    @commands.command(pass_context = True)
-    async def bean(self, ctx, *, user : str = ""):
-        await self.bot.send_typing(ctx.message.channel)
-        ctx=util.execute(self,ctx)
-        whitelist=[]
-        beans=False
+    async def bean(self, ctx, member : discord.Member):
+        "bean yourself or others, you friccin' moron"
+        await ctx.trigger_typing()
         imageUrl="https://i.imgur.com/sncYgfx.png"
-        memberID = user.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
-        member = ctx.message.server.get_member(memberID)
-        if os.path.isfile(os.path.join("assets","bean.json")):
-            beanlist = util.load_js(os.path.join("assets", "bean.json"))
-            beans=True
-        else:
-            beans=False
-        if member:
-            if beans:
-                for userList in beanlist:
-                    if str(memberID) == str(userList["id"]):
-                        imageUrl="https://i.imgur.com/oBadUcY.gif"
-            user=member.name
-            if self.bot.user.id==ctx.message.author.id:
-                title = "I beaned myself"
-                description = "Why did I do that?"
-            elif member is ctx.message.author:
-                title = "Ya done beaned urself"
-                description = "{} beaned themselves!".format(ctx.message.author.name)
-            elif self.bot.user.id == memberID:
-                title = "aw  :("
-                description = "{} beaned me.".format(ctx.message.author.name)
-            else:
-                title = "Uh oh!"
-                description = "{} got beaned by {}!".format(user, ctx.message.author.name)
+
+        beanList = util.load_js(opj(self.JSON_PATH, "bean.json"), \
+                                    returnListIfEmpty = True)
+        if str(member.id) in beanList:
+            imageUrl="https://i.imgur.com/oBadUcY.gif"
+
+        user=member.name
+        if member is ctx.author:
+            title = "Ya done beaned urself"
+            description = "{} beaned themselves!".format(ctx.message.author.name)
+        elif self.bot.user == member:
+            title = "aw  :("
+            description = "{} beaned me.".format(ctx.message.author.name)
         else:
             title = "Uh oh!"
             description = "{} got beaned by {}!".format(user, ctx.message.author.name)
+
         embed = discord.Embed()
         embed.title = title
         embed.description = description
         embed.set_image(url = imageUrl)
-        await self.bot.say(embed=embed)
-        
-    
-    
-    @commands.command(pass_context = True)
-    async def pat(self, ctx, member : discord.Member):
-        util.nullifyExecute()
-        await self.bot.send_typing(ctx.message.channel)
-        adjectives = ["gently", "lightly", "meekly"]
-        adjToUse = random.choice(adjectives)
-        if member == self.bot.user:
-            await self.bot.say("*pats myself on head*")
-        else:
-            await self.bot.say("*{} pats <@!{}> on the head*".format(adjToUse, member.id))
+        await ctx.send(embed = embed)
 
 def setup(bot):
     bot.add_cog(Images(bot))
