@@ -40,13 +40,13 @@ class Images(Base):
         finalImage = Image.new("RGBA", (811, 444), "white")
         frameImage = Image.open(opj("assets", "Art.png"))
 
-        data = requests.get(url)
+        data = requests.get(member.avatar_url)
 
-        with open(opj(self.TEMP_PATH, "%s.webp" % (mID)), "wb+") as f:
+        with open(opj(self.TEMP_PATH, "%s.webp" % (member.id)), "wb+") as f:
             f.write(data.content)
             f.close()
 
-        avPath = getMemberAvatar(member)
+        avPath = self.getMemberAvatar(member)
         profileImage = Image.open(avPath)
         profileImage = profileImage.resize((300,300))
 
@@ -217,7 +217,8 @@ class Images(Base):
         
         # handle nicknames
         slapper = util.getMemberName(ctx.author)
-        target = util.getMemberName(member)
+        if member != None:
+            target = util.getMemberName(member)
 
         if ctx.message.author == member:
             d = "%s slapped themselves." % (target)
@@ -233,12 +234,13 @@ class Images(Base):
         await ctx.send(embed = e)
 
     @commands.command()
-    async def punch(self, ctx, member : discord.Member):
+    async def punch(self, ctx, member : discord.Member = None):
         await ctx.trigger_typing()
         images = util.load_js(os.path.join("assets", "punch.json"))
         imgDict = random.choice(images)
 
-        name = util.getMemberName(member)
+        if member != None:
+            name = util.getMemberName(member)
         puncher = util.getMemberName(ctx.author)
 
         if member is ctx.message.author:
@@ -247,6 +249,9 @@ class Images(Base):
         elif self.bot.user == member:
             title = "aw  :("
             description = "%s punched me." % (ctx.message.author.name)
+        elif member == None:
+            title = "oof"
+            description = "Somewhere, something was punched."
         else:
             title = imgDict["title"]
             description = imgDict["description"].format(name, puncher)
@@ -257,85 +262,51 @@ class Images(Base):
         embed.set_image(url = imgDict["image-url"])
         await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True)
-    async def hug(self, ctx, *, target : str = ""):
-        await self.bot.send_typing(ctx.message.channel)
-        """Hug ya friends"""
-        ctx=util.execute(self,ctx)
+    @commands.command()
+    async def hug(self, ctx, member : discord.Member = None):
+        "Hug ya friends"
+
+        await ctx.trigger_typing()
         titles = ["hugs", "aww", "yay", "huggie hug"]
         pics = util.load_js(os.path.join("assets", "hug.json"))
-        memberID = target.replace("<", "").replace(">", "").replace("@", "").replace("!", "")
-        member = ctx.message.server.get_member(memberID)
         if member != None:
-            target = member.name
+            target = util.getMemberName(member)
 
-        if self.bot.user.id==ctx.message.author.id:
-            d = "I hugged myself!"
-        elif ctx.message.author.id == memberID:
+        if ctx.message.author == member:
             d = "{} hugged themselves.".format(target)
-        elif self.bot.user.id == memberID:
+        elif self.bot.user == member:
             d = "{} hugged me!".format(ctx.message.author.name)
-        elif member == None and target == "":
+        elif member == None:
             d = "hugs"
         else:
             d = "{} got hugged by {}.".format(target, ctx.message.author.name)
-        i=random.randint(0,len(pics)-1)
-        urlText = pics[i]
+
+        urlText = random.choice(pics)
         titleText = random.choice(titles)
-        if urlText=="https://i.imgur.com/oQ8J3Za.gif":
+        if urlText == "https://i.imgur.com/oQ8J3Za.gif":
             titleText="oops"
-            if self.bot.user.id==ctx.message.author.id:
-                d = "I got pizza!"
-            elif ctx.message.author.id == memberID:
-                d = "{} got pizza.".format(target)
+            if ctx.author == member:
+                d = "%s got pizza." % (target)
             elif self.bot.user.id == memberID:
-                d = "{} gave me pizza!".format(ctx.message.author.name)
+                d = "%s gave me pizza!" % (ctx.message.author.name)
             elif member == None and target == "":
                 d = "pizza"
             else:
-                d = "{} gave {} pizza.".format(ctx.message.author.name, target)
-        if urlText=="https://i.imgur.com/MnszwT3.gif":
+                d = "%s gave %s pizza." % (ctx.message.author.name, target)
+        if urlText == "https://i.imgur.com/MnszwT3.gif":
             titleText="no"
-            if self.bot.user.id==ctx.message.author.id:
-                d = "I didn't want to hug myself"
-            elif ctx.message.author.id == memberID:
-                d = "{} didn't want the hug.".format(target)
+            if ctx.message.author.id == memberID:
+                d = "%s didn't want the hug." % (target)
             elif self.bot.user.id == memberID:
-                d = "{} didn't want my hugs! ;-;".format(ctx.message.author.name)
+                d = "%s didn't want my hugs! ;-;" % (ctx.message.author.name)
             elif member == None and target == "":
                 d = "no"
             else:
-                d = "{} didn't want {}'s hug.".format(target, ctx.message.author.name)
+                d = "%s didn't want %s's hug." % (target, ctx.message.author.name)
+
         e = discord.Embed(title=titleText, description = d)
         e.set_image(url=urlText)
-        await self.bot.say(embed = e)
-
-    @commands.command(pass_context=True)
-    async def addHug(self, ctx, *, url : str = ""):
-        util.nullifyExecute()
-        perms = await util.check_perms(self, ctx)
-        if not perms:
-            return
-        pics = util.load_js(os.path.join("assets", "hug.json"))
-        if url == "":
-            await self.bot.say("Please provide a url.")
-        elif not url.startswith("http"):
-            await self.bot.say("Please provide a valid url.")
-        elif url.startswith("https://i.imgur.com/"):
-            pics.append(url)
-            util.save_js("assets/hug.json",pics)
-            await self.bot.say("Successfully added "+link+" to hugs.json")
-        else:
-            try:
-                payload={"image":url,"type":"URL"}
-                headers = {"Authorization": "Client-ID 2397de93cc488b8"}
-                r=requests.post("https://api.imgur.com/3/image",headers=headers,data=payload)
-                link=r.json()["data"]["link"]
-                pics.append(link)
-                util.save_js("assets/hug.json",pics)
-                await self.bot.say("Successfully added "+link+" to hugs.json")
-            except:
-                await self.bot.say("nope")
+        await ctx.send(embed = e)
 
     @commands.command()
     async def beanRegister(self, ctx, register : bool):
@@ -365,27 +336,35 @@ class Images(Base):
 
         util.save_js(filename, beanList)
     
-    @commands.command(pass_context = True)
-    async def bean(self, ctx, member : discord.Member):
+    @commands.command()
+    async def bean(self, ctx, member : discord.Member = None):
         "bean yourself or others, you friccin' moron"
         await ctx.trigger_typing()
         imageUrl="https://i.imgur.com/sncYgfx.png"
 
         beanList = util.load_js(opj(self.JSON_PATH, "bean.json"), \
                                     returnListIfEmpty = True)
-        if str(member.id) in beanList:
-            imageUrl="https://i.imgur.com/oBadUcY.gif"
+        if member != None:
+            name = util.getMemberName(member)
+            if str(member.id) in beanList:
+                imageUrl="https://i.imgur.com/oBadUcY.gif"
 
-        user=member.name
+        else:
+            if str(ctx.author.id) in beanList:
+                imageUrl="https://i.imgur.com/oBadUcY.gif"
+        
         if member is ctx.author:
             title = "Ya done beaned urself"
             description = "{} beaned themselves!".format(ctx.message.author.name)
         elif self.bot.user == member:
             title = "aw  :("
             description = "{} beaned me.".format(ctx.message.author.name)
+        elif member == None:
+            title = "you friccin' moron"
+            description = "you just got beaned!!!!1111!!11!1!1"
         else:
             title = "Uh oh!"
-            description = "{} got beaned by {}!".format(user, ctx.message.author.name)
+            description = "{} got beaned by {}!".format(name, ctx.message.author.name)
 
         embed = discord.Embed()
         embed.title = title
