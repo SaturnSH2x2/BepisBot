@@ -51,15 +51,17 @@ class RandomStuff(Base):
     # TODO: work on refactoring this, get around the character limit
     # This will also involved work on the JSON file.
     @commands.command()
-    async def ship(self, mem1 : str, mem2 : str):
-        util.nullifyExecute()
-        """Ship two people together to create a fanfiction.  Slightly disturbing material may arise out of this.  You have been warned."""
-        fanfics = util.load_js("cogs/fanfics.json")
+    async def ship(self, ctx, mem1 : str, mem2 : str):
+        "Ship two people together to create a fanfiction.  NSFW."
+        fanfics = util.load_js(opj("assets", "fanfics.json"))
 
-        message = fanfics[random.randint(0, len(fanfics) - 1)]
-        msgFormatted = message.format(mem1, mem2)
-        print(msgFormatted)
-        await self.bot.say(msgFormatted)
+        fanfic = random.choice(fanfics)
+        for fLine in fanfic:
+            await ctx.trigger_typing()
+            await asyncio.sleep(1.5)
+
+            msgFormatted = fLine.format(mem1, mem2)
+            await ctx.send(msgFormatted)    
 
     @commands.command()
     async def pat(self, ctx, member : discord.Member):
