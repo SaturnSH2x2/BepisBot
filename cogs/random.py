@@ -13,40 +13,37 @@ from discord.ext import commands
 from cogs.base import Base
 
 class RandomStuff(Base):
-    @commands.command(pass_context = True)
-    async def rate(self, ctx):
-        """Rate anything, on a scale frrom 0 to 10."""
+    @commands.command()
+    async def rate(self, ctx, something : str):
+        "Rate anything, on a scale frrom 0 to 10."
         rating = 0
 
-        thing = ctx.message.content[len(ctx.prefix) + len(ctx.command.name) + 1:]
-        for char in thing:
+        if self.bot.user in ctx.message.mentions:
+            await ctx.send(":thinking: I'd give myself a 10 out of 10.")
+            return
+
+        for char in something:
             a_value = ord(char) % 10
             rating += a_value
         rating %= 10
 
+        highRatingsPeople = [
+            "162357148540469250",
+            "164761117544022016"
+        ]
+
         # special cases
-        if "162357148540469250" in thing.lower():
-            rating = 420
-        elif "persona 3" in thing.lower():
-            rating = 10
-        elif "kingy" in thing.lower():
-            rating = "gey"
-        elif "197244770626568193" in thing.lower():
-            rating = "gey"
-        elif "164761117544022016" in thing.lower():
-            rating = 69
-        elif "gnmmarechal" in thing.lower():
-            rating = 69
-        elif "gnmpolicemata" in thing.lower():
-            rating = 69
+        for mention in ctx.message.mentions:
+            if str(mention.id) in highRatingsPeople:
+                rating = 10
 
         if rating == 8:
             word = "an"
         else:
             word = "a"
 
-        await self.bot.say(":thinking: I'd give %s %s %s out of 10." % \
-                            (thing, word, rating))
+        await ctx.send(":thinking: I'd give %s %s %s out of 10." % \
+                            (something, word, rating))
 
     # TODO: work on refactoring this, get around the character limit
     # This will also involved work on the JSON file.
