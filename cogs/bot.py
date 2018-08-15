@@ -20,6 +20,7 @@ class BotCmd(Base):
         super().__init__(bot)
 
     @commands.command(pass_context = True)
+    @commands.guild_only()
     async def setCommandEnable(self, ctx, passedCommand : str, enable : bool):
         "Disable a specific bot command. Requires the Manage Server permission."
         perms = ctx.author.permissions_in(ctx.channel)
@@ -28,7 +29,8 @@ class BotCmd(Base):
                             "this command.")
             return
             
-        path = opj(self.JSON_PATH, "disabled-commands.json")
+        path = opj(self.JSON_PATH, "%s-disabled-commands.json" %
+                                    ctx.guild.id)
         disabledCommands = util.load_js(path, returnListIfEmpty = True)
             
         cmd = self.bot.get_command(passedCommand)
@@ -38,54 +40,35 @@ class BotCmd(Base):
         elif cmd == None:
             await ctx.send("The %s%s command does not exist!" % \
                     (self.bot.command_prefix, passedCommand))
-
-        for entry in disabledCommands:
-            if entry["command"] == passedCommand:
-                await ctx.send("%s")
-
-        disabledCommands.append({ "command" : passedCommand,
-                                  "server-id" : ctx.author.id})
-        util.save_js(path)
-        
+            return
+    
         if enable == False:
+            if passedCommand in disabledCommands:
+                await ctx.send("%s is already disabled." % passedCommand)
+                return
+            disabledCommands.append(passedCommand)
             await ctx.send("%s has been disabled for use in this server." % \
                             passedCommand)
         else:
+            if passedCommand not in disabledCommands:
+                await ctx.send("%s is already enabled." % passedCommand)
+                return
+            disabledCommands.remove(passedCommand)
             await ctx.send("%s has been enabled for use in this server." % \
                             passedCommand)
-                
-        
-        
+
+        util.save_js(path, disabledCommands)
+              
     @commands.command(pass_context = True)
-    async def enableCommand(self, ctx, passedCommand : str):
-        util.nullifyExecute()
-        perms = await util.check_perms(self, ctx)
-        if not perms:
-            return
-            
-        disabledCommands = util.load_js("disabled-commands.json")
-        index = 0
-        for d in disabledCommands:
-            if d["command"] == passedCommand and d["server-id"] == ctx.message.server.id:
-                del d
-                del disabledCommands[index]
-                util.save_js("disabled-commands.json", disabledCommands)
-                await self.bot.say("{}{} has been re-enabled.".format(self.bot.command_prefix, passedCommand))
-                return
-                
-            index += 1
-        await self.bot.say("{}{} either isn't a valid command, or is not currently disabled.".format(self.bot.command_prefix, passedCommand))
-                
-    @commands.command(pass_context = True)
+    @commands.guild_only()
     async def printDisabledCommands(self, ctx):
-        util.nullifyExecute()
-        disabledCommands = util.load_js("disabled-commands.json")
+        "Print the commands that have been disabled for this server."
+        disabledCommands = util.load_js(opj(self.JSON_PATH,
+                                    "%s-disabled-commands.json" % ctx.guild.id))
         e = discord.Embed()
         eContent = ""
         for d in disabledCommands:
-            if d["server-id"] == ctx.message.server.id:
-                eContent += d["command"]
-                eContent += "\n"
+            eContent += "%s\n" % d
                 
         if eContent == "":
             e.title = "No commands have been disabled for this server."
@@ -93,7 +76,7 @@ class BotCmd(Base):
             e.title = "Here are the commands that have been disabled for this server."
         e.description = eContent
         
-        await self.bot.say(embed = e)
+        await ctx.send(embed = e)
     
     @commands.command(pass_context = True)
     async def deleteMessages(self, ctx, number : int = 10):
