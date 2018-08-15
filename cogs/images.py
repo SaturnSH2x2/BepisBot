@@ -380,5 +380,14 @@ class Images(Base):
         embed.set_image(url = imageUrl)
         await ctx.send(embed = embed)
 
+    @commands.command()
+    async def embedImage(self, ctx, u : str):
+        "Embeds a picture so we don't have to look at a big, ugly URL."
+        e = discord.Embed()
+        e.set_image(url = u)
+
+        await ctx.message.delete()
+        await ctx.send(embed = e)
+
 def setup(bot):
     bot.add_cog(Images(bot))
