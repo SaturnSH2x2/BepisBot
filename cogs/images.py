@@ -242,6 +242,7 @@ class Images(Base):
 
     @commands.command()
     async def punch(self, ctx, member : discord.Member = None):
+        "punch ya friends"
         await ctx.trigger_typing()
         images = util.load_js(os.path.join("assets", "punch.json"))
         imgDict = random.choice(images)

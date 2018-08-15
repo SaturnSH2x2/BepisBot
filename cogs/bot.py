@@ -8,6 +8,8 @@ import subprocess
 from discord.ext import commands
 from cogs.base import Base
 
+from os.path import join as opj
+
 class BotCmd(Base):
     def __init__(self, bot):
         conf = util.load_js("config.json")
@@ -31,10 +33,10 @@ class BotCmd(Base):
             
         cmd = self.bot.get_command(passedCommand)
         if cmd == self.setCommandEnable:
-            await self.bot.say("That command cannot be disabled.")
+            await ctx.send("That command cannot be disabled.")
             return
         elif cmd == None:
-            await self.bot.say("The %s%s command does not exist!" % \
+            await ctx.send("The %s%s command does not exist!" % \
                     (self.bot.command_prefix, passedCommand))
 
         for entry in disabledCommands:
@@ -50,7 +52,7 @@ class BotCmd(Base):
                             passedCommand)
         else:
             await ctx.send("%s has been enabled for use in this server." % \
-                            passedCommand)        
+                            passedCommand)
                 
         
         
@@ -325,104 +327,6 @@ class BotCmd(Base):
         await self.bot.say("Logging for this server has been enabled.")
 
     @commands.command(pass_context = True)
-    async def updateOkaybot(self, ctx):
-        util.nullifyExecute()
-        """Updates OkayBot.  I'm only able to do this because OkayBot is hosted on the same VPS."""
-        user = ctx.message.author.id
-        files = ctx.message.attachments
-
-        if (user != "162357148540469250") and (user != "218919888583000064"):
-            await self.bot.say("Due to the nature of this command, only B_E_P_I_S_M_A_N and Stovven can update OkayBot.")
-            return
-
-        mainRB = None
-        for f in files:
-            if f["filename"] == "main.rb":
-                mainRB = f["url"]
-                break
-
-        if not mainRB:
-            await self.bot.say("Please make sure your file is named \"main.rb\", then try uploading again.")
-            return
-
-        okbInServer = False
-        for member in ctx.message.server.members:
-            if member.id == "354059440355409921":
-                okbInServer = True
-
-        if okbInServer:
-            await self.bot.say("Okay, <@!354059440355409921>, get your ass over here")
-            await asyncio.sleep(3.0)
-
-        data = requests.get(mainRB)
-        with open(os.path.join(self.okbLocation, "main.rb"), "wb+") as mrb:
-            mrb.write(data.content)
-            mrb.close()
-        
-        os.system("killall ruby")
-        subprocess.Popen(["ruby", os.path.join(self.okbLocation, "main.rb"), self.okbToken])
-        await self.bot.say(":white_check_mark: OkayBot has been updated.")
-
-    @commands.command(pass_context = True)
-    async def startOkaybot(self, ctx):
-        util.nullifyExecute()
-        "Starts OkayBot. Useful for when it's down. Only B_E_P_I_S_M_A_N and Stovven can use this command."
-        user = ctx.message.author.id
-        if (user != "162357148540469250") and (user != "218919888583000064"):
-            await self.bot.say("Due to the nature of this command, only B_E_P_I_S_M_A_N and Stovven can update OkayBot.")
-            return
-
-        out = subprocess.check_output(["ps", "-a"], shell = True)
-        out = str(out)
-        if "ruby" in out:
-            await self.bot.say("OkayBot seems to already be running.")
-            return
-
-        subprocess.Popen(["ruby", os.path.join(self.okbLocation, "main.rb"), self.okbToken])
-        await self.bot.say(":white_check_mark: OkayBot is now running.")
-
-    @commands.command(pass_context = True)
-    async def fDisable(self, ctx):
-        util.nullifyExecute()
-        "Don't want SpongeBob's ugly mug staring you down every time you pay your respects? Use this. Requires special perms."
-        perms = await util.check_perms(self, ctx)
-        if not perms:
-            return
-
-        conf = util.load_js("config.json")
-        try:
-            conf["fDisabled"].append(ctx.message.server.id)
-        except KeyError:
-            conf["fDisabled"] = []
-            conf["fDisabled"].append(ctx.message.server.id)		
-
-        util.save_js("config.json", conf)
-
-        await self.bot.say("F Reactions have been disabled.")
-
-    @commands.command(pass_context = True)
-    async def fEnable(self, ctx):
-        util.nullifyExecute()
-        "Enables the bot to react accordingly whenever you pay your respects. Requires special perms."
-        perms = await util.check_perms(self, ctx)
-        if not perms:
-            return
-
-        conf = util.load_js("config.json")
-        try:
-            conf["fDisabled"].remove(ctx.message.server.id)
-        except KeyError:
-            await self.bot.say("F Reactions are already enabled.")
-            return
-        except ValueError:
-            await self.bot.say("F Reactions are already enabled.")
-            return
-
-        util.save_js("config.json", conf)
-
-        await self.bot.say("F Reactions have been enabled.")
-
-    @commands.command(pass_context = True)
     async def disableLogging(self, ctx):
         util.nullifyExecute()
         perms = await util.check_perms(self, ctx)
@@ -434,44 +338,6 @@ class BotCmd(Base):
         util.save_js("logs/server-list.json", logLog)
         
         await self.bot.say("Logging for this server has been disabled.")
-        
-    @commands.command(pass_context = True)
-    async def noOneCaresDisable(self, ctx):
-        util.nullifyExecute()
-        """Getting annoyed?  No one cares, but are you?"""
-        perms = util.check_perms(self, ctx)
-        if not perms:
-            return
-            
-        conf = util.load_js("config.json")
-        try:
-            conf["noOneCaresDisabled"].append(ctx.message.server.id)
-        except KeyError:
-            conf["noOneCaresDisabled"] = []
-            conf["noOneCaresDisabled"].append(ctx.message.server.id)
-            
-        util.save_js("config.json", conf)
-        await self.bot.say("The 'no one cares' reaction has been disabled for this server.")
-        
-    @commands.command(pass_context = True)
-    async def noOneCaresEnable(self, ctx):
-        util.nullifyExecute()
-        perms = util.check_perms(self, ctx)
-        if not perms:
-            return
-            
-        conf = util.load_js("config.json")
-        try:
-            conf["noOneCaresDisabled"].remove(ctx.message.server.id)
-        except KeyError:
-            await self.bot.say("The reaction is already enabled for this server.")
-            return
-        except ValueError:
-            await self.bot.say("The reaction is already enabled for this server.")
-            return
-            
-        util.save_js("config.json", conf)
-        await self.bot.say("The 'no one cares' reaction has been enabled for this server.")
         
     @commands.command(pass_context = True)
     async def listServers(self, ctx):

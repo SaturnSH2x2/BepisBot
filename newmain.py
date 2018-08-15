@@ -15,7 +15,7 @@ COGS = [
     "cogs.random",
     "cogs.images",
     "cogs.tarot",
-    # "cogs.bot",
+    "cogs.bot",
     "cogs.react"
 ]
 

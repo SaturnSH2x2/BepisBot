@@ -73,7 +73,6 @@ class Music(Base):
     @commands.guild_only()
     async def join(self, ctx):
         "Joins a voice channel. You must be in VC for this to work."
-        util.nullifyExecute()
         if not await self._check_opus(ctx):
             return
             

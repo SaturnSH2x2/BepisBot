@@ -18,6 +18,8 @@ class MessageReactions(Base):
         self.bot.add_listener(self.noOneCaresListen, "on_message")
         self.bot.add_listener(self.fListen, "on_message")
 
+    # helper function to get the correct JSON file, depending on the
+    # context of the invocation
     def getReactPath(self, ctx : commands.Context = None, \
                             message : discord.Message = None):
         if ctx != None:
@@ -34,6 +36,15 @@ class MessageReactions(Base):
             else:
                 return opj(self.JSON_PATH, "%s-react.json" % \
                                             message.author.id)
+
+    # simple helper function to check if the member has the 
+    # "Manager Server" permission
+    def checkPerms(self, ctx):
+        if ctx.guild != None:
+            perms = ctx.author.permissions_in(ctx.channel)
+            if not perms.manage_guild:
+                return False
+        return True
 
     # listeners
     async def noOneCaresListen(self, message):
@@ -68,6 +79,11 @@ class MessageReactions(Base):
     async def noOneCaresSet(self, ctx, enabled : bool):
         "Enable/Disable the \"no one cares\" reaction."
         path = self.getReactPath(ctx = ctx)
+
+        if ctx.guild != None and not self.checkPerms(ctx):
+            await ctx.send("The \"Manage Guild\" permission is required to " +
+                            "run this command.")
+            return
 
         reactDict = util.load_js(path)
         reactDict["no-one-cares"] = enabled
