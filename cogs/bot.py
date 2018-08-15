@@ -18,29 +18,41 @@ class BotCmd(Base):
         super().__init__(bot)
 
     @commands.command(pass_context = True)
-    async def disableCommand(self, ctx, passedCommand : str):
-        util.nullifyExecute()
-        perms = await util.check_perms(self, ctx)
-        if not perms:
+    async def setCommandEnable(self, ctx, passedCommand : str, enable : bool):
+        "Disable a specific bot command. Requires the Manage Server permission."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.manage_guild:
+            await ctx.send("You need the Manage Server permission to run " +
+                            "this command.")
             return
             
-        disabledCommands = util.load_js("disabled-commands.json")
-        if len(disabledCommands) == 0:
-            disabledCommands = []
+        path = opj(self.JSON_PATH, "disabled-commands.json")
+        disabledCommands = util.load_js(path, returnListIfEmpty = True)
             
-        if passedCommand == "disableCommand" or passedCommand == "enableCommand":
+        cmd = self.bot.get_command(passedCommand)
+        if cmd == self.setCommandEnable:
             await self.bot.say("That command cannot be disabled.")
             return
-            
-        for command in self.bot.commands:
-            if command == passedCommand:
-                disabledCommands.append({ "command" : passedCommand,
-                                        "server-id" : ctx.message.server.id})
-                util.save_js("disabled-commands.json", disabledCommands)
-                await self.bot.say("{}{} has been disabled.".format(self.bot.command_prefix, passedCommand))
-                return
+        elif cmd == None:
+            await self.bot.say("The %s%s command does not exist!" % \
+                    (self.bot.command_prefix, passedCommand))
+
+        for entry in disabledCommands:
+            if entry["command"] == passedCommand:
+                await ctx.send("%s")
+
+        disabledCommands.append({ "command" : passedCommand,
+                                  "server-id" : ctx.author.id})
+        util.save_js(path)
+        
+        if enable == False:
+            await ctx.send("%s has been disabled for use in this server." % \
+                            passedCommand)
+        else:
+            await ctx.send("%s has been enabled for use in this server." % \
+                            passedCommand)        
                 
-        await self.bot.say("The {}{} command does not exist!".format(self.bot.command_prefix, passedCommand))
+        
         
     @commands.command(pass_context = True)
     async def enableCommand(self, ctx, passedCommand : str):

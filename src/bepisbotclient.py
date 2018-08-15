@@ -16,14 +16,16 @@ class BepisBotClient(commands.Bot):
 
     async def on_command_error(self, ctx, exception):
         eType = type(exception)
-        if eType == errors.MissingRequiredArgument:
+        if eType == errors.MissingRequiredArgument or \
+           eType == errors.BadArgument:
             helpList = await self.formatter.format_help_for(ctx, ctx.command)
 
-            print(helpList)
             for helpStr in helpList:
                 await ctx.send(helpStr)
         elif eType == errors.CommandNotFound:
             pass
+        elif eType == errors.NoPrivateMessage:
+            await ctx.author.send("Sorry, but I can't do that command in DMs.")
         else:
             eText = ""
             eList = traceback.format_exception(None, exception, None)

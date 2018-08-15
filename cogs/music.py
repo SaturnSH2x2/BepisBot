@@ -47,8 +47,8 @@ class Music(Base):
         if discord.opus.is_loaded():
             return True
         else:
-            await ctx.send("The Opus Library is not loaded. \
-                Voice commands are not available at this time.")
+            await ctx.send("The Opus Library is not loaded. " +
+                "Voice commands are not available at this time.")
             return False
 
     # helper function to avoid repeating code for checking certain
@@ -56,20 +56,21 @@ class Music(Base):
     async def checkPermissions(self, ctx):
         if ctx.guild.id not in self.voice.keys() or \
             self.voice[ctx.guild.id] == None:
-            await ctx.send("I need to be connected to a voice channel to \
-                            do that. Use %sjoin." % (self.bot.command_prefix))
+            await ctx.send("I need to be connected to a voice channel to " +
+                            "do that. Use %sjoin." % (self.bot.command_prefix))
             return False
         elif ctx.author.voice == None:
             await ctx.send("You're not connected to a voice channel. \
                 Do that first, then call this command.")
         elif self.voice[ctx.guild.id].channel != ctx.author.voice.channel:
-            await ctx.send("I need to be in the same voice channel as you \
-                            to do that!")
+            await ctx.send("I need to be in the same voice channel as you " +
+                            "to do that!")
             return False
 
         return True
 
     @commands.command()
+    @commands.guild_only()
     async def join(self, ctx):
         "Joins a voice channel. You must be in VC for this to work."
         util.nullifyExecute()
@@ -80,8 +81,8 @@ class Music(Base):
         try:
             vChannel = ctx.message.author.voice.channel
         except AttributeError:
-            await ctx.send("You're not connected to a voice channel. \
-                Do that first, then call this command.")
+            await ctx.send("You're not connected to a voice channel. " +
+                "Do that first, then call this command.")
             return
             
         # connect to a voice channel. If bot is in another voice channel, switch
@@ -95,6 +96,7 @@ class Music(Base):
         await ctx.send("Ready!")
 
     @commands.command()
+    @commands.guild_only()
     async def leave(self, ctx):
         "Disconnects from a voice channel. Does nothing if not connected."
         if not await self.checkPermissions(ctx):
@@ -107,9 +109,9 @@ class Music(Base):
         self.musicList.pop(ctx.guild.id, None)
         
     @commands.command()
+    @commands.guild_only()
     async def play(self, ctx, ytLink : str):
-        "Download and play a YouTube video. Direct links only, at the moment. \
-        If a video is already playing, yours will be added to a queue."
+        "Download and play a YouTube video. Direct links only, at the moment."
 
         # sanity checks
         if not await self.checkPermissions(ctx):
@@ -161,6 +163,7 @@ class Music(Base):
 
     # the rest of these commands should be fairly self-explanatory
     @commands.command()
+    @commands.guild_only()
     async def queue(self, ctx):
         "List all items in the current playback queue."
         queueString = ""
@@ -173,6 +176,7 @@ class Music(Base):
         await ctx.send(queueString)
 
     @commands.command()
+    @commands.guild_only()
     async def skip(self, ctx):
         "Skips the video currently playing in the queue."
         if not await self.checkPermissions(ctx):
@@ -185,6 +189,7 @@ class Music(Base):
             self.voice[ctx.guild.id].stop()
 
     @commands.command()
+    @commands.guild_only()
     async def pause(self, ctx):
         "Pauses playback. Does nothing if not playing audio."
         if not await self.checkPermissions(ctx):
@@ -196,6 +201,7 @@ class Music(Base):
             await ctx.send("Pausing audio playback.")
 
     @commands.command()
+    @commands.guild_only()
     async def resume(self, ctx):
         "Resumes audio playback, if paused. Does nothing otherwise."
         if not await self.checkPermissions(ctx):

@@ -17,10 +17,11 @@ from os.path import join as opj
 class Images(Base):
     # Helper function for downloading a Discord member's avatar.
     # Used for some image commands.
-    def getMemberAvatar(self, member : discord.Member):
-        url = member.avatar_url
-        if url == "":
-            url = member.default_avatar_url
+    def getMemberAvatar(self, member : discord.Member = None, url : str = None):
+        if url == None:
+            url = member.avatar_url
+            if url == "":
+                url = member.default_avatar_url
 
         data = requests.get(url)
         path = opj(self.TEMP_PATH, "%s.webp" % (member.id))
@@ -30,6 +31,14 @@ class Images(Base):
             f.close()
 
         return path
+
+    # Helper function for determining temporary file names.
+    # Used to get certain commands to work in DMs.
+    def getIdentifier(self, ctx):
+        if ctx.guild == None:
+            return ctx.author.id
+        else:
+            return ctx.guild.id
 
     # Helper functions for processing images.  Run as separate processes
     # to prevent the bot from being bogged down in other channels/servers.
@@ -43,7 +52,7 @@ class Images(Base):
             f.write(data.content)
             f.close()
 
-        avPath = self.getMemberAvatar(member)
+        avPath = self.getMemberAvatar(member = member)
         profileImage = Image.open(avPath)
         profileImage = profileImage.resize((300,300))
 
@@ -63,9 +72,7 @@ class Images(Base):
         fontA  = ImageFont.truetype(opj("assets","RodeoClown.ttf"), 83)
         fontB  = ImageFont.truetype(opj("assets","Nashville.ttf"), 44)
 
-        url = member.avatar_url
-        if url == "":
-            url = member.default_avatar_url
+        url = None
 
         # make sure the user isn't entering in an ungodly amount
         if not (-100000 < amount < 1000000):
@@ -84,12 +91,12 @@ class Images(Base):
 
         # in case the user is trying to frame the bot
         elif self.bot.user == member:
-            url = backup
+            url = ctx.author.avatar_url
             amount = 999999
             reason = "Trying to frame me!"
             
         line = "$%i REWARD" % (amount)
-        avPath = self.getMemberAvatar(member)
+        avPath = self.getMemberAvatar(member, url)
         profileImage = Image.open(avPath)
         profileImage = profileImage.resize((500,500))
 
@@ -140,8 +147,9 @@ class Images(Base):
 
         await ctx.trigger_typing()
         url = member.avatar_url
+        identifier = self.getIdentifier(ctx)
         filename = opj(self.TEMP_PATH, "art-%s-%s-%s.png" % (member.id, time.time(), \
-                        ctx.guild.id))
+                        identifier))
         
         process = mp.Process(target=self.artProcess, \
                         args=(member, filename))
@@ -160,9 +168,10 @@ class Images(Base):
                         *, reason : str = None):
         "Make any server member the most wanted Discord user in the West."
         await ctx.trigger_typing()
-        backup=ctx.message.author.avatar_url
+        backup = ctx.message.author.avatar_url
+        identifier = self.getIdentifier(ctx)
         filename = opj(self.TEMP_PATH, "wanted-%s-%s-%s.png" % \
-                        (member.id, time.time(), ctx.guild.id))
+                        (member.id, time.time(), identifier))
 
         process = mp.Process(target=self.wantedProcess, 
                                 args=(member, ctx, amount, reason, filename, backup))
@@ -181,8 +190,9 @@ class Images(Base):
         "why would you even do this to yourself"
 
         await ctx.trigger_typing()
+        identifier = self.getIdentifier(ctx)
         filename = opj("assets", "fs-%s-%s.png" % \
-                    (time.time(), ctx.guild.id))
+                    (time.time(), identifier))
 
         process = mp.Process(target=self.fsProcess,
                                 args=(line, filename))

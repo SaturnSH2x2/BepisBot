@@ -24,9 +24,12 @@ async def check_perms(obj, ctx):
 	return False
 
 def getMemberName(member : discord.Member):
-	if member.nick != None:
-		return member.nick
-	else:
+	try:
+		if member.nick != None:
+			return member.nick
+		else:
+			return member.name
+	except AttributeError:
 		return member.name
 
 def load_js(path, returnListIfEmpty = False):

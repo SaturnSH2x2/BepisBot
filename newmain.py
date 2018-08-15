@@ -14,7 +14,9 @@ COGS = [
     "cogs.music",
     "cogs.random",
     "cogs.images",
-    "cogs.tarot"
+    "cogs.tarot",
+    # "cogs.bot",
+    "cogs.react"
 ]
 
 def main():

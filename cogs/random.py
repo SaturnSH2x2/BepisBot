@@ -88,8 +88,14 @@ class RandomStuff(Base):
         ramList = util.load_js(opj("assets", "ram.json"))
         text = random.choice(ramList)
 
+        # this is to get the command to work in DMs
+        if ctx.guild == None:
+            identifier = ctx.author.id
+        else:
+            identifier = ctx.guild.id
+
         filename = opj(self.TEMP_PATH, "%s-%s.txt" % \
-                    (ctx.guild.id, time.time()))
+                    (identifier, time.time()))
 
         with open(filename, "w+") as f:
             f.write(text)
@@ -104,7 +110,7 @@ class RandomStuff(Base):
         os.remove(filename)
 
     @commands.command()
-    async def kill(self, ctx, member : discord.Member):
+    async def kill(self, ctx, member : str):
         "kill all of your friends"
 
         # The "@everyone" thing is a loophole left open for anyone who wants
@@ -117,6 +123,9 @@ class RandomStuff(Base):
 
         offender = ctx.author.mention
         victims = ctx.message.mentions
+
+        if len(victims) == 0:
+            raise commands.errors.BadArgument
 
         # special kill blacklist for Bepis, trainboy, and Dionicio3
         invincibles = ["162357148540469250", 
