@@ -16,6 +16,7 @@ COGS = [
     "cogs.images",
     "cogs.tarot",
     "cogs.bot",
+    "cogs.mod",
     "cogs.react"
 ]
 

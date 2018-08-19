@@ -1,14 +1,17 @@
 import asyncio
 import discord
 import os
-from discord.ext import commands
-from datetime import datetime
 import hashlib
+import time
 
 import util
 import cogs.base as base
 
 import shutil
+
+from discord.ext import commands
+from datetime import datetime
+from os.path import join as opj
 
 class Moderator(base.Base):
     MAXWARNS = 3
@@ -27,77 +30,171 @@ class Moderator(base.Base):
         except FileExistsError:
             pass
 
-    @commands.command(pass_context = True)
+    @commands.command()
     async def kick(self, ctx, member : discord.Member):
-        util.nullifyExecute()
-        """Kick a member from a server.  This requires special perms."""
-        perms = await util.check_perms(self, ctx)
-        print(perms)
-        if (perms):
+        "Kick a member from a server."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.kick_members:
+            await ctx.send("You need the \"Kick Members\" permission to " + 
+                            "run this command.")
+            return
+
+        try:
+            await member.kick()
+            await ctx.send("%s has been kicked from the server." % member.name)
+        except:
+            await ctx.send("Could not kick member.  This might be a " + 
+                           "permissions issue with the bot.")
+
+    @commands.command()
+    async def ban(self, ctx, member : discord.Member):
+        "Bans a member from a server."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.ban_members:
+            await ctx.send("You need the \"Ban Members\" permission to " + 
+                            "run this command.")
+            return
+
+        try:
+            member.ban()
+            await ctx.send("%s has been banned from the server." % member.name)
+        except:
+            await ctx.send("Could not ban member.  This might be a " + 
+                           "permissions issue with the bot.")
+
+    @commands.command(pass_context = True)
+    async def unwarn(self, ctx, member : discord.Member):
+        "Remove the most recent warn(s) from a member."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.ban_members:
+            await ctx.send("You need the \"Ban Members\" permission to " + 
+                            "run this command.")
+            return
+
+        path = opj(self.JSON_PATH, "%s-warns.json" % ctx.guild.id)
+        
+        serverWarnList = util.load_js(path)
+        strID = str(member.id)
+        
+        # I feel this section could have been done a bit better
+        if strID not in serverWarnList.keys():
+            await ctx.send("%s does not have any warns." % member.name)
+            return
+
+        warns = serverWarnList[strID]
+        warnCount = len(warns)
+
+        if warnCount == 0:
+            await ctx.send("%s does not have any warns." % member.name)
+            return
+
+        # check to see that the response is valid
+        def responseCheck(message):
+            if message.content.lower() == "cancel":
+                return True
+
             try:
-                await self.bot.kick(member)
-                await self.bot.say("{} has been kicked from the server.".format(member.name))
-            except:
-                await self.bot.say("Could not kick member.  This might be a permissions issue.")
+                choice = int(message.content)
+                return (0 < choice <= self.MAXWARNS) and \
+                        message.author == ctx.author
+            except ValueError:
+                return False
+
+        eContent = ""
+        for i in range(warnCount):
+            eContent += "%i.  %s\n\n" % (i + 1, warns[i])
+        e = discord.Embed()
+        e.title = "Please type the index of the warn to remove, " + \
+                    "or type \"cancel\" to cancel unwarn."
+        e.description = eContent
+
+        await ctx.send(embed = e)
+        response = await self.bot.wait_for("message", check = responseCheck)
+
+        if response.content.lower() == "cancel":
+            await ctx.send("Unwarn cancelled.")
+            return
+
+        delWarn = int(response.content)
+
+        del warns[delWarn - 1]
+        await ctx.send("%s, you have had a warn removed. You now have %i warnings." % \
+                (member.mention, len(warns)))
+        util.save_js(path, serverWarnList)
 
     @commands.command(pass_context = True)
-    async def unwarn(self, ctx, member : discord.Member, amount : int = 1):
-        util.nullifyExecute()
-        perms = await util.check_perms(self, ctx)
-        if not perms:
+    async def warn(self, ctx, member : discord.Member, *, 
+                        reason : str = "None"):
+        "Warns a member. 3 warns results in a ban."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.ban_members:
+            await ctx.send("You need the \"Ban Members\" permission to " + 
+                            "run this command.")
             return
 
-        serverWarnList = util.load_js(os.path.join("warns", "{}.json".format(ctx.message.server.id)))
-        if member.id not in serverWarnList or serverWarnList[member.id] <= 0:
-            await self.bot.say("{} does not currently have any warns".format(member.name))
-            return
+        path = opj(self.JSON_PATH, "%s-warns.json" % ctx.guild.id)
+        serverWarnList = util.load_js(path)
+        strID = str(member.id)
 
-        if amount > self.MAXWARNS:
-            amount = self.MAXWARNS
+        # properly format the reason
+        reasonFmt = time.strftime("%c, by ") + "%s: %s. Reason: %s" % \
+                                (ctx.author.name, ctx.author.id, reason)
 
-        serverWarnList[member.id] -= amount
-        await self.bot.say("<@!{}>, you have had {} warns removed.  {} warnings remain.".format(member.id, amount, self.MAXWARNS - serverWarnList[member.id]))
-        util.save_js(os.path.join("warns", "{}.json".format(ctx.message.server.id)), serverWarnList)
+        if strID not in serverWarnList:
+            serverWarnList[strID] = []
+        serverWarnList[strID] += [reasonFmt]
 
-    @commands.command(pass_context = True)
-    async def warn(self, ctx, member : discord.Member):
-        util.nullifyExecute()
-        perms = await util.check_perms(self, ctx)
-        if not perms:
-            return
-
-        serverWarnList = util.load_js(os.path.join("warns", "{}.json".format(ctx.message.server.id)))
-
-        if member.id not in serverWarnList:
-            serverWarnList[member.id] = 0
-        serverWarnList[member.id] += 1
-
-        if self.MAXWARNS - serverWarnList[member.id] > 1:
-            await self.bot.say("<@!{}>, you have been given a warning.  You have {} warnings left.".format(member.id, self.MAXWARNS - serverWarnList[member.id]))
-        elif serverWarnList[member.id] >= self.MAXWARNS:
-            pass
+        warns = len(serverWarnList[strID])
+        warnMessage = "%s, you have been warned by %s." % \
+                        (member.mention, util.getMemberName(ctx.author))
+        if self.MAXWARNS - warns == 1:
+            warnMessage += " This is your final warning. "
         else:
-            await self.bot.say("<@!{}>, this is your final warning.  One more warn and you will be banned.".format(member.id))
-        util.save_js(os.path.join("warns", "{}.json".format(ctx.message.server.id)), serverWarnList)
+            warnMessage += " You have %i warnings left. " % \
+                        (self.MAXWARNS - warns)
+        warnMessage += "Reason given: %s" % reason
+            
+        util.save_js(path, serverWarnList)
 
-        if serverWarnList[member.id] >= self.MAXWARNS:
-            await self.bot.ban(member)
-            await self.bot.say("<@!{}> has been banned from the server for getting {} warnings.".format(member.id, self.MAXWARNS))
-
-    @commands.command(pass_context=True)
-    async def listWarns(self, ctx, member : discord.Member):
-        util.nullifyExecute()
-        perms = await util.check_perms(self, ctx)
-        if not perms:
-            return
-        serverWarnList = util.load_js(os.path.join("warns", "{}.json".format(ctx.message.server.id)))
-        if member.id not in serverWarnList or serverWarnList[member.id]==0:
-            await self.bot.say("<@!{}> does not currently have any warns.".format(member.id))
-        elif serverWarnList[member.id]>=self.MAXWARNS:
-            await self.bot.say("<@!{}> recieved ".format(member.id)+str(self.MAXWARNS)+" warnings and was banned.")
+        if warns >= self.MAXWARNS:
+            await member.ban()
+            await ctx.send("%s exceeded %i warnings, and has been banned." % \
+                            (member.name, self.MAXWARNS))
         else:
-            await self.bot.say("<@!{}> currently has ".format(member.id)+str(serverWarnList[member.id])+" warnings. They will be banned if they recieve "+str(self.MAXWARNS-serverWarnList[member.id])+" more.")
+            await ctx.send(warnMessage)
 
+    @commands.command()
+    async def listWarns(self, ctx, member : discord.Member = None):
+        "List the warnings you or a given member has."
+        if member != None and member != ctx.author:
+            perms = ctx.author.permissions_in(ctx.channel)
+            if not perms.ban_members:
+                await ctx.send("You need the \"Ban Members\" permission to " + 
+                            "run this command.")
+                return
+
+        if member == None:
+            member = ctx.author
+
+        path = opj(self.JSON_PATH, "%s-warns.json" % ctx.guild.id)
+        name = util.getMemberName(member)
+        strID = str(member.id)
+        serverWarnList = util.load_js(path)
+
+        if strID in serverWarnList.keys():
+            nLine = "\n"
+            eContent = "**%i** of **%i** warnings\n\n" % \
+                (len(serverWarnList[strID]), self.MAXWARNS)
+            warns = serverWarnList[strID]
+            eContent += nLine.join(warns)
+        else:
+            eContent = "No warnings for %s." % name
+
+        e = discord.Embed()
+        e.title = "Warnings for %s" % name
+        e.description = eContent
+
+        await ctx.send("Warns: ", embed = e)
 
     @commands.command(pass_context=True)
     async def note(self, ctx, member : discord.Member, *, note : str = None):

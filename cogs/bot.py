@@ -25,7 +25,7 @@ class BotCmd(Base):
         "Disable a specific bot command. Requires the Manage Server permission."
         perms = ctx.author.permissions_in(ctx.channel)
         if not perms.manage_guild:
-            await ctx.send("You need the Manage Server permission to run " +
+            await ctx.send("You need the \"Manage Server\" permission to run " +
                             "this command.")
             return
             
