@@ -154,14 +154,15 @@ class Moderator(base.Base):
                         (self.MAXWARNS - warns)
         warnMessage += "Reason given: %s" % reason
             
-        util.save_js(path, serverWarnList)
-
         if warns >= self.MAXWARNS:
             await member.ban()
             await ctx.send("%s exceeded %i warnings, and has been banned." % \
                             (member.name, self.MAXWARNS))
+            del serverWarnList[strID]
         else:
             await ctx.send(warnMessage)
+
+        util.save_js(path, serverWarnList)
 
     @commands.command()
     async def listWarns(self, ctx, member : discord.Member = None):
@@ -195,6 +196,39 @@ class Moderator(base.Base):
         e.description = eContent
 
         await ctx.send("Warns: ", embed = e)
+
+    @commands.command()
+    async def giveRole(self, ctx, member : discord.Member, role : discord.Role):
+        "Give someone a role.  This requires the role to be mentionable."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.manage_guild:
+            await ctx.send("You need the \"Manage Server\" permission to " + 
+                            "run this command.")
+            return
+
+        try:
+            await member.add_roles(role)
+            await ctx.send("%s has been given the %s role." % \
+                    (member.mention, role.name))
+        except:
+            await ctx.send("Could not add role. This might be a permissions issue.")
+
+    @commands.command(pass_context = True)
+    async def revokeRole(self, ctx, member : discord.Member, role : discord.Role):
+        "Revoke a role from someone.  This requires special perms."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.manage_guild:
+            await ctx.send("You need the \"Manage Server\" permission to " + 
+                            "run this command.")
+            return	
+
+        try:
+            await member.remove_roles(role)
+            await ctx.send("%s has had the %s role revoked." % \
+                    (member.mention, role.name))
+        except:
+            await ctx.send("Could not revoke role. This might be a permissions issue.")
+
 
     @commands.command(pass_context=True)
     async def note(self, ctx, member : discord.Member, *, note : str = None):
