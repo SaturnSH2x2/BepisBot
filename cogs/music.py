@@ -6,7 +6,6 @@ import os
 import queue
 import multiprocessing as mp
 import youtube_dl
-import util
 
 from ctypes.util import find_library
 from discord.ext import commands
