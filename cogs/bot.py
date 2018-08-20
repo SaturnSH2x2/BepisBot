@@ -92,10 +92,9 @@ class BotCmd(Base):
     @commands.command(pass_context = True)
     async def inviteLink(self, ctx):
         "DMs you an invite link for the bot."
-        client_id = util.load_js("config.json")["client-id"]
         await ctx.author.send(
             "https://discordapp.com/oauth2/authorize?&client_id=" + 
-            "{0}&scope=bot&permissions=0".format(client_id))
+            "{0}&scope=bot&permissions=0".format(self.clientID))
 
     @commands.command(pass_context = True)
     async def say(self, ctx, *, thing):

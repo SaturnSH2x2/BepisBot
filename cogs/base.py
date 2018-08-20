@@ -2,6 +2,8 @@ import asyncio
 import discord
 import os
 
+import util
+
 # Base cog class, from which all other cogs inherit.
 class Base:
     # Folder to put all per-cog JSON data.
@@ -19,7 +21,10 @@ class Base:
     METADATA_PATH = "metadata"
 
     def __init__(self, bot):
+        config = util.load_js("config.json")
+        
         self.bot = bot
+        self.clientID = config["client-id"]
         print("{} cog set up successfully.".format(self.__class__.__name__))
 
         # checks to see that each directory exists on startup.

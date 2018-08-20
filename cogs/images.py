@@ -15,6 +15,15 @@ from cogs.base import Base
 from os.path import join as opj
 
 class Images(Base):
+    def __init__(self, bot):
+        self.slapPics = util.load_js(opj("assets", "slap.json"))
+        self.punchPics = util.load_js(opj("assets", "punch.json"))
+        self.hugPics = util.load_js(opj("assets", "hug.json"))
+
+        self.slapTitles =  ["oof", "ouch", "owie", "ouchie ouch", "ow"]
+
+        super().__init__(bot)
+
     # Helper function for downloading a Discord member's avatar.
     # Used for some image commands.
     def getMemberAvatar(self, member : discord.Member = None, url : str = None):
@@ -218,9 +227,6 @@ class Images(Base):
     async def slap(self, ctx, member : discord.Member = None):
         "Slap ya friends"
         await ctx.trigger_typing()
-
-        titles = ["oof", "ouch", "owie", "ouchie ouch", "ow"]
-        pics = util.load_js(opj("assets", "slap.json"))
         
         # handle nicknames
         slapper = util.getMemberName(ctx.author)
@@ -236,16 +242,15 @@ class Images(Base):
         else:
             d = "%s got slapped by %s." % (target, slapper)
         
-        e = discord.Embed(title = random.choice(titles), description = d)
-        e.set_image(url = random.choice(pics))
+        e = discord.Embed(title = random.choice(self.slapTitles), description = d)
+        e.set_image(url = random.choice(self.slapPics))
         await ctx.send(embed = e)
 
     @commands.command()
     async def punch(self, ctx, member : discord.Member = None):
         "punch ya friends"
         await ctx.trigger_typing()
-        images = util.load_js(os.path.join("assets", "punch.json"))
-        imgDict = random.choice(images)
+        imgDict = random.choice(self.punchPics)
 
         if member != None:
             name = util.getMemberName(member)
@@ -276,7 +281,7 @@ class Images(Base):
 
         await ctx.trigger_typing()
         titles = ["hugs", "aww", "yay", "huggie hug"]
-        pics = util.load_js(os.path.join("assets", "hug.json"))
+
         if member != None:
             target = util.getMemberName(member)
 
@@ -289,7 +294,7 @@ class Images(Base):
         else:
             d = "{} got hugged by {}.".format(target, ctx.message.author.name)
 
-        urlText = random.choice(pics)
+        urlText = random.choice(self.hugPics)
         titleText = random.choice(titles)
         if urlText == "https://i.imgur.com/oQ8J3Za.gif":
             titleText="oops"

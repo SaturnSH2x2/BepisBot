@@ -13,6 +13,11 @@ from discord.ext import commands
 from cogs.base import Base
 
 class RandomStuff(Base):
+    def __init__(self, bot):
+        self.fanfics = util.load_js(opj("assets", "fanfics.json"))
+        self.ramResponses = util.load_js(opj("assets", "ram.json"))
+        super().__init__(bot)
+
     @commands.command()
     async def rate(self, ctx, something : str):
         "Rate anything, on a scale frrom 0 to 10."
@@ -50,9 +55,7 @@ class RandomStuff(Base):
     @commands.command()
     async def ship(self, ctx, mem1 : str, mem2 : str):
         "Ship two people together to create a fanfiction.  NSFW."
-        fanfics = util.load_js(opj("assets", "fanfics.json"))
-
-        fanfic = random.choice(fanfics)
+        fanfic = random.choice(self.fanfics)
         for fLine in fanfic:
             await ctx.trigger_typing()
             await asyncio.sleep(1.5)
@@ -85,8 +88,7 @@ class RandomStuff(Base):
             await asyncio.sleep(1)
 
         # we have a bunch of RAM flavor text stored in the JSON file
-        ramList = util.load_js(opj("assets", "ram.json"))
-        text = random.choice(ramList)
+        text = random.choice(self.ramResponses)
 
         # this is to get the command to work in DMs
         if ctx.guild == None:
