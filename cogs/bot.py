@@ -180,5 +180,30 @@ class BotCmd(Base):
             pass
         await ctx.send(thing)
     
+    @commands.command()
+    async def poll(self, ctx, *, msg : str = None):
+        "Have the bot create a poll, with reactions as votes."
+        options = msg.split(" | ")
+        try:
+            await ctx.message.delete()
+        except:
+            pass  # apparently, the user was 2fast4us
+
+        if len(options) < 1:
+            await self.bot.say("Not enough parameters")
+        else:
+            emoji = ['1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '9⃣']
+            toReact = []
+            question=options.pop(0)
+            if len(options) > len(emoji):
+                await ctx.send("Too many options")
+            else:
+                for i in range(len(options)):
+                    toReact.append(emoji[i])
+                    question += "\n" + options[i] + "\t" + emoji[i]
+                postedMessage = await ctx.send(question)
+                for reaction in toReact:
+                    await postedMessage.add_reaction(reaction)
+
 def setup(bot):
     bot.add_cog(BotCmd(bot))

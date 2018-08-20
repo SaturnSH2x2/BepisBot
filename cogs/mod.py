@@ -31,6 +31,7 @@ class Moderator(base.Base):
             pass
 
     @commands.command()
+    @commands.guild_only()
     async def kick(self, ctx, member : discord.Member):
         "Kick a member from a server."
         perms = ctx.author.permissions_in(ctx.channel)
@@ -47,6 +48,7 @@ class Moderator(base.Base):
                            "permissions issue with the bot.")
 
     @commands.command()
+    @commands.guild_only()
     async def ban(self, ctx, member : discord.Member):
         "Bans a member from a server."
         perms = ctx.author.permissions_in(ctx.channel)
@@ -62,7 +64,8 @@ class Moderator(base.Base):
             await ctx.send("Could not ban member.  This might be a " + 
                            "permissions issue with the bot.")
 
-    @commands.command(pass_context = True)
+    @commands.command()
+    @commands.guild_only()
     async def unwarn(self, ctx, member : discord.Member):
         "Remove the most recent warn(s) from a member."
         perms = ctx.author.permissions_in(ctx.channel)
@@ -122,7 +125,8 @@ class Moderator(base.Base):
                 (member.mention, len(warns)))
         util.save_js(path, serverWarnList)
 
-    @commands.command(pass_context = True)
+    @commands.command()
+    @commands.guild_only()
     async def warn(self, ctx, member : discord.Member, *, 
                         reason : str = "None"):
         "Warns a member. 3 warns results in a ban."
@@ -165,6 +169,7 @@ class Moderator(base.Base):
         util.save_js(path, serverWarnList)
 
     @commands.command()
+    @commands.guild_only()
     async def listWarns(self, ctx, member : discord.Member = None):
         "List the warnings you or a given member has."
         if member != None and member != ctx.author:
@@ -198,6 +203,7 @@ class Moderator(base.Base):
         await ctx.send("Warns: ", embed = e)
 
     @commands.command()
+    @commands.guild_only()
     async def giveRole(self, ctx, member : discord.Member, role : discord.Role):
         "Give someone a role.  This requires the role to be mentionable."
         perms = ctx.author.permissions_in(ctx.channel)
@@ -213,7 +219,8 @@ class Moderator(base.Base):
         except:
             await ctx.send("Could not add role. This might be a permissions issue.")
 
-    @commands.command(pass_context = True)
+    @commands.command()
+    @commands.guild_only()
     async def revokeRole(self, ctx, member : discord.Member, role : discord.Role):
         "Revoke a role from someone.  This requires special perms."
         perms = ctx.author.permissions_in(ctx.channel)
@@ -229,7 +236,9 @@ class Moderator(base.Base):
         except:
             await ctx.send("Could not revoke role. This might be a permissions issue.")
 
-
+    # TODO: there's no point in rewriting all these commands if you're
+    # considering moving from JSON to SQLite anyways. I'll get to them eventually.
+"""
     @commands.command(pass_context=True)
     async def note(self, ctx, member : discord.Member, *, note : str = None):
         util.nullifyExecute()
@@ -283,8 +292,7 @@ class Moderator(base.Base):
             loggedTime = serverNoteList[member.id]["time"][note]
             loggedIssuer = serverNoteList[member.id]["issuer"][note]
             loggedIssuerName=serverNoteList[member.id]["issuerName"][note]
-            await self.bot.say(loggedIssuerName+""" made a note about """+loggedName+""" on """+loggedTime+""" that said
-`"""+loggedNote+"""`""")
+            await self.bot.say(loggedIssuerName+" made a note about "+loggedName+" on "+loggedTime+" that said"+loggedNote+"`")
         except KeyError:
             await self.bot.say("That note does not exist")
 
@@ -323,7 +331,6 @@ class Moderator(base.Base):
                 else:
                     serverNoteList[member.id][key][str(i)] = serverNoteList[member.id][key][str(i+1)]
         
-        """
             try:
                 
                 serverNoteList[member.id]["note"][str(i)]=serverNoteList[member.id]["note"][str(i+1)]
@@ -335,7 +342,6 @@ class Moderator(base.Base):
                 serverNoteList[member.id]["noteNum"]-=1
                 util.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
                 return
-        """
         util.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
 
     @commands.command(pass_context=True)
@@ -411,52 +417,7 @@ class Moderator(base.Base):
         else:
             await self.bot.say("To wipe the notes, you must enter the correct key.")
             return
-
-    @commands.command(pass_context = True)
-    async def poll(self, ctx, *, msg : str = None):
-        util.nullifyExecute()
-        options = msg.split(" | ")
-        try:
-            await self.bot.delete_message(ctx.message)
-        except:
-            pass
-        if len(options)<1:
-            await self.bot.say("Not enough parameters")
-        else:
-            emoji = ['1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '9⃣']
-            toReact = []
-            question=options.pop(0)
-            if len(options)>len(emoji):
-                await self.bot.say("Too many options")
-            else:
-                for i in range(len(options)):
-                    toReact.append(emoji[i])
-                    question+="\n"+options[i]+"\t"+emoji[i]
-                postedMessage = await self.bot.say(question)
-                for reaction in toReact:
-                    await self.bot.add_reaction(postedMessage, reaction)
-
-##    @commands.command(pass_context=True)
-##    async def clearCache(self, ctx):
-##        util.nullifyExecute()
-##        perms = await util.check_perms(self, ctx)
-##        if not perms:
-##            return
-##        if ctx.message.author.id == self.bot.user.id:
-##            return
-##        folder = 'cache'
-##        print(os.listdir(folder))
-##        for the_file in os.listdir(folder):
-##            file_path = os.path.join(folder, the_file)
-##            try:
-##                if os.path.isfile(file_path):
-##                    os.unlink(file_path)
-##                elif os.path.isdir(file_path): shutil.rmtree(file_path)
-##            except Exception as e:
-##                await self.bot.say(e)
-##        await self.bot.say("Done")
-##        return
-
+"""
 
 def setup(bot):
     config = util.load_js("config.json")
