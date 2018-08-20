@@ -17,7 +17,6 @@ class Moderator(base.Base):
     MAXWARNS = 3
 
     def __init__(self, bot, config):
-        self.mod_roles = config["moderator-roles"]
         super().__init__(bot)
 
         # make sure this directory exists

@@ -12,10 +12,6 @@ from os.path import join as opj
 
 class BotCmd(Base):
     def __init__(self, bot):
-        conf = util.load_js("config.json")
-        self.okbLocation = conf["okaybot-location"]
-        self.okbToken    = conf["okaybot-token"]
-        self.mod_roles= conf["moderator-roles"]
         self.kSpam = []
         super().__init__(bot)
 
