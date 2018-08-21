@@ -14,4 +14,4 @@ warns/
 temp/
 metadata/
 jsondata/
-*.workspace
+*.code-workspace
