@@ -1,5 +1,6 @@
 {
 	"client-id": "client id, must be int, used for the invite command", 
+	"special" : ["list of",  "special user IDs", "goes here"]
 	"token": "token here", 
 	"prefix": "prefix here"
 }

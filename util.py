@@ -5,24 +5,6 @@ from discord.ext import commands
 
 import json
 
-async def check_perms(obj, ctx):
-	try:
-		whitelist = load_js("whitelist.json")
-		for member in whitelist["users"]:
-			if ctx.message.author.id == member:
-				return True
-			
-		for wRole in whitelist["roles"]:
-			for role in ctx.message.author.roles:
-				if role.id == wRole:
-					return True
-	except KeyError:
-		whitelist = {"users" : [], "roles" : []}
-		save_js("whitelist.json", whitelist)
-	
-	await obj.bot.say("You do not have permission to perform this action.")
-	return False
-
 def getMemberName(member : discord.Member):
 	try:
 		if member.nick != None:
@@ -51,19 +33,3 @@ def save_js(path, data):
 	js.close()
 	
 	return
-
-# deprecated, the rewrite branch already passes member objects automatically
-def execute(obj, ctx):
-        if os.path.isfile(os.path.join("cache","{}.bepis".format(ctx.message.id))):
-                os.remove(os.path.join("cache","{}.bepis".format(ctx.message.id)))
-                ctx.author=ctx.message.server.get_member(obj.bot.user.id)
-                ctx.message.author=ctx.message.server.get_member(obj.bot.user.id)
-        return ctx
-
-
-# should also be deprecated for reasons stated above
-def nullifyExecute():
-	files=os.listdir('cache')
-	for file in files:
-                if file.endswith('.bepis'):
-                        os.remove(os.path.join('cache',file))

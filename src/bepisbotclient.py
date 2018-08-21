@@ -31,8 +31,11 @@ class BepisBotClient(commands.Bot):
 
     async def on_command_error(self, ctx, exception):
         eType = type(exception)
-        if eType == errors.MissingRequiredArgument or \
-           eType == errors.BadArgument:
+        if (eType == errors.MissingRequiredArgument or \
+           eType == errors.BadArgument):
+            if ctx.command.hidden:
+                return
+
             helpList = await self.formatter.format_help_for(ctx, ctx.command)
 
             for helpStr in helpList:
