@@ -24,17 +24,17 @@ class MessageReactions(Base):
                             message : discord.Message = None):
         if ctx != None:
             if ctx.guild != None:
-                return opj(self.JSON_PATH, "%s-react.json" % \
+                return opj(self.JSON_PATH, "react-%s.json" % \
                                             ctx.guild.id)
             else:
-                return opj(self.JSON_PATH, "%s-react.json" % \
+                return opj(self.JSON_PATH, "react-%s.json" % \
                                             ctx.author.id)
         if message != None:
             if message.guild != None:
-                return opj(self.JSON_PATH, "%s-react.json" % \
+                return opj(self.JSON_PATH, "react-%s.json" % \
                                             message.guild.id)
             else:
-                return opj(self.JSON_PATH, "%s-react.json" % \
+                return opj(self.JSON_PATH, "react-%s.json" % \
                                             message.author.id)
 
     # simple helper function to check if the member has the 

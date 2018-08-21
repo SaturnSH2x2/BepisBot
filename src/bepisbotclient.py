@@ -16,17 +16,41 @@ class BepisBotClient(commands.Bot):
         print("User Name:  %s" % self.user.name)
         print("User ID:    %s" % self.user.id)
 
-    async def on_message(self, message):
-        if message.guild != None:
-            disabledCommands = util.load_js(opj(self.JSON_PATH, 
-                        "%s-disabled-commands.json" % message.guild.id))
-            for command in disabledCommands:
-                if "%s%s" % (self.command_prefix, command) in \
-                    message.content:
-                    await message.channel.send("That command is disabled for " + 
-                                    "use in this server.")
-                    return
+        self.blacklistUpdated = None
+        self.disabledCommandsUpdated = None
 
+        self.blacklist = {}
+        self.disabledCommands = {}
+
+        for guild in self.guilds:
+            self.blacklist[str(guild.id)] = util.load_js(opj(self.JSON_PATH, \
+                        "blacklist-%s" % guild.id), returnListIfEmpty=True)
+            self.disabledCommands[str(guild.id)] = util.load_js(opj(self.JSON_PATH, \
+                        "disabled-commands-%s.json" % guild.id),
+                        returnListIfEmpty=True)
+
+            self.add_check(self.checkIfBlacklisted, call_once = True)
+            self.add_check(self.checkIfEnabled, call_once = True)
+        print("Blacklist and Disabled Command Dictionaries loaded.")
+            
+    def checkIfBlacklisted(self, ctx):
+        guildBlacklist = self.blacklist[str(ctx.guild.id)]
+        print(guildBlacklist)
+
+        if str(ctx.author.id) in guildBlacklist:
+            return False
+        return True
+
+    def checkIfEnabled(self, ctx):
+        if ctx.guild != None:  # not a DM
+            for command in self.disabledCommands[str(ctx.guild.id)]:
+                if "%s%s" % (self.command_prefix, command) in \
+                    ctx.message.content:
+                    return False
+        
+        return True
+
+    async def on_message(self, message):
         await self.process_commands(message)
 
     async def on_command_error(self, ctx, exception):

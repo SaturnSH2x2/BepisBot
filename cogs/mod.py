@@ -21,10 +21,6 @@ class Moderator(base.Base):
 
         # make sure this directory exists
         try:
-            os.mkdir("warns")
-        except FileExistsError:
-            pass
-        try:
             os.mkdir("notes")
         except FileExistsError:
             pass
@@ -73,7 +69,7 @@ class Moderator(base.Base):
                             "run this command.")
             return
 
-        path = opj(self.JSON_PATH, "%s-warns.json" % ctx.guild.id)
+        path = opj(self.JSON_PATH, "warns-%s.json" % ctx.guild.id)
         
         serverWarnList = util.load_js(path)
         strID = str(member.id)
@@ -135,7 +131,7 @@ class Moderator(base.Base):
                             "run this command.")
             return
 
-        path = opj(self.JSON_PATH, "%s-warns.json" % ctx.guild.id)
+        path = opj(self.JSON_PATH, "warns-%s.json" % ctx.guild.id)
         serverWarnList = util.load_js(path)
         strID = str(member.id)
 
@@ -181,7 +177,7 @@ class Moderator(base.Base):
         if member == None:
             member = ctx.author
 
-        path = opj(self.JSON_PATH, "%s-warns.json" % ctx.guild.id)
+        path = opj(self.JSON_PATH, "warns-%s.json" % ctx.guild.id)
         name = util.getMemberName(member)
         strID = str(member.id)
         serverWarnList = util.load_js(path)
@@ -234,6 +230,69 @@ class Moderator(base.Base):
                     (member.mention, role.name))
         except:
             await ctx.send("Could not revoke role. This might be a permissions issue.")
+
+    @commands.command()
+    @commands.guild_only()
+    async def setBlacklist(self, ctx, member : discord.Member, isBlacklist : bool):
+        "Blacklist a user from using the bot in this guild."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.manage_guild:
+            await ctx.send("You need the \"Manage Server\" permission to " + 
+                            "run this command.")
+            return
+
+        path = opj(self.JSON_PATH, "blacklist-%s.json" % ctx.guild.id)
+        blacklistDict = util.load_js(path, returnListIfEmpty=True)
+
+        strMemberID = str(member.id)
+
+        if isBlacklist:
+            if strMemberID in blacklistDict:
+                await ctx.send("%s is already on the blacklist for this server." % \
+                                    util.getMemberName(member))
+                return
+            blacklistDict.append(strMemberID)
+            await ctx.send("%s, you have been added to this server's blacklist." % \
+                            member.mention)
+        else:
+            if strMemberID not in blacklistDict:
+                await ctx.send("%s is not on the blacklist for this server." % \
+                                    util.getMemberName(member))
+                return
+            blacklistDict.remove(strMemberID)
+            await ctx.send("%s, you have been removed from this server's blacklist." \
+                            % member.mention)
+        
+        util.save_js(path, blacklistDict)
+        self.bot.blacklist[str(ctx.guild.id)] = blacklistDict
+
+    @commands.command()
+    @commands.guild_only()
+    async def getBlacklist(self, ctx):
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.manage_guild:
+            await ctx.send("You need the \"Manage Server\" permission to " + 
+                            "run this command.")
+            return
+
+        path = opj(self.JSON_PATH, "blacklist-%s.json" % ctx.guild.id)
+        blacklistDict = util.load_js(path, returnListIfEmpty=True)
+
+        e = discord.Embed()
+        memberList = []
+        for member in blacklistDict:
+            aMember = ctx.guild.get_member(int(member))
+
+            memberList.append(util.getMemberName(aMember))
+
+        nl = "\n"
+        if len(memberList) == 0:
+            e.title = "There are no blacklists for this server."
+        else:
+            e.title = "Here is a list of blacklisted members for this server:"
+            e.description = nl.join(memberList)
+
+        await ctx.send(embed = e)
 
     # TODO: there's no point in rewriting all these commands if you're
     # considering moving from JSON to SQLite anyways. I'll get to them eventually.

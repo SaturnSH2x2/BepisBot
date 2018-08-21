@@ -25,7 +25,7 @@ class BotCmd(Base):
                             "this command.")
             return
             
-        path = opj(self.JSON_PATH, "%s-disabled-commands.json" %
+        path = opj(self.JSON_PATH, "disabled-commands-%s.json" %
                                     ctx.guild.id)
         disabledCommands = util.load_js(path, returnListIfEmpty = True)
             
@@ -54,6 +54,7 @@ class BotCmd(Base):
                             passedCommand)
 
         util.save_js(path, disabledCommands)
+        self.bot.disabledCommands[str(ctx.guild.id)] = disabledCommands
               
     @commands.command()
     @commands.guild_only()
