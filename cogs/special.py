@@ -64,7 +64,7 @@ class Special(Base):
         os.system("git checkout --force origin/bepisbot-mk3")
         await ctx.send("Bot is updated!  Restarting...")
 
-        os.system("./run.sh")
+        os.system("./run.sh &")
         await self.bot.close()
 
     @commands.command(hidden = True)
