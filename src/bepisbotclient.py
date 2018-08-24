@@ -25,20 +25,30 @@ class BepisBotClient(commands.Bot):
         self.disabledCommands = {}
 
         # TODO: leftover JSON code, delet this
-        for guild in self.guilds:
-            self.blacklist[str(guild.id)] = util.load_js(opj(self.JSON_PATH, \
-                        "blacklist-%s" % guild.id), returnListIfEmpty=True)
-            self.disabledCommands[str(guild.id)] = util.load_js(opj(self.JSON_PATH, \
-                        "disabled-commands-%s.json" % guild.id),
-                        returnListIfEmpty=True)
-
-            self.add_check(self.checkIfBlacklisted, call_once = True)
-            self.add_check(self.checkIfEnabled, call_once = True)
 
         # TODO: add support for password-protected redis servers
         print("Attempting to connect to the localhost redis server. Please " +
                 "make sure you have an instance running.")
         self.rconn = await ar.Connection.create(host = "localhost")
+
+        for guild in self.guilds:
+            bl = await self.rconn.smembers("blacklist:%s" % guild.id)
+            dc = await self.rconn.smembers("disabledcommands:%s" % guild.id)
+
+            strID = str(guild.id)
+            self.blacklist[strID] = []
+            self.disabledCommands[strID] = []
+
+            for b in bl:
+                item = await b
+                self.blacklist[strID].append(item)
+
+            for d in dc:
+                item = await d
+                self.disabledCommands[strID].append(item)
+
+        self.add_check(self.checkIfBlacklisted, call_once = True)
+        self.add_check(self.checkIfEnabled, call_once = True)
         
         print("Blacklist and Disabled Command Dictionaries loaded.")
             
@@ -52,6 +62,7 @@ class BepisBotClient(commands.Bot):
 
     def checkIfEnabled(self, ctx):
         if ctx.guild != None:  # not a DM
+            print(self.disabledCommands[str(ctx.guild.id)])
             for command in self.disabledCommands[str(ctx.guild.id)]:
                 if "%s%s" % (self.command_prefix, command) in \
                     ctx.message.content:

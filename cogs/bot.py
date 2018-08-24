@@ -25,10 +25,16 @@ class BotCmd(Base):
                             "this command.")
             return
             
-        path = opj(self.JSON_PATH, "disabled-commands-%s.json" %
-                                    ctx.guild.id)
-        disabledCommands = util.load_js(path, returnListIfEmpty = True)
-            
+        key = "disabledcommands:%s" % ctx.guild.id
+        dc = await self.bot.rconn.smembers(key)
+
+        print(key)
+        disabledCommands = []
+        for d in dc:
+            item = await d
+            disabledCommands.append(item)
+        print(disabledCommands)
+
         cmd = self.bot.get_command(passedCommand)
         if cmd == self.setCommandEnable:
             await ctx.send("That command cannot be disabled.")
@@ -41,29 +47,31 @@ class BotCmd(Base):
         if enable == False:
             if passedCommand in disabledCommands:
                 await ctx.send("%s is already disabled." % passedCommand)
-                return
-            disabledCommands.append(passedCommand)
-            await ctx.send("%s has been disabled for use in this server." % \
+            else:
+                await self.bot.rconn.sadd(key, [passedCommand])
+                disabledCommands.append(passedCommand)
+                await ctx.send("%s has been disabled for use in this server." % \
                             passedCommand)
         else:
             if passedCommand not in disabledCommands:
                 await ctx.send("%s is already enabled." % passedCommand)
                 return
-            disabledCommands.remove(passedCommand)
-            await ctx.send("%s has been enabled for use in this server." % \
+            else:
+                await self.bot.rconn.srem(key, [passedCommand])
+                disabledCommands.remove(passedCommand)
+                await ctx.send("%s has been enabled for use in this server." % \
                             passedCommand)
 
-        util.save_js(path, disabledCommands)
         self.bot.disabledCommands[str(ctx.guild.id)] = disabledCommands
               
     @commands.command()
     @commands.guild_only()
     async def printDisabledCommands(self, ctx):
         "Print the commands that have been disabled for this server."
-        disabledCommands = util.load_js(opj(self.JSON_PATH,
-                                    "%s-disabled-commands.json" % ctx.guild.id))
+        disabledCommands = self.bot.disabledCommands[str(ctx.guild.id)]
         e = discord.Embed()
         eContent = ""
+        
         for d in disabledCommands:
             eContent += "%s\n" % d
                 
