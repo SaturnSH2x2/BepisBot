@@ -3,6 +3,8 @@ import discord
 import traceback
 import util
 
+import asyncio_redis as ar
+
 from discord.ext import commands
 from discord.ext.commands import errors
 
@@ -22,6 +24,7 @@ class BepisBotClient(commands.Bot):
         self.blacklist = {}
         self.disabledCommands = {}
 
+        # TODO: leftover JSON code, delet this
         for guild in self.guilds:
             self.blacklist[str(guild.id)] = util.load_js(opj(self.JSON_PATH, \
                         "blacklist-%s" % guild.id), returnListIfEmpty=True)
@@ -31,11 +34,17 @@ class BepisBotClient(commands.Bot):
 
             self.add_check(self.checkIfBlacklisted, call_once = True)
             self.add_check(self.checkIfEnabled, call_once = True)
+
+        # TODO: add support for password-protected redis servers
+        print("Attempting to connect to the localhost redis server. Please " +
+                "make sure you have an instance running.")
+        self.rconn = await ar.Connection.create(host = "localhost")
+        
         print("Blacklist and Disabled Command Dictionaries loaded.")
             
     def checkIfBlacklisted(self, ctx):
         guildBlacklist = self.blacklist[str(ctx.guild.id)]
-        print(guildBlacklist)
+        #print(guildBlacklist)
 
         if str(ctx.author.id) in guildBlacklist:
             return False

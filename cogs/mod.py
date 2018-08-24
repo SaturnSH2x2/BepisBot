@@ -294,41 +294,55 @@ class Moderator(base.Base):
 
         await ctx.send(embed = e)
 
-    # TODO: there's no point in rewriting all these commands if you're
-    # considering moving from JSON to SQLite anyways. I'll get to them eventually.
-"""
     @commands.command(pass_context=True)
     async def note(self, ctx, member : discord.Member, *, note : str = None):
-        util.nullifyExecute()
-        perms = await util.check_perms(self, ctx)
-        if not perms:
+        "Make a note of a member. Used for moderation purposes."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.manage_guild:
+            await ctx.send("You need the \"Manage Server\" permission to " + 
+                            "run this command.")
             return
-        if ctx.message.author.id == self.bot.user.id:
+
+        await ctx.message.delete()
+
+        if note == None:
+            await ctx.send("You didn't make a note.")
             return
-        await self.bot.delete_message(ctx.message)
-        if note==None:
-            await self.bot.say("You didn't make a note.")
-            return
-        serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
-        if member.id not in serverNoteList:
-            serverNoteList[member.id]={'noteNum':0, 'name':{'1':''}, 'note':{'1':''},'time':{'1':''},'issuer':{'1':''},'issuerName':{'1':''}}
-        serverNoteList[member.id]["noteNum"] += 1
-        noteNum=str(serverNoteList[member.id]["noteNum"])
-        serverNoteList[member.id]["note"][noteNum] = note
-        serverNoteList[member.id]["name"][noteNum] = member.name
-        serverNoteList[member.id]["time"][noteNum] = str(datetime.now())
-        serverNoteList[member.id]["issuer"][noteNum] = ctx.message.author.id
-        serverNoteList[member.id]["issuerName"][noteNum] = ctx.message.author.name
-        util.save_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)), serverNoteList)
-        await self.bot.say("Your note has been recorded")
+
+        path = opj(self.JSON_PATH, "note-%s.json" % ctx.message.guild.id)
+        serverNoteList = util.load_js(path)
+
+        strID = str(member.id)
+        if strID not in serverNoteList:
+            serverNoteList[strID] = {
+                'noteNum' : 0, 
+                'name' : { '1' : ' '}, 
+                'note' : { '1' : '' },
+                'time' : { '1' : '' },
+                'issuer' : { '1' : ' '},
+                'issuerName' : { '1' : '' }
+            }
+        serverNoteList[strID]["noteNum"] += 1
+        noteNum=str(serverNoteList[strID]["noteNum"])
+        serverNoteList[strID]["note"][noteNum] = note
+        serverNoteList[strID]["name"][noteNum] = member.name
+        serverNoteList[strID]["time"][noteNum] = str(datetime.now())
+        serverNoteList[strID]["issuer"][noteNum] = str(ctx.author.id)
+        serverNoteList[strID]["issuerName"][noteNum] = ctx.author.name
+        util.save_js(path, serverNoteList)
+        await ctx.send("Your note has been recorded.")
 
     @commands.command(pass_context=True)
     async def listNote(self, ctx, member : discord.Member, *, note : str = None):
-        util.nullifyExecute()
-        perms = await util.check_perms(self, ctx)
-        if not perms:
+        "Lists all notes for a given user."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.manage_guild:
+            await ctx.send("You need the \"Manage Server\" permission to " + 
+                            "run this command.")
             return
-        serverNoteList = util.load_js(os.path.join("notes", "{}.json".format(ctx.message.server.id)))
+
+        path = opj(self.JSON_PATH, "note-%s.json" % ctx.guild.id)
+        serverNoteList = util.load_js(path)
         if note==None:
             output="`"
             if member.id not in serverNoteList or serverNoteList[member.id]["noteNum"]==0:
@@ -475,7 +489,6 @@ class Moderator(base.Base):
         else:
             await self.bot.say("To wipe the notes, you must enter the correct key.")
             return
-"""
 
 def setup(bot):
     config = util.load_js("config.json")

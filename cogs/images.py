@@ -323,31 +323,35 @@ class Images(Base):
 
     @commands.command()
     async def beanRegister(self, ctx, register : bool):
-        "Add or remove yourself to the beanlist. Affects the bean command."
+        "Add or remove yourself to the beanSet. Affects the bean command."
         filename = opj(self.JSON_PATH, "bean.json")
         strID = str(ctx.author.id)
 
-        beanList = util.load_js(filename, returnListIfEmpty = True)
-
+        beanSet = await self.bot.rconn.smembers("beanset")
         name = util.getMemberName(ctx.author)
+
+        # there's probably a better way of doing this, but screw it,
+        # I'm leaving it for now
+        beanList = []
+        for bean in beanSet:
+            item = await bean
+            beanList.append(item)
 
         if register == True:
             if strID in beanList:
                 await ctx.send("**%s**, you're already on the beanlist." % name)
                 return
 
-            beanList.append(strID)
+            await self.bot.rconn.sadd("beanset", [strID])
             await ctx.send("**%s**, you have been added to the beanlist." % name)   
         else:
             if strID not in beanList:
                 await ctx.send("**%s**, you aren't on the beanlist." % name)
                 return
 
-            beanList.remove(str(ctx.author.id))
+            await self.bot.rconn.srem("beanset", [strID])
             await ctx.send("**%s**, you've been removed from the beanlist." % \
                             name)
-
-        util.save_js(filename, beanList)
     
     @commands.command()
     async def bean(self, ctx, member : discord.Member = None):
@@ -355,15 +359,20 @@ class Images(Base):
         await ctx.trigger_typing()
         imageUrl="https://i.imgur.com/sncYgfx.png"
 
-        beanList = util.load_js(opj(self.JSON_PATH, "bean.json"), \
-                                    returnListIfEmpty = True)
+        beanSet = await self.bot.rconn.smembers("beanset")
+
+        beanList = []
+        for bean in beanSet:
+            item = await bean
+            beanList.append(item)
+
         if member != None:
             name = util.getMemberName(member)
             if str(member.id) in beanList:
                 imageUrl="https://i.imgur.com/oBadUcY.gif"
 
         else:
-            if str(ctx.author.id) in beanList:
+            if str(ctx.author.id) in beanSet:
                 imageUrl="https://i.imgur.com/oBadUcY.gif"
         
         if member is ctx.author:
