@@ -28,12 +28,10 @@ class BotCmd(Base):
         key = "disabledcommands:%s" % ctx.guild.id
         dc = await self.bot.rconn.smembers(key)
 
-        print(key)
         disabledCommands = []
         for d in dc:
             item = await d
             disabledCommands.append(item)
-        print(disabledCommands)
 
         cmd = self.bot.get_command(passedCommand)
         if cmd == self.setCommandEnable:
@@ -71,7 +69,7 @@ class BotCmd(Base):
         disabledCommands = self.bot.disabledCommands[str(ctx.guild.id)]
         e = discord.Embed()
         eContent = ""
-        
+
         for d in disabledCommands:
             eContent += "%s\n" % d
                 

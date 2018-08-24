@@ -54,7 +54,6 @@ class BepisBotClient(commands.Bot):
             
     def checkIfBlacklisted(self, ctx):
         guildBlacklist = self.blacklist[str(ctx.guild.id)]
-        #print(guildBlacklist)
 
         if str(ctx.author.id) in guildBlacklist:
             return False
@@ -62,7 +61,6 @@ class BepisBotClient(commands.Bot):
 
     def checkIfEnabled(self, ctx):
         if ctx.guild != None:  # not a DM
-            print(self.disabledCommands[str(ctx.guild.id)])
             for command in self.disabledCommands[str(ctx.guild.id)]:
                 if "%s%s" % (self.command_prefix, command) in \
                     ctx.message.content:
