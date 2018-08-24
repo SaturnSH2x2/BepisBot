@@ -323,7 +323,7 @@ class Images(Base):
 
     @commands.command()
     async def beanRegister(self, ctx, register : bool):
-        "Add or remove yourself to the beanSet. Affects the bean command."
+        "Add or remove yourself to the beanlist. Affects the bean command."
         filename = opj(self.JSON_PATH, "bean.json")
         strID = str(ctx.author.id)
 
