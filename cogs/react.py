@@ -33,11 +33,9 @@ class MessageReactions(Base):
             key = "noonecares:%s" % message.author.id
         else:
             key = "noonecares:%s" % message.guild.id
-        print(key)
 
         noOneCaresEnabled = await self.bot.rconn.get(key)
         if not noOneCaresEnabled or noOneCaresEnabled == "0":
-            print("returning...")
             return
 
         if "no one cares" in message.content.lower() or \
@@ -56,7 +54,6 @@ class MessageReactions(Base):
             key = "f:%s" % message.guild.id
 
         fEnabled = await self.bot.rconn.get(key)
-        print(fEnabled)
         if not fEnabled or fEnabled == "0":
             return
 
@@ -74,7 +71,6 @@ class MessageReactions(Base):
             key = "noonecares:%s" % ctx.author.id
         else:
             key = "noonecares:%s" % ctx.guild.id
-        print(key)
 
         if ctx.guild != None and not self.checkPerms(ctx):
             await ctx.send("The \"Manage Guild\" permission is required to " +

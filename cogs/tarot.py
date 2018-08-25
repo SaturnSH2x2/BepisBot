@@ -48,19 +48,22 @@ class Tarot(Base):
     @commands.command()
     async def setExplanations(self, ctx, setEx : bool):
         "Set explanations for tarot readings, per user."
-        self.guild_decks[str(ctx.author.id)] = setEx
-        util.save_js(self.cfgPath, self.guild_decks)
+        key = "tarotexplanations:%s" % ctx.author.id
 
         if setEx:
             enStr = "enabled"
+            await self.bot.rconn.set(key, "1")
         else:
             enStr = "disabled"
+            await self.bot.rconn.set(key, "0")
 
         await ctx.send("Explanations for readings have been **%s**." % (enStr))
 
     @commands.command()
     async def drawCard(self, ctx):
         "Draws a Tarot Card. Major Arcana only, at the moment."
+        key = "tarotexplanations:%s" % ctx.author.id
+
         if random.randint(0, 1):
             card = random.choice(MAJOR_ARCANA)
         else:
@@ -71,12 +74,8 @@ class Tarot(Base):
         e.title = "You drew the {} card.".format(cardName)
         e.set_image( url = self.deck[card] )
 
-        try:
-            if self.guild_decks[str(ctx.author.id)]:
-                e.description = self.explanations[card]
-                e.set_footer( text = self.explanations["source"] )
-        except KeyError:
-            self.guild_decks[str(ctx.author.id)] = True
+        exEnabled = await self.bot.rconn.get(key)
+        if exEnabled == "1":
             e.description = self.explanations[card]
             e.set_footer( text = self.explanations["source"] )
 
