@@ -69,22 +69,20 @@ class Moderator(base.Base):
                             "run this command.")
             return
 
-        path = opj(self.JSON_PATH, "warns-%s.json" % ctx.guild.id)
-        
-        serverWarnList = util.load_js(path)
+        key = "warns:%s:%s" % (ctx.guild.id, member.id)
+        sw = await self.bot.rconn.lrange(key)
+        warnList = []
+        for s in sw:
+            item = await s
+            warnList.append(item)
         strID = str(member.id)
         
         # I feel this section could have been done a bit better
-        if strID not in serverWarnList.keys():
+        if len(warnList) == 0:
             await ctx.send("%s does not have any warns." % member.name)
             return
 
-        warns = serverWarnList[strID]
-        warnCount = len(warns)
-
-        if warnCount == 0:
-            await ctx.send("%s does not have any warns." % member.name)
-            return
+        warnCount = len(warnList)
 
         # check to see that the response is valid
         def responseCheck(message):
@@ -100,7 +98,7 @@ class Moderator(base.Base):
 
         eContent = ""
         for i in range(warnCount):
-            eContent += "%i.  %s\n\n" % (i + 1, warns[i])
+            eContent += "%i.  %s\n\n" % (i + 1, warnList[i])
         e = discord.Embed()
         e.title = "Please type the index of the warn to remove, " + \
                     "or type \"cancel\" to cancel unwarn."
@@ -113,12 +111,12 @@ class Moderator(base.Base):
             await ctx.send("Unwarn cancelled.")
             return
 
-        delWarn = int(response.content)
+        delWarn = int(response.content) - 1
 
-        del warns[delWarn - 1]
+        await self.bot.rconn.lrem(key, value = warnList[delWarn])
         await ctx.send("%s, you have had a warn removed. You now have %i warnings." % \
-                (member.mention, len(warns)))
-        util.save_js(path, serverWarnList)
+                (member.mention, len(warnList) - 1))
+        #util.save_js(path, warnList)
 
     @commands.command()
     @commands.guild_only()
@@ -131,19 +129,22 @@ class Moderator(base.Base):
                             "run this command.")
             return
 
-        path = opj(self.JSON_PATH, "warns-%s.json" % ctx.guild.id)
-        serverWarnList = util.load_js(path)
+        key = "warns:%s:%s" % (ctx.guild.id, member.id)
+        sw = await self.bot.rconn.lrange(key)
+        warnList = []
+        for s in sw:
+            item = await s
+            warnList.append(item)
         strID = str(member.id)
+        print(warnList)
 
         # properly format the reason
         reasonFmt = time.strftime("%c, by ") + "%s: %s. Reason: %s" % \
                                 (ctx.author.name, ctx.author.id, reason)
 
-        if strID not in serverWarnList:
-            serverWarnList[strID] = []
-        serverWarnList[strID] += [reasonFmt]
+        # increment warncount by 1 to keep things accurate
+        warns = len(warnList) + 1
 
-        warns = len(serverWarnList[strID])
         warnMessage = "%s, you have been warned by %s." % \
                         (member.mention, util.getMemberName(ctx.author))
         if self.MAXWARNS - warns == 1:
@@ -157,11 +158,12 @@ class Moderator(base.Base):
             await member.ban()
             await ctx.send("%s exceeded %i warnings, and has been banned." % \
                             (member.name, self.MAXWARNS))
-            del serverWarnList[strID]
+            await self.bot.rconn.delete(key)
         else:
+            await self.bot.rconn.lpush(key, [reasonFmt])
             await ctx.send(warnMessage)
 
-        util.save_js(path, serverWarnList)
+        #util.save_js(path, warnList)
 
     @commands.command()
     @commands.guild_only()
@@ -177,17 +179,21 @@ class Moderator(base.Base):
         if member == None:
             member = ctx.author
 
-        path = opj(self.JSON_PATH, "warns-%s.json" % ctx.guild.id)
+        key = "warns:%s:%s" % (ctx.guild.id, member.id)
         name = util.getMemberName(member)
         strID = str(member.id)
-        serverWarnList = util.load_js(path)
+        sw = await self.bot.rconn.lrange(key)
+        warnList = []
+        for s in sw:
+            item = await s
+            warnList.append(item)
+        print(warnList)
 
-        if strID in serverWarnList.keys():
+        if len(warnList) > 0:
             nLine = "\n"
             eContent = "**%i** of **%i** warnings\n\n" % \
-                (len(serverWarnList[strID]), self.MAXWARNS)
-            warns = serverWarnList[strID]
-            eContent += nLine.join(warns)
+                (len(warnList), self.MAXWARNS)
+            eContent += nLine.join(warnList)
         else:
             eContent = "No warnings for %s." % name
 
@@ -195,7 +201,7 @@ class Moderator(base.Base):
         e.title = "Warnings for %s" % name
         e.description = eContent
 
-        await ctx.send("Warns: ", embed = e)
+        await ctx.send(embed = e)
 
     @commands.command()
     @commands.guild_only()
