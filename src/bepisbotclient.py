@@ -53,6 +53,9 @@ class BepisBotClient(commands.Bot):
         print("Blacklist and Disabled Command Dictionaries loaded.")
             
     def checkIfBlacklisted(self, ctx):
+        if ctx.guild == None:
+            return True
+
         guildBlacklist = self.blacklist[str(ctx.guild.id)]
 
         if str(ctx.author.id) in guildBlacklist:

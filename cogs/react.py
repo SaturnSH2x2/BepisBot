@@ -18,25 +18,6 @@ class MessageReactions(Base):
         self.bot.add_listener(self.noOneCaresListen, "on_message")
         self.bot.add_listener(self.fListen, "on_message")
 
-    # helper function to get the correct JSON file, depending on the
-    # context of the invocation
-    def getReactPath(self, ctx : commands.Context = None, \
-                            message : discord.Message = None):
-        if ctx != None:
-            if ctx.guild != None:
-                return opj(self.JSON_PATH, "react-%s.json" % \
-                                            ctx.guild.id)
-            else:
-                return opj(self.JSON_PATH, "react-%s.json" % \
-                                            ctx.author.id)
-        if message != None:
-            if message.guild != None:
-                return opj(self.JSON_PATH, "react-%s.json" % \
-                                            message.guild.id)
-            else:
-                return opj(self.JSON_PATH, "react-%s.json" % \
-                                            message.author.id)
-
     # simple helper function to check if the member has the 
     # "Manager Server" permission
     def checkPerms(self, ctx):
@@ -48,9 +29,15 @@ class MessageReactions(Base):
 
     # listeners
     async def noOneCaresListen(self, message):
-        reactDict = util.load_js(self.getReactPath(message = message))
-        if "no-one-cares" not in reactDict.keys() or \
-            not reactDict["no-one-cares"]:
+        if message.guild == None:
+            key = "noonecares:%s" % message.author.id
+        else:
+            key = "noonecares:%s" % message.guild.id
+        print(key)
+
+        noOneCaresEnabled = await self.bot.rconn.get(key)
+        if not noOneCaresEnabled or noOneCaresEnabled == "0":
+            print("returning...")
             return
 
         if "no one cares" in message.content.lower() or \
@@ -63,9 +50,14 @@ class MessageReactions(Base):
                             (message.author.mention))
 
     async def fListen(self, message):
-        reactDict = util.load_js(self.getReactPath(message = message))
-        if "f" not in reactDict.keys() or \
-            not reactDict["f"]:
+        if message.guild == None:
+            key = "f:%s" % message.author.id
+        else:
+            key = "f:%s" % message.guild.id
+
+        fEnabled = await self.bot.rconn.get(key)
+        print(fEnabled)
+        if not fEnabled or fEnabled == "0":
             return
 
         if message.content.lower() == "f":
@@ -78,21 +70,23 @@ class MessageReactions(Base):
     @commands.command()
     async def noOneCaresSet(self, ctx, enabled : bool):
         "Enable/Disable the \"no one cares\" reaction."
-        path = self.getReactPath(ctx = ctx)
+        if ctx.guild == None:
+            key = "noonecares:%s" % ctx.author.id
+        else:
+            key = "noonecares:%s" % ctx.guild.id
+        print(key)
 
         if ctx.guild != None and not self.checkPerms(ctx):
             await ctx.send("The \"Manage Guild\" permission is required to " +
                             "run this command.")
             return
 
-        reactDict = util.load_js(path)
-        reactDict["no-one-cares"] = enabled
-        util.save_js(path, reactDict)
-
         if enabled:
             enStr = "enabled"
+            await self.bot.rconn.set(key, "1")
         else:
             enStr = "disabled"
+            await self.bot.rconn.set(key, "0")
 
         await ctx.send("The \"no one cares\" reaction has been %s here." \
                         % (enStr))
@@ -100,16 +94,22 @@ class MessageReactions(Base):
     @commands.command()
     async def fSet(self, ctx, enabled : bool):
         "Enable/Disable the image reactions to \"F\"."
-        path = self.getReactPath(ctx = ctx)
+        if ctx.guild == None:
+            key = "f:%s" % ctx.author.id
+        else:
+            key = "f:%s" % ctx.guild.id
 
-        reactDict = util.load_js(path)
-        reactDict["f"] = enabled
-        util.save_js(path, reactDict)
+        if ctx.guild != None and not self.checkPerms(ctx):
+            await ctx.send("The \"Manage Guild\" permission is required to " +
+                            "run this command.")
+            return
 
         if enabled:
             enStr = "enabled"
+            await self.bot.rconn.set(key, "1")
         else:
             enStr = "disabled"
+            await self.bot.rconn.set(key, "0")
 
         await ctx.send("The \"F\" reaction has been %s here." % enStr)
 
