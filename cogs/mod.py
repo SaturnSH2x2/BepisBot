@@ -116,7 +116,6 @@ class Moderator(base.Base):
         await self.bot.rconn.lrem(key, value = warnList[delWarn])
         await ctx.send("%s, you have had a warn removed. You now have %i warnings." % \
                 (member.mention, len(warnList) - 1))
-        #util.save_js(path, warnList)
 
     @commands.command()
     @commands.guild_only()
@@ -136,7 +135,6 @@ class Moderator(base.Base):
             item = await s
             warnList.append(item)
         strID = str(member.id)
-        print(warnList)
 
         # properly format the reason
         reasonFmt = time.strftime("%c, by ") + "%s: %s. Reason: %s" % \
@@ -163,8 +161,6 @@ class Moderator(base.Base):
             await self.bot.rconn.lpush(key, [reasonFmt])
             await ctx.send(warnMessage)
 
-        #util.save_js(path, warnList)
-
     @commands.command()
     @commands.guild_only()
     async def listWarns(self, ctx, member : discord.Member = None):
@@ -187,7 +183,6 @@ class Moderator(base.Base):
         for s in sw:
             item = await s
             warnList.append(item)
-        print(warnList)
 
         if len(warnList) > 0:
             nLine = "\n"
@@ -247,30 +242,37 @@ class Moderator(base.Base):
                             "run this command.")
             return
 
+        key = "blacklisted:%s" % ctx.guild.id
+
         path = opj(self.JSON_PATH, "blacklist-%s.json" % ctx.guild.id)
-        blacklistDict = util.load_js(path, returnListIfEmpty=True)
+        bl = await self.bot.rconn.lrange(key)
+        blacklist = []
+        for b in bl:
+            item = await b
+            blacklist.append(item)
 
         strMemberID = str(member.id)
 
         if isBlacklist:
-            if strMemberID in blacklistDict:
+            if strMemberID in blacklist:
                 await ctx.send("%s is already on the blacklist for this server." % \
                                     util.getMemberName(member))
                 return
-            blacklistDict.append(strMemberID)
+            await self.bot.rconn.lpush(key, [strMemberID])
+            blacklist.append(strMemberID)
             await ctx.send("%s, you have been added to this server's blacklist." % \
                             member.mention)
         else:
-            if strMemberID not in blacklistDict:
+            if strMemberID not in blacklist:
                 await ctx.send("%s is not on the blacklist for this server." % \
                                     util.getMemberName(member))
                 return
-            blacklistDict.remove(strMemberID)
+            await self.bot.rconn.lrem(key, value = strMemberID)
+            blacklist.remove(strMemberID)
             await ctx.send("%s, you have been removed from this server's blacklist." \
                             % member.mention)
-        
-        util.save_js(path, blacklistDict)
-        self.bot.blacklist[str(ctx.guild.id)] = blacklistDict
+
+        self.bot.blacklist[str(ctx.guild.id)] = blacklist
 
     @commands.command()
     @commands.guild_only()
@@ -281,12 +283,16 @@ class Moderator(base.Base):
                             "run this command.")
             return
 
-        path = opj(self.JSON_PATH, "blacklist-%s.json" % ctx.guild.id)
-        blacklistDict = util.load_js(path, returnListIfEmpty=True)
+        key = "blacklisted:%s" % ctx.guild.id
+        bl = await self.bot.rconn.lrange(key)
+        blacklist = []
+        for b in bl:
+            item = await b
+            blacklist.append(item)
 
         e = discord.Embed()
         memberList = []
-        for member in blacklistDict:
+        for member in blacklist:
             aMember = ctx.guild.get_member(int(member))
 
             memberList.append(util.getMemberName(aMember))

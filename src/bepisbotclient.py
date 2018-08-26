@@ -32,7 +32,7 @@ class BepisBotClient(commands.Bot):
         self.rconn = await ar.Connection.create(host = "localhost")
 
         for guild in self.guilds:
-            bl = await self.rconn.smembers("blacklist:%s" % guild.id)
+            bl = await self.rconn.lrange("blacklisted:%s" % guild.id)
             dc = await self.rconn.smembers("disabledcommands:%s" % guild.id)
 
             strID = str(guild.id)
