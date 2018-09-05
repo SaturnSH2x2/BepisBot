@@ -244,7 +244,6 @@ class Moderator(base.Base):
 
         key = "blacklisted:%s" % ctx.guild.id
 
-        path = opj(self.JSON_PATH, "blacklist-%s.json" % ctx.guild.id)
         bl = await self.bot.rconn.lrange(key)
         blacklist = []
         for b in bl:
