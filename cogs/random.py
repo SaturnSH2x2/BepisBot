@@ -19,18 +19,44 @@ class RandomStuff(Base):
         super().__init__(bot)
 
     @commands.command()
+    async def setRateRandomization(self, ctx, makeRandom : bool):
+        "Determine how BepisBot assigns scores for the rate command."
+        perms = ctx.author.permissions_in(ctx.channel)
+        if not perms.manage_guild:
+            await ctx.send("You need the \"Manage Server\" permission to" +
+                            "run this command.")
+            return
+
+        key = "rateRandomized:%s" % ctx.guild.id
+
+        if makeRandom:
+            await self.bot.rconn.set(key, "1")
+            await ctx.send("%srate will now use randomized scores." % 
+                            self.bot.command_prefix)
+        else:
+            await self.bot.rconn.set(key, "0")
+            await ctx.send("%srate will now use scores based on ASCII values." %
+                            self.bot.command_prefix)
+
+    @commands.command()
     async def rate(self, ctx, something : str):
-        "Rate anything, on a scale frrom 0 to 10."
+        "Rate anything, on a scale from 0 to 10."
         rating = 0
 
         if self.bot.user in ctx.message.mentions:
             await ctx.send(":thinking: I'd give myself a 10 out of 10.")
             return
 
-        for char in something:
-            a_value = ord(char) % 10
-            rating += a_value
-        rating %= 10
+        key = "rateRandomized:%s" % ctx.guild.id
+        randomizeScore = await self.bot.rconn.get(key)
+
+        if randomizeScore == "1":
+            rating = random.randint(0, 10)
+        else:
+            for char in something:
+                a_value = ord(char) % 10
+                rating += a_value
+            rating %= 10
 
         highRatingsPeople = [
             "162357148540469250",
