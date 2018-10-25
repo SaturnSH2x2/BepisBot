@@ -121,7 +121,7 @@ class Music(Base):
         process = mp.Process(target = downloadVideo, args = [ytLink, filename, vidInfoQueue])
         process.start()
 
-        await ctx.send("Please wait while I download the video for streaming...")
+        await ctx.send("Downloading video, please wait...")
         await ctx.trigger_typing()
 
         # wait for the process to complete without holding up
