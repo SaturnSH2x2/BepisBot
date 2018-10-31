@@ -322,7 +322,7 @@ class Images(Base):
         await ctx.send(embed = e)
 
     @commands.command()
-    async def beanRegister(self, ctx, register : bool):
+    async def setBeanRegister(self, ctx, register : bool):
         "Add or remove yourself to the beanlist. Affects the bean command."
         filename = opj(self.JSON_PATH, "bean.json")
         strID = str(ctx.author.id)
