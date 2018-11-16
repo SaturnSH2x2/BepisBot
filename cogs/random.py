@@ -145,8 +145,8 @@ class RandomStuff(Base):
         # to see the result of doing an @everyone without pinging the entire
         # server.  Don't change it, it's intentional.
         if ctx.message.mention_everyone or "@everyone" in ctx.message.content:
-            await ctx.send(":boom::gun: Welp, %s killed everyone, the absolute \
-                            madman." % (ctx.message.author.mention))
+            await ctx.send(":boom::gun: Welp, %s killed everyone, the absolute " +
+                            "madman." % (ctx.message.author.mention))
             return
 
         offender = ctx.author.mention
@@ -175,8 +175,8 @@ class RandomStuff(Base):
                 await ctx.send("Hey **%s**, can\'t touch this!" \
                                     % (offender))
             else:
-                await ctx.send(":boom::gun: **%s**, you have been killed \
-                                 by **%s**!" % (victim.mention, offender))
+                await ctx.send(":boom::gun: **%s**, you have been killed " +
+                                 "by **%s**!" % (victim.mention, offender))
 
     @commands.command()
     async def soon(self, ctx):
